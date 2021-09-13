@@ -13,28 +13,29 @@ class StoriesList extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: 10,
             itemBuilder: (context, index) {
-              return InkWell(
-                  onTap: () {},
-                  child: Card(
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(30.0),
-                          child: Image.asset('assets/images/pizza.png'),
-                        ),
-                        Positioned(
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              padding: EdgeInsets.all(20),
-                              child: Text(
-                                'Комбо-сеты на двоих от 40 000 сумов',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ))
-                      ],
+              return Container(
+                margin: EdgeInsets.only(left: 6),
+                  child: InkWell(
+                onTap: () {},
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: Image.asset('assets/images/pizza.png'),
                     ),
-                  ));
+                    Positioned(
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.only(top: 70, left: 5, right: 5),
+                          child: Text(
+                            'Комбо-сеты на двоих от 40 000 сумов',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ))
+                  ],
+                ),
+              ));
             }));
   }
 }

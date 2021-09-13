@@ -1,6 +1,7 @@
 import 'package:chopar_app/widgets/ChooseAddress.dart';
 import 'package:chopar_app/widgets/ChooseCity.dart';
 import 'package:chopar_app/widgets/ChooseTypeDelivery.dart';
+import 'package:chopar_app/widgets/Footer.dart';
 import 'package:chopar_app/widgets/StoriesList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,8 @@ class _HomeState extends State<Home> {
               StoriesList()
             ],
           ),
-        ));
+        ),
+        bottomNavigationBar: Footer()
+    );
   }
 }
