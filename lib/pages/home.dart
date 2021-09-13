@@ -1,3 +1,8 @@
+import 'package:chopar_app/widgets/ChooseAddress.dart';
+import 'package:chopar_app/widgets/ChooseCity.dart';
+import 'package:chopar_app/widgets/ChooseTypeDelivery.dart';
+import 'package:chopar_app/widgets/StoriesList.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -8,29 +13,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String dropdownValue = 'Ваш город';
-  var cities = ['Ваш город', 'Ташкент', 'Самарканд', 'Фергана', 'Андижан'];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: DropdownButton<String>(
-          value: dropdownValue,
-            icon: const Icon(Icons.arrow_downward),
-            iconSize: 24,
-            elevation: 16,
-          items:cities.map((String cities) {
-            return DropdownMenuItem(value: cities, child: Text(cities));
-          }).toList(),
-          onChanged: (String? newValue) {
-          setState(() {
-            dropdownValue = newValue!;
-          });
-      },
-        ),
-
-      ),
-    );
+        backgroundColor: Colors.white,
+        body: Container(
+          margin: EdgeInsets.all(20.0),
+          child: Column(
+            children: <Widget>[
+              ChooseCity(),
+              ChooseTypeDelivery(),
+              ChooseAddress(),
+              StoriesList()
+            ],
+          ),
+        ));
   }
 }
