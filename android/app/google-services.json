@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1061762820645",
+    "project_id": "chopar-302ce",
+    "storage_bucket": "chopar-302ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061762820645:android:0de35562b7ae92d5102dcc",
+        "android_client_info": {
+          "package_name": "com.example.chopar_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061762820645-os79g60dpr4st1mgugor5ht2227og2ik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGTEuO0cFYwV61_fzD5aAoQajorRdlq7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061762820645-os79g60dpr4st1mgugor5ht2227og2ik.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,11 @@
-import 'package:chopar_app/widgets/ChooseAddress.dart';
-import 'package:chopar_app/widgets/ChooseCity.dart';
-import 'package:chopar_app/widgets/ChooseTypeDelivery.dart';
-import 'package:chopar_app/widgets/StoriesList.dart';
+import 'package:chopar_app/login_view.dart';
+import 'package:chopar_app/widgets/home/ChooseAddress.dart';
+import 'package:chopar_app/widgets/home/ChooseCity.dart';
+import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
+import 'package:chopar_app/widgets/home/ProductsList.dart';
+import 'package:chopar_app/widgets/home/StoriesList.dart';
+import 'package:chopar_app/widgets/profile/PagesList.dart';
+import 'package:chopar_app/widgets/profile/UserName.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,13 +28,14 @@ class _HomeState extends State<Home> {
 
   final tabs = [
     Container(
-      margin: EdgeInsets.all(20.0),
+      margin: EdgeInsets.all(15.0),
       child: Column(
         children: <Widget>[
           ChooseCity(),
           ChooseTypeDelivery(),
           ChooseAddress(),
-          StoriesList()
+          StoriesList(),
+          ProductsList()
         ],
       ),
     ),
@@ -38,8 +43,17 @@ class _HomeState extends State<Home> {
       child: Text('Sale'),
     ),
     Center(
-      child: Text('Profile'),
+      child: ElevatedButton(
+          onPressed: () {
+          },
+          child: Text('Войти')),
     ),
+    // Container(
+    //   margin: EdgeInsets.all(20.0),
+    //   child: Column(
+    //     children: <Widget>[/*ChooseCity(), UserName(), PagesList()*/ LoginView()],
+    //   ),
+    // ),
     Center(
       child: Text('Basket'),
     )
@@ -50,13 +64,20 @@ class _HomeState extends State<Home> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         backgroundColor: Colors.white,
-        body: tabs[_selectedIndex],
+        body: SafeArea(child: tabs[_selectedIndex]),
         bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(50)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: Colors.grey, blurRadius: 5, offset: Offset(0, 0))
+              ],
+            ),
             margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
             child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(50)),
                 child: BottomNavigationBar(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.white,
                   selectedItemColor: Colors.orange,
                   unselectedItemColor: Colors.grey,
                   type: BottomNavigationBarType.fixed,

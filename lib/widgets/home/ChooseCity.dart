@@ -1,4 +1,5 @@
-import 'package:chopar_app/modals/modal_fit.dart';
+import 'package:chopar_app/models/modal_fit.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -8,13 +9,13 @@ class ChooseCity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: Text(
-          'Ваш город',
-          style: TextStyle(color: Colors.grey[600]),
-        ),
-        trailing: Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: <Widget>[
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Ваш город',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
             Icon(Icons.keyboard_arrow_down),
           ],
         ),
