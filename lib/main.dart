@@ -5,12 +5,14 @@ import 'package:chopar_app/pages/home.dart';
 
 import 'authentication_repository.dart';
 
-void main() => runApp(App(
-      authenticationRepository: AuthenticationRepository(),
-      userRepository: UserRepository(),
-    )
-        // MaterialApp(
-        //   theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
-        //   home: Home(),
-        // ),
+void main() => runApp(
+    // App(
+    //   authenticationRepository: AuthenticationRepository(),
+    //   userRepository: UserRepository(),
+    // )
+
+        MaterialApp(
+          theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
+          home: Home(),
+        ),
         );
