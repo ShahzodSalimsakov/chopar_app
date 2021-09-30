@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           ChooseCity(),
           ChooseTypeDelivery(),
-          ChooseAddress(),
+          // ChooseAddress(),
           // StoriesList(),
           ProductsList()
         ],

@@ -1,19 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ChooseTypeDelivery extends StatelessWidget {
+class ChooseTypeDelivery extends StatefulWidget {
   const ChooseTypeDelivery({Key? key}) : super(key: key);
+
+  @override
+  _ChooseTypeDeliveryState createState() => _ChooseTypeDeliveryState();
+}
+
+class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery> {
+  int _activeWidget = 1;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 35,
+      padding: EdgeInsets.all(2),
       decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.all(Radius.circular(50))),
-      // color: Colors.grey,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+        color: Colors.grey,
+      ),
+      child: Wrap(
+        spacing: 5.0,
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -27,7 +34,11 @@ class ChooseTypeDelivery extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                _activeWidget = 1;
+              });
+            },
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -39,10 +50,50 @@ class ChooseTypeDelivery extends StatelessWidget {
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                _activeWidget = 2;
+              });
+            },
           ),
+          Container(
+            child: Column(
+              children: [ChooseDelivery()],
+            ),
+          )
         ],
       ),
+      // color: Colors.grey,
     );
+  }
+
+  Widget ChooseDelivery() {
+    switch (_activeWidget) {
+      case 1:
+        return
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Укажите адрес доставки'),
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {},
+            )
+          ],
+        );
+      case 2:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Выберите ресторан'),
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {},
+            )
+          ],
+        );
+      default:
+        return Text('asd');
+    }
   }
 }
