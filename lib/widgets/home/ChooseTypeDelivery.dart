@@ -1,5 +1,7 @@
+import 'package:chopar_app/models/modal_fit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ChooseTypeDelivery extends StatefulWidget {
   const ChooseTypeDelivery({Key? key}) : super(key: key);
@@ -25,12 +27,12 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 shape: StadiumBorder(),
-                primary: Colors.white,
+                primary: _activeWidget != 2 ? Colors.white : Colors.grey,
                 minimumSize: Size(182, 30)),
             child: Text(
               'Доставка',
               style: TextStyle(
-                  color: Colors.grey[600],
+                  color: _activeWidget != 2 ? Colors.grey[600] : Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
@@ -43,11 +45,11 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 shape: StadiumBorder(),
-                primary: Colors.grey,
+                primary: _activeWidget == 2 ? Colors.white : Colors.grey,
                 minimumSize: Size(182, 30)),
             child: Text('Самовывоз',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: _activeWidget == 2 ? Colors.grey[600] : Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
             onPressed: () {
@@ -56,42 +58,51 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery> {
               });
             },
           ),
-          Container(
-            child: Column(
-              children: [ChooseDelivery()],
-            ),
-          )
+          Column(
+            children: [chooseDelivery()],
+          ),
         ],
       ),
       // color: Colors.grey,
     );
   }
 
-  Widget ChooseDelivery() {
+  Widget chooseDelivery() {
+    chooseAddress() => showMaterialModalBottomSheet(
+          expand: false,
+          context: context,
+          backgroundColor: Colors.transparent,
+          builder: (context) => ModalFit(),
+        );
     switch (_activeWidget) {
       case 1:
-        return
-          Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Укажите адрес доставки'),
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {},
-            )
-          ],
-        );
+        return TextButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Укажите адрес доставки',
+                ),
+                Icon(Icons.edit)
+              ],
+            ),
+            onPressed: chooseAddress,
+            style: TextButton.styleFrom(primary: Colors.red));
       case 2:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Выберите ресторан'),
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {},
-            )
-          ],
-        );
+        return TextButton(
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Выберите ресторан'),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {},
+                )
+              ],
+            ),
+            style: TextButton.styleFrom(primary: Colors.red));
+
       default:
         return Text('asd');
     }

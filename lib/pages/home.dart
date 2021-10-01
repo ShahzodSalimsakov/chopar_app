@@ -3,7 +3,6 @@ import 'package:chopar_app/cubit/user/state.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/auth/modal.dart';
-import 'package:chopar_app/widgets/home/ChooseAddress.dart';
 import 'package:chopar_app/widgets/home/ChooseCity.dart';
 import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
 import 'package:chopar_app/widgets/home/ProductsList.dart';
