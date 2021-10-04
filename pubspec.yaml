@@ -45,6 +45,7 @@ dependencies:
     path: packages/authentication_repository
   user_repository:
     path: packages/user_repository
+  extended_tabs: ^2.3.0
 
 dependency_overrides:
 
