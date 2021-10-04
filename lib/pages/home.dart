@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
           ChooseTypeDelivery(),
           // ChooseAddress(),
           // StoriesList(),
+          SizedBox(height: 20.0),
           ProductsList()
         ],
       ),
@@ -110,7 +111,8 @@ class _HomeState extends State<Home> {
                         onTap: (int index) {
                           var _userBloc = BlocProvider.of<UserCubit>(context);
                           print(_userBloc.state);
-                          if (index >= 2 && _userBloc.state is UserUnauthorizedState) {
+                          if (index >= 2 &&
+                              _userBloc.state is UserUnauthorizedState) {
                             Navigator.push<void>(
                               context,
                               MaterialPageRoute(

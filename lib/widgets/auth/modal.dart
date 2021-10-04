@@ -97,25 +97,6 @@ class _AuthModalState extends State<AuthModal> {
               Container(
                 width: double.infinity,
                 margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 4),
-                        blurRadius: 5.0)
-                  ],
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 1.0],
-                    colors: [
-                      Colors.deepPurple.shade400,
-                      Colors.deepPurple.shade200,
-                    ],
-                  ),
-                  color: Colors.deepPurple.shade300,
-                  borderRadius: BorderRadius.circular(20),
-                ),
                 child: ElevatedButton(
                   onPressed: () {
                     print(formKey.currentState);
