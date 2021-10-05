@@ -73,7 +73,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                       ],
                     ),
                     onPressed: () {},
-                    style: TextButton.styleFrom(primary: Colors.red)),
+                    style: TextButton.styleFrom(primary: Colors.grey)),
                 TextButton(
                     onPressed: () {},
                     child: Row(
@@ -86,7 +86,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                         )
                       ],
                     ),
-                    style: TextButton.styleFrom(primary: Colors.red))
+                    style: TextButton.styleFrom(primary: Colors.grey))
               ],
             )),
       ],

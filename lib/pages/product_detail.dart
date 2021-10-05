@@ -25,7 +25,8 @@ class ProductDetail extends HookWidget {
             minChildSize: 0.5,
             maxChildSize: 1,
             builder: (_, controller) => Container(
-                padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+                padding:
+                    EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 20),
                 color: Colors.white,
                 child: ListView(
                   children: [
@@ -74,6 +75,23 @@ class ProductDetail extends HookWidget {
                             });
                       }),
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    SizedBox(height: 30),
+                    Text(
+                      'Добавить в пиццу',
+                      style: TextStyle(
+                          color: Colors.yellow.shade600, fontSize: 16),
+                    ),
+                    SizedBox(height: 40),
+                    ElevatedButton(
+                      child: Text('asdasd'),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.yellow.shade600),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0))),
+                      ),
+                      onPressed: () {},
                     )
                   ],
                 ))));
