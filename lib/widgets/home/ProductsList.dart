@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chopar_app/models/product_section.dart';
+import 'package:chopar_app/pages/product_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:niku/niku.dart';
 
 // class ProductsList extends StatelessWidget {
@@ -155,7 +157,16 @@ class ProductsList extends HookWidget {
                             width: 1.0, color: Colors.yellow.shade600)),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25.0)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      showMaterialModalBottomSheet(
+                          expand: false,
+                          context: context,
+                          isDismissible: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => ProductDetail(
+                                detail: product,
+                              ));
+                    },
                   ),
                 ],
               ),

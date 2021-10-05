@@ -54,7 +54,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                   unselectedLabelColor: Colors.white,
                 ))),
         Container(
-            height: 100,
+            height: 50,
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
@@ -63,8 +63,11 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Укажите адрес доставки',
+                        Container(
+                          child: Text(
+                            'Укажите адрес доставки',
+                          ),
+                          width: 320,
                         ),
                         Icon(Icons.edit)
                       ],
@@ -76,7 +79,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Выберите ресторан'),
+                        Container(width: 300, child: Text('Выберите ресторан')),
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {},
