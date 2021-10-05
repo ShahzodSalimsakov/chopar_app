@@ -107,7 +107,7 @@ class ProductsList extends HookWidget {
     String productPrice = '';
 
     if (product?.variants != null && product!.variants!.isNotEmpty) {
-      productPrice = product!.variants!.first.price;
+      productPrice = product.variants!.first.price;
     } else {
       productPrice = product!.price;
     }
@@ -136,23 +136,27 @@ class ProductsList extends HookWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    product?.attributeData?.name?.chopar?.ru ?? '',
+                    product.attributeData?.name?.chopar?.ru ?? '',
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
                   ),
                   Html(
-                    data: product?.attributeData?.description?.chopar?.ru ?? '',
+                    data: product.attributeData?.description?.chopar?.ru ?? '',
                     // style: TextStyle(
                     //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
                   ),
-                  NikuButton.outlined(Text('от ' + productPrice))
-                    ..fg(Colors.yellow)
-                    ..overlayColor(base: Colors.yellow)
-                    ..borderSide(
-                        base: BorderSide(width: 3.0, color: Colors.yellow))
-                    ..borderColor(base: Colors.yellow, focused: Colors.yellow)
-                    ..rounded()
-                    ..px(11.0)
+                  OutlinedButton(
+                    child: Text(
+                      'от ' + productPrice,
+                      style: TextStyle(color: Colors.yellow.shade600),
+                    ),
+                    style: ButtonStyle(
+                        side: MaterialStateProperty.all(BorderSide(
+                            width: 1.0, color: Colors.yellow.shade600)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0)))),
+                    onPressed: () {},
+                  ),
                 ],
               ),
             ),

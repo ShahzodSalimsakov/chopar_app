@@ -57,7 +57,7 @@ class _AuthModalState extends State<AuthModal> {
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.6,
                   child: InternationalPhoneNumberInput(
                     onInputChanged: (PhoneNumber number) {
                       print(number.phoneNumber);

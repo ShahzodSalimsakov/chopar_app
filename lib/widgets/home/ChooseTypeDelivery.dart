@@ -15,8 +15,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
   // int _activeWidget = 1;
 
   final myTabs = <Tab>[
-    Tab(text: 'LEFT'),
-    Tab(text: 'RIGHT'),
+    Tab(text: 'Доставка'),
+    Tab(text: 'Самовывоз'),
   ];
 
   late TabController _tabController;
@@ -38,12 +38,20 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     return Column(
       children: [
         Container(
+            height: 33.0,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25.0), color: Colors.grey),
+            padding: EdgeInsets.all(1.0),
             child: DefaultTabController(
                 length: 2,
                 child: TabBar(
                   tabs: myTabs,
                   controller: _tabController,
-                  unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
+                  // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
+                  indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white),
+                  unselectedLabelColor: Colors.white,
                 ))),
         Container(
             height: 100,

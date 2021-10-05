@@ -2,6 +2,9 @@ import 'package:chopar_app/cubit/user/cubit.dart';
 import 'package:chopar_app/cubit/user/state.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/auth/modal.dart';
+import 'package:chopar_app/widgets/home/ChooseCity.dart';
+import 'package:chopar_app/widgets/profile/PagesList.dart';
+import 'package:chopar_app/widgets/profile/UserName.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,15 +30,22 @@ class ProfileIndex extends StatelessWidget {
         builder: (context, state) {
           if (state is UserUnauthorizedState) {
             return Container(
+              margin: EdgeInsets.all(15.0),
               child: Column(
-                children: [Text('не авторизован')],
+                children: [
+                  ChooseCity(),
+                  UserName(),
+                  PagesList()
+                ],
               ),
             );
           }
           return Container(
             child: Column(
               children: [
-                Text('Авторизован')
+                ChooseCity(),
+                UserName(),
+                PagesList()
               ],
             ),
           );
