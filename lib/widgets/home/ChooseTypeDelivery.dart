@@ -12,8 +12,6 @@ class ChooseTypeDelivery extends StatefulWidget {
 
 class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     with SingleTickerProviderStateMixin {
-  // int _activeWidget = 1;
-
   final myTabs = <Tab>[
     Tab(text: 'Доставка'),
     Tab(text: 'Самовывоз'),
@@ -91,97 +89,5 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
             )),
       ],
     );
-
-    //   Container(
-    //   padding: EdgeInsets.all(2),
-    //   decoration: BoxDecoration(
-    //     borderRadius: BorderRadius.all(Radius.circular(100)),
-    //     color: Colors.grey,
-    //   ),
-    //   child: Wrap(
-    //     spacing: 5.0,
-    //     children: [
-    //       ElevatedButton(
-    //         style: ElevatedButton.styleFrom(
-    //             shape: StadiumBorder(),
-    //             primary: _activeWidget != 2 ? Colors.white : Colors.grey,
-    //             minimumSize: Size(182, 30)),
-    //         child: Text(
-    //           'Доставка',
-    //           style: TextStyle(
-    //               color: _activeWidget != 2 ? Colors.grey[600] : Colors.white,
-    //               fontSize: 16,
-    //               fontWeight: FontWeight.bold),
-    //         ),
-    //         onPressed: () {
-    //           setState(() {
-    //             _activeWidget = 1;
-    //           });
-    //         },
-    //       ),
-    //       ElevatedButton(
-    //         style: ElevatedButton.styleFrom(
-    //             shape: StadiumBorder(),
-    //             primary: _activeWidget == 2 ? Colors.white : Colors.grey,
-    //             minimumSize: Size(182, 30)),
-    //         child: Text('Самовывоз',
-    //             style: TextStyle(
-    //                 color: _activeWidget == 2 ? Colors.grey[600] : Colors.white,
-    //                 fontSize: 16,
-    //                 fontWeight: FontWeight.bold)),
-    //         onPressed: () {
-    //           setState(() {
-    //             _activeWidget = 2;
-    //           });
-    //         },
-    //       ),
-    //       Column(
-    //         children: [chooseDelivery()],
-    //       ),
-    //     ],
-    //   ),
-    //   // color: Colors.grey,
-    // );
   }
-
-// Widget chooseDelivery() {
-//   chooseAddress() => showMaterialModalBottomSheet(
-//         expand: false,
-//         context: context,
-//         backgroundColor: Colors.transparent,
-//         builder: (context) => ModalFit(),
-//       );
-//   switch (_activeWidget) {
-//     case 1:
-//       return TextButton(
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 'Укажите адрес доставки',
-//               ),
-//               Icon(Icons.edit)
-//             ],
-//           ),
-//           onPressed: chooseAddress,
-//           style: TextButton.styleFrom(primary: Colors.red));
-//     case 2:
-//       return TextButton(
-//           onPressed: () {},
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text('Выберите ресторан'),
-//               IconButton(
-//                 icon: Icon(Icons.edit),
-//                 onPressed: () {},
-//               )
-//             ],
-//           ),
-//           style: TextButton.styleFrom(primary: Colors.red));
-//
-//     default:
-//       return Text('asd');
-//   }
-// }
 }
