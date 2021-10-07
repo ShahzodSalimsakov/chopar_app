@@ -14,5 +14,6 @@ void main() => runApp(
         MaterialApp(
           theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
           home: Home(),
+          debugShowCheckedModeBanner: false,
         ),
         );

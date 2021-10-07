@@ -3,9 +3,13 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class ProductDetail extends HookWidget {
-  const ProductDetail({Key? key, required this.detail, modifiers}) : super(key: key);
+  const ProductDetail({Key? key, required this.detail, modifiers})
+      : super(key: key);
 
   final detail;
 
@@ -16,65 +20,113 @@ class ProductDetail extends HookWidget {
           onTap: () => Navigator.of(context).pop(),
           child: GestureDetector(onTap: () {}, child: child));
 
-  List<Widget> modifiersList(List<Modifiers> modifiers) {
-    print(modifiers);
+  Widget modifierImage(Modifiers mod) {
+    if (mod.assets != null && mod.assets!.isNotEmpty) {
+      // print('https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}');
+      return Image.network(
+        'https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+        width: 100.0,
+        height: 73.0,
+        // width: MediaQuery.of(context).size.width / 2.5,
+      );
+    } else {
+      if (mod.xmlId.isNotEmpty) {
+        return SvgPicture.network(
+          'https://choparpizza.uz/no_photo.svg',
+          width: 100.0,
+          height: 73.0,
+        );
+      } else {
+        return Image.network(
+          'https://choparpizza.uz/sausage_modifier.png',
+          width: 100.0,
+          height: 73.0,
+          // width: MediaQuery.of(context).size.width / 2.5,
+        );
+      }
+    }
+  }
+
+  List<Widget> modifiersList(
+      List<Modifiers> modifiers, addModifier, activeModifiers) {
     if (detail.variants.length > 0) {
+      final formatCurrency = new NumberFormat.currency(
+          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       return [
-        SizedBox(height: 30.0),
+        SizedBox(height: 20.0),
         Text(
           'Добавить в пиццу',
           style: TextStyle(color: Colors.yellow.shade600, fontSize: 16.0),
         ),
-        SizedBox(height: 30.0),
-        ...List<Container>.from(modifiers.map((m) =>
-            Container(
-                height: 75,
-                padding: EdgeInsets.only(
-                    top: 10, left: 20, bottom: 10),
-                margin: EdgeInsets.symmetric(horizontal: 2),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                  BorderRadius.all(Radius.circular(15)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 3, // changes position of shadow
+        SizedBox(height: 10.0),
+        ...List<InkWell>.from(modifiers
+            .map((m) => InkWell(
+                onTap: () {
+                  addModifier(m.id);
+                },
+                child: Container(
+                    height: 75,
+                    padding: EdgeInsets.only(
+                        left: 20, top: 10, bottom: 10, right: 20),
+                    margin: EdgeInsets.symmetric(horizontal: 2, vertical: 10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      border: Border.all(
+                          color: activeModifiers.value.contains(m.id)
+                              ? Colors.yellow.shade600
+                              : Colors.grey),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 3, // changes position of shadow
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Stack(
+                      fit: StackFit.loose,
                       children: [
-                        Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Бортик с сосиской',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(height: 10),
-                              DecoratedBox(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(12))),
-                                  child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 3, horizontal: 10),
-                                      child: Text('10 000 сум'))),
-                            ]),
-                        Image.network(
-                          detail.image,
-                          width: 100.0,
-                          height: 73.0,
-                          // width: MediaQuery.of(context).size.width / 2.5,
+                        Expanded(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    m.name,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  SizedBox(height: 10),
+                                  DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade300,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(12))),
+                                      child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 3, horizontal: 10),
+                                          child: Text(
+                                              formatCurrency.format(m.price)))),
+                                ]),
+                            Spacer(),
+                            modifierImage(m)
+                          ],
+                        )),
+                        Positioned(
+                          child: activeModifiers.value.contains(m.id)
+                              ? Icon(Icons.check_circle_outline,
+                                  color: Colors.yellow.shade600)
+                              : SizedBox(width: 0.0),
+                          width: 10.0,
+                          height: 10.0,
+                          top: 5.0,
+                          right: 5.0,
                         )
                       ],
-                    )))).toList()),
+                    ))))
+            .toList()),
       ];
     } else {
       return [
@@ -87,35 +139,43 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedVariant = useState<String>('');
+    final formatCurrency = new NumberFormat.currency(
+        locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
+    String defaultSelectedVariant = '';
+    if (detail.variants != null && detail.variants.length > 0) {
+      defaultSelectedVariant = detail.variants[0].customName;
+    }
+    final selectedVariant = useState<String>(defaultSelectedVariant);
+    final activeModifiers = useState<List<int>>([]);
     final modifiers = useMemoized(() {
       List<Modifiers> modifier = List<Modifiers>.empty();
       if (detail.variants != null && detail.variants.length > 0) {
         try {
-          Variants? activeValue = detail.variants.firstWhere(
-              (item) => item.customName == selectedVariant.value,
-              orElse: () => null);
+          Variants? activeValue = detail.variants
+              .firstWhere((item) => item.customName == selectedVariant.value);
           if (activeValue != null && activeValue.modifiers != null) {
-            modifier = activeValue.modifiers!;
+            modifier = [...activeValue.modifiers!];
             if (activeValue.modifierProduct != null) {
-              Modifiers? isExistSausage = modifier.firstWhere(
-                  (mod) => mod.id == activeValue.modifierProduct?.id,
-                  orElse: () => null as Modifiers);
-              if (isExistSausage != null) {
-                modifier.add(new Modifiers(
-                    id: activeValue.modifierProduct?.id ?? 0,
-                    createdAt: '',
-                    updatedAt: '',
-                    name: 'Сосисочный борт',
-                    xmlId: '',
-                    price:
-                        int.parse(activeValue.modifierProduct?.price ?? '0') -
-                            int.parse(activeValue.price),
-                    weight: 0,
-                    groupId: '',
-                    nameUz: 'Sosiskali tomoni'));
-              }
+              // Modifiers? sausageModifier = modifier.firstWhere(
+              //     (mod) => mod.id == activeValue.modifierProduct?.id, orElse: () => null);
+              // if (sausageModifier != null) {
+              modifier.add(new Modifiers(
+                id: activeValue.modifierProduct?.id ?? 0,
+                createdAt: '',
+                updatedAt: '',
+                name: 'Сосисочный борт',
+                xmlId: '',
+                price: int.parse(double.parse(
+                            activeValue.modifierProduct?.price ?? '0.0000')
+                        .toStringAsFixed(0)) -
+                    int.parse(
+                        double.parse(activeValue.price).toStringAsFixed(0)),
+                weight: 0,
+                groupId: '',
+                nameUz: 'Sosiskali tomoni',
+              ));
+              // }
             }
           }
         } catch (e) {
@@ -133,6 +193,93 @@ class ProductDetail extends HookWidget {
 
       return modifier;
     }, [detail, selectedVariant.value]);
+
+    addModifier(int modId) {
+      ModifierProduct? modifierProduct;
+      if (detail.variants != null && detail.variants.length > 0) {
+        try {
+          Variants? activeValue = detail.variants
+              .firstWhere((item) => item.customName == selectedVariant.value);
+          if (activeValue != null && activeValue.modifierProduct != null) {
+            modifierProduct = activeValue.modifierProduct;
+          }
+        } catch (e) {}
+      }
+      Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
+      if (activeModifiers.value.contains(modId)) {
+        Modifiers currentModifier =
+            modifiers.firstWhere((mod) => mod.id == modId);
+        if (currentModifier == null) return;
+        if (currentModifier.price == 0) return;
+        List<int> resultModifiers = activeModifiers.value
+            .where((id) => modId != id)
+            .where((id) => id != null)
+            .toList();
+        if (resultModifiers.length == 0) {
+          resultModifiers.add(zeroModifier.id);
+        }
+        activeModifiers.value = resultModifiers;
+      } else {
+        Modifiers currentModifier =
+            modifiers.firstWhere((mod) => mod.id == modId);
+        if (currentModifier.price == 0) {
+          activeModifiers.value = [modId].toList();
+        } else {
+          List<int> selectedModifiers = [
+            ...activeModifiers.value.where((id) => id != zeroModifier.id),
+            modId,
+          ].toList();
+
+          if (modifierProduct != null) {
+            Modifiers sausage =
+                modifiers.firstWhere((mod) => mod.id == modifierProduct?.id);
+            if (selectedModifiers.contains(modifierProduct.id) &&
+                sausage.price < currentModifier.price) {
+              selectedModifiers = [
+                ...selectedModifiers.where((modId) => modId != sausage.id),
+              ].toList();
+            } else if (currentModifier.id == sausage.id) {
+              List<int> richerModifier = modifiers
+                  .where((mod) => mod.price > sausage.price)
+                  .map((mod) => mod.id)
+                  .toList();
+              selectedModifiers = [
+                ...selectedModifiers
+                    .where((modId) => !richerModifier.contains(modId)),
+                modId,
+              ].toList();
+            }
+          }
+          activeModifiers.value = selectedModifiers;
+        }
+      }
+    }
+
+    final totalPrice = useMemoized(() {
+      int price =
+          int.parse(double.parse(detail.price ?? '0.0000').toStringAsFixed(0));
+      if (detail.variants != null && detail.variants.length > 0) {
+        try {
+          Variants? activeValue = detail.variants
+              .firstWhere((item) => item.customName == selectedVariant.value);
+          if (activeValue != null) {
+            price += int.parse(
+                double.parse(activeValue.price.toString() ?? '0.0000').toStringAsFixed(0));
+          }
+
+          if (modifiers != null && modifiers.isNotEmpty) {
+            modifiers.forEach((mod) {
+              if (activeModifiers.value.contains(mod.id)) {
+                price += int.parse(
+                    double.parse(mod.price.toString() ?? '0.0000').toStringAsFixed(0));
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      return price;
+    }, [detail.price, detail.variants, modifiers, activeModifiers.value]);
 
     return makeDismisible(
         context: context,
@@ -152,8 +299,8 @@ class ProductDetail extends HookWidget {
                         Center(
                             child: Image.network(
                           detail.image,
-                          width: 345.0,
-                          height: 345.0,
+                          width: 300.0,
+                          height: 300.0,
                           // width: MediaQuery.of(context).size.width / 2.5,
                         )),
                         SizedBox(
@@ -175,40 +322,44 @@ class ProductDetail extends HookWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: List<Widget>.generate(
                                 detail.variants.length, (index) {
-                              return ElevatedButton(
-                                  style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0))),
-                                      backgroundColor: MaterialStateProperty.all(
-                                          selectedVariant.value ==
-                                                  detail.variants[index]
-                                                      .customName
-                                              ? Colors.yellow.shade600
-                                              : Colors.white)),
-                                  child: Text(detail.variants[index].customName,
-                                      style: TextStyle(
-                                          fontSize: 13.0,
-                                          color: selectedVariant.value ==
-                                                  detail.variants[index].customName
-                                              ? Colors.white
-                                              : Colors.grey)),
-                                  onPressed: () {
-                                    selectedVariant.value =
-                                        detail.variants[index].customName;
-                                  });
+                              return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 3.0),
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0))),
+                                          backgroundColor: MaterialStateProperty.all(
+                                              selectedVariant.value ==
+                                                      detail.variants[index]
+                                                          .customName
+                                                  ? Colors.yellow.shade600
+                                                  : Colors.grey.shade100)),
+                                      child: Text(detail.variants[index].customName,
+                                          style: TextStyle(
+                                              fontSize: 13.0,
+                                              color: selectedVariant.value ==
+                                                      detail.variants[index].customName
+                                                  ? Colors.white
+                                                  : Colors.grey)),
+                                      onPressed: () {
+                                        selectedVariant.value =
+                                            detail.variants[index].customName;
+                                      }));
                             }),
                           ),
                         ),
-                        ...modifiersList(modifiers),
-
-                        SizedBox(height: 30.0),
+                        ...modifiersList(
+                            modifiers, addModifier, activeModifiers),
                       ],
                     )),
-                    DefaultStyledButton(
-                        width: MediaQuery.of(context).size.width,
-                        onPressed: () {},
-                        text: 'davr')
+                    Container(
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: DefaultStyledButton(
+                          width: MediaQuery.of(context).size.width,
+                          onPressed: () {},
+                          text: 'В корзину ${formatCurrency.format(totalPrice)}'),
+                    ),
                   ],
                 ))));
   }
