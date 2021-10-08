@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'package:chopar_app/models/modal_fit.dart';
+import 'package:chopar_app/models/terminals.dart';
+import 'package:chopar_app/widgets/delivery/pickup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:http/http.dart' as http;
 
 class ChooseTypeDelivery extends StatefulWidget {
   const ChooseTypeDelivery({Key? key}) : super(key: key);
@@ -33,6 +38,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
 
   @override
   Widget build(BuildContext context) {
+
+
     return Column(
       children: [
         Container(
@@ -61,23 +68,50 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          child: Text(
-                            'Укажите адрес доставки',
-                          ),
-                          width: 320,
+                        Text(
+                          'Укажите адрес доставки',
                         ),
+                        Spacer(),
                         Icon(Icons.edit)
                       ],
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                    appBar: AppBar(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Colors.black,
+                                      centerTitle: true,
+                                      title: Text('Укажите адрес доставки',
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                    body: SafeArea(
+                                        child: Text('Укажите адрес доставки')),
+                                  )));
+                    },
                     style: TextButton.styleFrom(primary: Colors.grey)),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                    appBar: AppBar(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Colors.black,
+                                      centerTitle: true,
+                                      title: Text('Выберите ресторан',
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                    body: Pickup(),
+                                  )));
+                    },
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(width: 300, child: Text('Выберите ресторан')),
+                        Text('Выберите ресторан'),
+                        Spacer(),
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {},

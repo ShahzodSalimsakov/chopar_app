@@ -12,24 +12,6 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:niku/niku.dart';
 
-// class ProductsList extends StatelessWidget {
-//   const ProductsList({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return
-//       Container(
-//       height: 20,
-//       child: ListView.builder(
-//         scrollDirection: Axis.horizontal,
-//           itemCount: 60,
-//           itemBuilder: (context, index) {
-//             return  Text('asdasd');
-//           }),
-//     );
-//   }
-// }
-
 class ProductsList extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -54,7 +36,7 @@ class ProductsList extends HookWidget {
 
     useEffect(() {
       getProducts();
-    });
+    }, []);
     ScrollController scrollController = new ScrollController();
 
     return Expanded(

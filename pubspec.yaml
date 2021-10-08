@@ -48,6 +48,7 @@ dependencies:
   user_repository:
     path: packages/user_repository
   extended_tabs: ^2.3.0
+  yandex_mapkit: ^1.1.1
 
 dependency_overrides:
 
