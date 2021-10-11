@@ -3,6 +3,7 @@ import 'package:chopar_app/cubit/user/state.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/auth/modal.dart';
+import 'package:chopar_app/widgets/basket/basket.dart';
 import 'package:chopar_app/widgets/home/ChooseCity.dart';
 import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
 import 'package:chopar_app/widgets/home/ProductsList.dart';
@@ -56,9 +57,7 @@ class _HomeState extends State<Home> {
     //     children: <Widget>[/*ChooseCity(), UserName(), PagesList()*/ LoginView()],
     //   ),
     // ),
-    Center(
-      child: Text('Basket'),
-    )
+    Basket()
   ];
 
   @override
@@ -111,20 +110,20 @@ class _HomeState extends State<Home> {
                         onTap: (int index) {
                           var _userBloc = BlocProvider.of<UserCubit>(context);
                           print(_userBloc.state);
-                          if (index >= 2 &&
-                              _userBloc.state is UserUnauthorizedState) {
-                            Navigator.push<void>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AuthModal(),
-                                fullscreenDialog: true,
-                              ),
-                            );
-                          } else {
+                          // if (index >= 2 &&
+                          //     _userBloc.state is UserUnauthorizedState) {
+                          //   Navigator.push<void>(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => AuthModal(),
+                          //       fullscreenDialog: true,
+                          //     ),
+                          //   );
+                          // } else {
                             setState(() {
                               _selectedIndex = index;
                             });
-                          }
+                          // }
                         },
                       ))));
         },

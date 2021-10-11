@@ -1,11 +1,26 @@
 import 'dart:convert';
 import 'package:chopar_app/models/terminals.dart';
+import 'package:chopar_app/widgets/delivery/control_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:chopar_app/widgets/delivery/dummy_image.dart' show rawImageData;
 
 class Pickup extends HookWidget {
+
+  late YandexMapController controller;
+  static const Point _point = Point(latitude: 41.311081, longitude: 69.240562);
+
+  final Placemark _placemarkWithDynamicIcon = Placemark(
+    point: const Point(latitude: 41.311081, longitude: 69.240562),
+    onTap: (Placemark self, Point point) => print('Tapped me at $point'),
+    style: PlacemarkStyle(
+      opacity: 0.95,
+      iconName: 'assets/images/place.png',
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final terminals = useState<List<Terminals>>(List<Terminals>.empty());
@@ -70,17 +85,36 @@ class Pickup extends HookWidget {
                                             Expanded(
                                                 child: Container(
                                                     padding:
-                                                        const EdgeInsets.all(8),
-                                                    child: const YandexMap())),
-                                            // Expanded(
-                                            //     child: ListView.builder(
-                                            //       itemCount: _allPages.length,
-                                            //       itemBuilder: (_, int index) => ListTile(
-                                            //         title: Text(_allPages[index].title),
-                                            //         onTap: () => _pushPage(context, _allPages[index]),
-                                            //       ),
-                                            //     )
-                                            // )
+                                                         EdgeInsets.all(8),
+                                                    child:  YandexMap(onMapCreated: (YandexMapController yandexMapController) async {
+                                                      controller = yandexMapController;
+                                                    },))),
+                                            Expanded(
+                                                child: SingleChildScrollView(
+                                                    child: Column(
+                                                        children: <Widget>[
+                                                          const Text('Placemark with Binary Icon:'),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                            children: <Widget>[
+                                                              ControlButton(
+                                                                  onPressed: () async {
+                                                                    await controller.addPlacemark(_placemarkWithDynamicIcon);
+                                                                  },
+                                                                  title: 'Add'
+                                                              ),
+                                                              ControlButton(
+                                                                  onPressed: () async {
+                                                                    await controller.removePlacemark(_placemarkWithDynamicIcon);
+                                                                  },
+                                                                  title: 'Remove'
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ]
+                                                    )
+                                                )
+                                            )
                                           ]))));
                             },
                             style: ButtonStyle(
