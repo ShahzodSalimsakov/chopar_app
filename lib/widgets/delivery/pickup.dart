@@ -5,15 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'package:yandex_mapkit/yandex_mapkit.dart';
-import 'package:chopar_app/widgets/delivery/dummy_image.dart' show rawImageData;
 
 class Pickup extends HookWidget {
-
   late YandexMapController controller;
-  static const Point _point = Point(latitude: 41.311081, longitude: 69.240562);
+  late YandexMap map;
 
   final Placemark _placemarkWithDynamicIcon = Placemark(
-    point: const Point(latitude: 41.311081, longitude: 69.240562),
+    point: Point(latitude: 41.311081, longitude: 69.240562),
     onTap: (Placemark self, Point point) => print('Tapped me at $point'),
     style: PlacemarkStyle(
       opacity: 0.95,
@@ -78,43 +76,165 @@ class Pickup extends HookWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => Scaffold(
-                                          appBar: AppBar(
-                                              title: const Text(
-                                                  'YandexMap examples')),
-                                          body: Column(children: <Widget>[
+                                              body: Stack(children: [
                                             Expanded(
                                                 child: Container(
-                                                    padding:
-                                                         EdgeInsets.all(8),
-                                                    child:  YandexMap(onMapCreated: (YandexMapController yandexMapController) async {
-                                                      controller = yandexMapController;
-                                                    },))),
-                                            Expanded(
-                                                child: SingleChildScrollView(
-                                                    child: Column(
-                                                        children: <Widget>[
-                                                          const Text('Placemark with Binary Icon:'),
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                            children: <Widget>[
-                                                              ControlButton(
-                                                                  onPressed: () async {
-                                                                    await controller.addPlacemark(_placemarkWithDynamicIcon);
-                                                                  },
-                                                                  title: 'Add'
-                                                              ),
-                                                              ControlButton(
-                                                                  onPressed: () async {
-                                                                    await controller.removePlacemark(_placemarkWithDynamicIcon);
-                                                                  },
-                                                                  title: 'Remove'
-                                                              ),
-                                                            ],
-                                                          )
-                                                        ]
-                                                    )
-                                                )
-                                            )
+                                                    padding: EdgeInsets.all(8),
+                                                    child: YandexMap())),
+                                            Positioned(
+                                              top:  50,
+                                                child: RawMaterialButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              elevation: 2.0,
+                                              fillColor: Colors.white,
+                                              child: Icon(Icons.close,
+                                                  size: 14.0,
+                                                  color: Colors.black),
+                                              padding: EdgeInsets.all(10.0),
+                                              shape: CircleBorder(),
+                                            )),
+                                            Positioned(
+                                                right: 0,
+                                                bottom: 40,
+                                                child: RawMaterialButton(
+                                                  onPressed: () {
+                                                    showModalBottomSheet(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return Material(
+                                                              borderRadius: BorderRadius.only(
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          20),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          20)),
+                                                              child: Container(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          15,
+                                                                      vertical:
+                                                                          33),
+                                                                  child: Column(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                            Icons.control_point,
+                                                                            color:
+                                                                                Colors.yellow.shade700,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width:
+                                                                                19,
+                                                                          ),
+                                                                          Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text(
+                                                                                'Максим Горький-Фэмили',
+                                                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 5,
+                                                                              ),
+                                                                              Text(
+                                                                                'улица Буюк Ипак Йули, 2 Ориентир: Davr Bank',
+                                                                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 5,
+                                                                              ),
+                                                                              Text(
+                                                                                'График работы: 10:00 - 03:00',
+                                                                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.green),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      Divider(
+                                                                        height:
+                                                                            1,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            15,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              double.infinity,
+                                                                          child: ElevatedButton(
+                                                                              onPressed: () {},
+                                                                              child: Text(
+                                                                                'Забрать здесь',
+                                                                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                              style: ButtonStyle(
+                                                                                  backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
+                                                                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(22.0),
+                                                                                  )))))
+                                                                    ],
+                                                                  )));
+                                                        });
+                                                  },
+                                                  elevation: 2.0,
+                                                  fillColor: Colors.white,
+                                                  child: Icon(Icons.navigation,
+                                                      size: 23.0,
+                                                      color: Colors
+                                                          .yellow.shade700),
+                                                  padding: EdgeInsets.all(10.0),
+                                                  shape: CircleBorder(),
+                                                )),
+
+                                            // Expanded(
+                                            //     child: SingleChildScrollView(
+                                            //         child: Column(
+                                            //           mainAxisSize: MainAxisSize.min,
+                                            //             crossAxisAlignment: CrossAxisAlignment.center,
+                                            //             children: <Widget>[
+                                            //               const Text('Placemark with Binary Icon:'),
+                                            //               Row(
+                                            //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            //                 children: <Widget>[
+                                            //                   ControlButton(
+                                            //                       onPressed: () async {
+                                            //                         await controller.addPlacemark(_placemarkWithDynamicIcon);
+                                            //                       },
+                                            //                       title: 'Add'
+                                            //                   ),
+                                            //                   ControlButton(
+                                            //                       onPressed: () async {
+                                            //                         await controller.removePlacemark(_placemarkWithDynamicIcon);
+                                            //                       },
+                                            //                       title: 'Remove'
+                                            //                   ),ControlButton(
+                                            //                       onPressed: () async {
+                                            //                         final point = await controller.getUserTargetPoint();
+                                            //                         print(point);
+                                            //                       },
+                                            //                       title: 'Get location'
+                                            //                   ),
+                                            //                 ],
+                                            //               )
+                                            //             ]
+                                            //         )
+                                            //     )
+                                            // )
                                           ]))));
                             },
                             style: ButtonStyle(
@@ -155,14 +275,19 @@ class Pickup extends HookWidget {
                                     SizedBox(
                                       width: 12,
                                     ),
+
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                     Text(
                                       terminals.value[index].name ?? '',
                                       style: TextStyle(fontSize: 16),
                                     ),
-                                  ],
-                                ),
-                                Text(terminals.value[index].desc ?? '',
-                                    style: TextStyle(fontSize: 14))
+                                    Text(terminals.value[index].desc ?? '',
+                                    style: TextStyle(fontSize: 14))],)
+
                               ],
                             ));
                       }),
