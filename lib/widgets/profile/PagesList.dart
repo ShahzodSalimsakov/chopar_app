@@ -1,4 +1,5 @@
 import 'package:chopar_app/pages/bonuses.dart';
+import 'package:chopar_app/pages/orders.dart';
 import 'package:flutter/material.dart';
 
 class PagesList extends StatelessWidget {
@@ -29,6 +30,14 @@ class PagesList extends StatelessWidget {
           leading: Icon(Icons.map),
           title: Text('Мои заказы'),
           trailing: Icon(Icons.keyboard_arrow_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Orders(),
+              ),
+            );
+          },
         ),
         ListTile(
           contentPadding: EdgeInsets.all(0.00),

@@ -81,6 +81,10 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                           MaterialPageRoute(
                               builder: (context) => Scaffold(
                                     appBar: AppBar(
+                                      leading: IconButton(
+                                        icon: Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
+                                        onPressed: () => Navigator.of(context).pop(),
+                                      ),
                                       backgroundColor: Colors.white,
                                       foregroundColor: Colors.black,
                                       centerTitle: true,
@@ -99,6 +103,10 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                           MaterialPageRoute(
                               builder: (context) => Scaffold(
                                     appBar: AppBar(
+                                      leading: IconButton(
+                                        icon: Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
+                                        onPressed: () => Navigator.of(context).pop(),
+                                      ),
                                       backgroundColor: Colors.white,
                                       foregroundColor: Colors.black,
                                       centerTitle: true,
