@@ -51,6 +51,7 @@ dependencies:
     path: packages/user_repository
   extended_tabs: ^2.3.0
   yandex_mapkit: ^1.1.1
+  font_awesome_flutter: ^9.1.0
 
 dependency_overrides:
 
