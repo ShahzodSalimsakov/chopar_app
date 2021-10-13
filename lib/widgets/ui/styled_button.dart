@@ -4,12 +4,14 @@ class DefaultStyledButton extends StatelessWidget {
   final double width;
   final onPressed;
   final String text;
+  final List<Color>? color;
 
   const DefaultStyledButton(
       {Key? key,
       required this.width,
       required this.onPressed,
-      required this.text})
+      required this.text,
+      this.color})
       : super(key: key);
 
   @override
@@ -22,7 +24,7 @@ class DefaultStyledButton extends StatelessWidget {
           width: double.maxFinite,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.yellow.shade200, Colors.yellow.shade600],
+                  colors: color != null ? color! : [Colors.yellow.shade200, Colors.yellow.shade600],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(25.0)),

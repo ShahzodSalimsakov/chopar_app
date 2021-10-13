@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/pages/product_detail.dart';
+import 'package:chopar_app/widgets/products/50_50.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -46,33 +47,47 @@ class ProductsList extends HookWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       countOfItemInSection: (int section) {
-        return products.value[section].items?.length ?? 0;
+        if (products.value[section].halfMode == 1) {
+          return 1;
+        } else {
+          return products.value[section].items?.length ?? 0;
+        }
       },
       itemBuilder: (BuildContext context, IndexPath index) {
-        return renderProduct(
-            context, products.value[index.section].items?[index.index]);
+        if (products.value[index.section].halfMode == 1) {
+          return renderCreatePizza(
+              context, products.value[index.section].items);
+        } else {
+          return renderProduct(
+              context, products.value[index.section].items?[index.index]);
+        }
       },
       groupHeaderBuilder: (BuildContext context, int section) {
-        return Container(
-          child: Stack(
-            children: [
-              NikuText(
-                  products.value[section].attributeData?.name?.chopar?.ru ?? '')
-                ..textDecoration(TextDecoration.underline)
-                ..textDecorationColor(Colors.yellow)
-                ..fontSize(24.0)
-                ..w400()
-                ..fontFamily('Ubuntu'),
-              SizedBox(
-                height: 40.0,
-              ),
+        if (products.value[section].halfMode == 1) {
+          return SizedBox();
+        } else {
+          return Container(
+            child: Stack(
+              children: [
+                NikuText(
+                    products.value[section].attributeData?.name?.chopar?.ru ??
+                        '')
+                  ..textDecoration(TextDecoration.underline)
+                  ..textDecorationColor(Colors.yellow)
+                  ..fontSize(24.0)
+                  ..w400()
+                  ..fontFamily('Ubuntu'),
+                SizedBox(
+                  height: 40.0,
+                ),
 
-              /// stack requires empty non positioned widget to work properly. refer: https://github.com/flutter/flutter/issues/49631#issuecomment-582090992
-              // Container(),
-            ],
-          ),
-          width: MediaQuery.of(context).size.width,
-        );
+                /// stack requires empty non positioned widget to work properly. refer: https://github.com/flutter/flutter/issues/49631#issuecomment-582090992
+                // Container(),
+              ],
+            ),
+            width: MediaQuery.of(context).size.width,
+          );
+        }
       },
       separatorBuilder: (context, index) => Divider(
         color: Colors.black,
@@ -82,6 +97,56 @@ class ProductsList extends HookWidget {
         height: 20.0,
       ),
     ));
+  }
+
+  Widget renderCreatePizza(BuildContext context, List<Items>? items) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 15.0),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  child: Image.network(
+                'https://store.hq.fungeek.net/createYourPizza.png',
+                width: 170.0,
+                height: 170.0,
+              )),
+              Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('Соберите свою пиццу', style:
+                            TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),),
+                            OutlinedButton(
+                              child: Text(
+                                'Собрать пиццу',
+                                style: TextStyle(color: Colors.yellow.shade600),
+                              ),
+                              style: ButtonStyle(
+                                  side: MaterialStateProperty.all(BorderSide(
+                                      width: 1.0, color: Colors.yellow.shade600)),
+                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25.0)))),
+                              onPressed: () {
+                                showMaterialModalBottomSheet(
+                                    expand: false,
+                                    context: context,
+                                    isDismissible: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => CreateOwnPizza(items));
+                              },
+                            )
+                          ])))
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   Widget renderProduct(BuildContext context, Items? product) {
