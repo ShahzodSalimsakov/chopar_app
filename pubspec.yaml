@@ -33,6 +33,8 @@ dependencies:
   flutter_bloc: ^7.3.0
   intl_phone_number_input: ^0.7.0+2
   niku: ^1.1.3
+  mobx: ^2.0.5
+  flutter_mobx: ^2.0.2
   intl: ^0.17.0
   equatable: ^2.0.3
   collection: ^1.15.0
@@ -56,6 +58,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_native_splash: ^1.2.1
+  build_runner:
+  mobx_codegen:
 
 flutter_native_splash:
   background_image: "assets/images/launch.png"

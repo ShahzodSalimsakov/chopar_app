@@ -8,7 +8,7 @@ class Basket extends StatefulWidget {
 }
 
 class _BasketState extends State<Basket> {
-  int _itemCount = 0;
+  int _itemCount = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -141,28 +141,28 @@ class _BasketState extends State<Basket> {
                             style: TextStyle(
                                 fontWeight: FontWeight.w400, fontSize: 18),
                           ),
-                          Text('125 000 сум',
+                          Text('92 000 сум',
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 18))
                         ],
                       ),
                     ),
-                    Container(
-                      height: 60,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Доставка',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 18),
-                          ),
-                          Text('10 000 сум',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18))
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   height: 60,
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //     children: [
+                    //       Text(
+                    //         'Доставка',
+                    //         style: TextStyle(
+                    //             fontWeight: FontWeight.w400, fontSize: 18),
+                    //       ),
+                    //       Text('10 000 сум',
+                    //           style: TextStyle(
+                    //               fontWeight: FontWeight.w400, fontSize: 18))
+                    //     ],
+                    //   ),
+                    // ),
                     Container(
                       height: 60,
                       child: Row(
@@ -173,7 +173,7 @@ class _BasketState extends State<Basket> {
                             style: TextStyle(
                                 fontWeight: FontWeight.w700, fontSize: 18),
                           ),
-                          Text('135  000 сум',
+                          Text('92 000 сум',
                               style: TextStyle(
                                   fontWeight: FontWeight.w700, fontSize: 18))
                         ],
