@@ -38,8 +38,6 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
 
   @override
   Widget build(BuildContext context) {
-
-
     return Column(
       children: [
         Container(
@@ -82,8 +80,11 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                               builder: (context) => Scaffold(
                                     appBar: AppBar(
                                       leading: IconButton(
-                                        icon: Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
-                                        onPressed: () => Navigator.of(context).pop(),
+                                        icon: Icon(
+                                            Icons.arrow_back_ios_outlined,
+                                            color: Colors.black),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                       ),
                                       backgroundColor: Colors.white,
                                       foregroundColor: Colors.black,
@@ -104,8 +105,11 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                               builder: (context) => Scaffold(
                                     appBar: AppBar(
                                       leading: IconButton(
-                                        icon: Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
-                                        onPressed: () => Navigator.of(context).pop(),
+                                        icon: Icon(
+                                            Icons.arrow_back_ios_outlined,
+                                            color: Colors.black),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                       ),
                                       backgroundColor: Colors.white,
                                       foregroundColor: Colors.black,
