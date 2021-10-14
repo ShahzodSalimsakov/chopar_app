@@ -10,6 +10,8 @@ import 'package:chopar_app/widgets/home/StoriesList.dart';
 import 'package:chopar_app/widgets/profile/PagesList.dart';
 import 'package:chopar_app/widgets/profile/UserName.dart';
 import 'package:chopar_app/widgets/profile/index.dart';
+import 'package:chopar_app/widgets/sales/sales.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -45,9 +47,7 @@ class _HomeState extends State<Home> {
         ],
       ),
     ),
-    Center(
-      child: Text('Sale'),
-    ),
+    Sales(),
     ProfileIndex(),
     // Container(
     //   margin: EdgeInsets.all(20.0),

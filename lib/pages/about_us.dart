@@ -2,12 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutUs extends StatelessWidget {
   const AboutUs({Key? key}) : super(key: key);
+  final instagramLink = 'https://www.instagram.com/choparpizza/';
+  final facebookLink = 'https://www.facebook.com/choparpizza';
+  final telegramLink = 'https://telegram.me/Chopar_bot';
 
   @override
   Widget build(BuildContext context) {
+    void _launchURLInstagram() async => await canLaunch(instagramLink)
+        ? await launch(instagramLink)
+        : throw 'Could not launch $instagramLink';
+    void _launchURLFacebook() async => await canLaunch(facebookLink)
+        ? await launch(facebookLink)
+        : throw 'Could not launch $facebookLink';
+    void _launchURLTelegram() async => await canLaunch(telegramLink)
+        ? await launch(telegramLink)
+        : throw 'Could not launch $telegramLink';
     return Scaffold(
         body: SafeArea(
             child: Column(
@@ -44,7 +57,9 @@ class AboutUs extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                _launchURLInstagram();
+              },
               child: FaIcon(FontAwesomeIcons.instagram),
               style: ElevatedButton.styleFrom(
                 side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
@@ -54,7 +69,9 @@ class AboutUs extends StatelessWidget {
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                _launchURLFacebook();
+              },
               child: FaIcon(FontAwesomeIcons.facebook),
               style: ElevatedButton.styleFrom(
                 side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
@@ -64,7 +81,9 @@ class AboutUs extends StatelessWidget {
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                _launchURLTelegram();
+              },
               child: FaIcon(FontAwesomeIcons.telegram),
               style: ElevatedButton.styleFrom(
                 side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
@@ -90,14 +109,37 @@ class AboutUs extends StatelessWidget {
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => Bonuses(),
-                  //     ),
-                  //   );
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_outlined,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            centerTitle: true,
+                            title: Text('Пользовательское соглашение',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w400)),
+                          ),
+                          body: SafeArea(
+                              child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
+                          )),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.all(0.00),
@@ -106,14 +148,37 @@ class AboutUs extends StatelessWidget {
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => Orders(),
-                  //     ),
-                  //   );
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_outlined,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            centerTitle: true,
+                            title: Text('Политика конфиденциальности',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w400)),
+                          ),
+                          body: SafeArea(
+                              child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
+                          )),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.all(0.00),
@@ -122,6 +187,37 @@ class AboutUs extends StatelessWidget {
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_outlined,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            centerTitle: true,
+                            title: Text('Публичная оферта',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w400)),
+                          ),
+                          body: SafeArea(
+                              child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
+                          )),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.all(0.00),
@@ -130,6 +226,37 @@ class AboutUs extends StatelessWidget {
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios_outlined,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            centerTitle: true,
+                            title: Text('Правила акций',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w400)),
+                          ),
+                          body: SafeArea(
+                              child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
+                          )),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ]).toList(),
             ))
