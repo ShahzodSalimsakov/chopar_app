@@ -5,14 +5,16 @@ import 'package:chopar_app/store/city.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ChooseCity extends HookWidget {
-  final CurrentCity _currentCity = CurrentCity();
 
   Widget cityModal(BuildContext context, List<City> cities) {
+    City? currentCity = Hive.box<City>('currentCity').get('currentCity');
     return Material(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20), topRight: Radius.circular(20)),
@@ -42,12 +44,20 @@ class ChooseCity extends HookWidget {
                   itemCount: cities.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(cities[index].name, style: TextStyle(color: Colors.black),),
-                      trailing: _currentCity.city!.id == cities[index].id ? const Icon(Icons.check, color: Colors.yellow,) : null,
-
-                      selected: _currentCity.city!.id == cities[index].id,
+                      title: Text(
+                        cities[index].name,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      trailing: currentCity != null && currentCity.id == cities[index].id
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.yellow,
+                            )
+                          : null,
+                      selected: currentCity != null && currentCity.id == cities[index].id,
                       onTap: () {
-                        _currentCity.setCurrentCity(cities[index]);
+                        Box<City> transaction = Hive.box<City>('currentCity');
+                        transaction.put('currentCity', cities[index]);
                         Navigator.of(context).pop();
                       },
                     );
@@ -73,10 +83,10 @@ class ChooseCity extends HookWidget {
         List<City> cityList = List<City>.from(
             json['data'].map((m) => new City.fromJson(m)).toList());
         cities.value = cityList;
-        if (_currentCity.city == null) {
-          _currentCity.setCurrentCity(cityList[0]);
+        City? currentCity = Hive.box<City>('currentCity').get('currentCity');
+        if (currentCity == null) {
+          Hive.box<City>('currentCity').put('currentCity', cityList[0]);
         }
-
       }
     }
 
@@ -84,23 +94,27 @@ class ChooseCity extends HookWidget {
       loadCities();
     }, []);
 
-    return Observer(
-        builder: (_) => ListTile(
-            title: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _currentCity.cityPlaceholder,
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-                Icon(Icons.keyboard_arrow_down),
-              ],
-            ),
-            onTap: () => showMaterialModalBottomSheet(
-                  expand: false,
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => cityModal(context, cities.value),
-                )));
+    return ValueListenableBuilder<Box<City>>(
+        valueListenable: Hive.box<City>('currentCity').listenable(),
+        builder: (context, box, _) {
+          City? currentCity = box.get('currentCity');
+          return ListTile(
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    currentCity != null ? currentCity.name : 'Ваш город',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  Icon(Icons.keyboard_arrow_down),
+                ],
+              ),
+              onTap: () => showMaterialModalBottomSheet(
+                    expand: false,
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => cityModal(context, cities.value),
+                  ));
+        });
   }
 }

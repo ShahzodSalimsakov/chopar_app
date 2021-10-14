@@ -1,13 +1,28 @@
-class City {
+
+import 'package:hive/hive.dart';
+part 'city.g.dart';
+
+@HiveType(typeId: 0)
+class City extends HiveObject {
+  @HiveField(0)
   late int id;
+  @HiveField(1)
   late String xmlId;
+  @HiveField(2)
   late String name;
+  @HiveField(3)
   late String nameUz;
+  @HiveField(4)
   late String mapZoom;
+  @HiveField(5)
   late String lat;
+  @HiveField(6)
   late String lon;
+  @HiveField(7)
   late bool active;
+  @HiveField(8)
   late int sort;
+  @HiveField(9)
   late String phone;
 
   City(
@@ -49,4 +64,18 @@ class City {
     data['phone'] = this.phone;
     return data;
   }
+
+  // String get cityPlaceholder {
+  //   City? currentCity = Hive.box<City>('currentCity').get('currentCity');
+  //   if (currentCity == null) {
+  //     return 'Ваш город';
+  //   }
+  //
+  //   return currentCity!.name;
+  // }
+  //
+  // void setCurrentCity(City c) {
+  //   Box<City> transaction = Hive.box<City>('currentCity');
+  //   transaction.put('currentCity', c);
+  // }
 }

@@ -1,3 +1,7 @@
+import 'package:hive/hive.dart';
+
+part 'user.g.dart';
+
 class UserData {
   late int id;
   late int userId;
@@ -37,20 +41,30 @@ class UserData {
   }
 }
 
+@HiveType(typeId: 1)
 class User {
+  @HiveField(0)
   late int id;
+  @HiveField(1)
   Null languageId;
+  @HiveField(2)
   late String name;
+  @HiveField(3)
   late String phone;
+  @HiveField(4)
   Null verificationCode;
+  @HiveField(5)
   Null phoneVerifiedAt;
+  @HiveField(6)
   late String createdAt;
+  @HiveField(7)
   late String updatedAt;
+  @HiveField(8)
   Null mobile;
+  @HiveField(9)
   late String userToken;
-  List<Roles>? roles;
 
-  User({required this.id, this.languageId, required this.name, required this.phone, this.verificationCode, this.phoneVerifiedAt, required this.createdAt, required this.updatedAt, this.mobile, required this.userToken, required this.roles});
+  User({required this.id, this.languageId, required this.name, required this.phone, this.verificationCode, this.phoneVerifiedAt, required this.createdAt, required this.updatedAt, this.mobile, required this.userToken});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -63,10 +77,6 @@ class User {
     updatedAt = json['updated_at'];
     mobile = json['mobile'];
     userToken = json['user_token'];
-    if (json['roles'] != null) {
-      roles = new List<Roles>.empty();
-      json['roles'].forEach((v) { roles?.add(new Roles.fromJson(v)); });
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -81,9 +91,6 @@ class User {
     data['updated_at'] = this.updatedAt;
     data['mobile'] = this.mobile;
     data['user_token'] = this.userToken;
-    if (this.roles != null) {
-      data['roles'] = this.roles?.map((v) => v.toJson()).toList();
-    }
     return data;
   }
 }

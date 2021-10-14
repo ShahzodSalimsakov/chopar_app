@@ -1,11 +1,17 @@
+import 'dart:convert';
+import 'package:chopar_app/models/basket.dart';
+import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/product_section.dart';
+import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ProductDetail extends HookWidget {
   const ProductDetail({Key? key, required this.detail, modifiers})
@@ -22,7 +28,6 @@ class ProductDetail extends HookWidget {
 
   Widget modifierImage(Modifiers mod) {
     if (mod.assets != null && mod.assets!.isNotEmpty) {
-      // print('https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}');
       return Image.network(
         'https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
         width: 100.0,
@@ -148,6 +153,7 @@ class ProductDetail extends HookWidget {
     }
     final selectedVariant = useState<String>(defaultSelectedVariant);
     final activeModifiers = useState<List<int>>([]);
+    final _isBasketLoading = useState<bool>(false);
     final modifiers = useMemoized(() {
       List<Modifiers> modifier = List<Modifiers>.empty();
       if (detail.variants != null && detail.variants.length > 0) {
@@ -264,14 +270,16 @@ class ProductDetail extends HookWidget {
               .firstWhere((item) => item.customName == selectedVariant.value);
           if (activeValue != null) {
             price += int.parse(
-                double.parse(activeValue.price.toString() ?? '0.0000').toStringAsFixed(0));
+                double.parse(activeValue.price.toString() ?? '0.0000')
+                    .toStringAsFixed(0));
           }
 
           if (modifiers != null && modifiers.isNotEmpty) {
             modifiers.forEach((mod) {
               if (activeModifiers.value.contains(mod.id)) {
                 price += int.parse(
-                    double.parse(mod.price.toString() ?? '0.0000').toStringAsFixed(0));
+                    double.parse(mod.price.toString() ?? '0.0000')
+                        .toStringAsFixed(0));
               }
             });
           }
@@ -280,6 +288,127 @@ class ProductDetail extends HookWidget {
 
       return price;
     }, [detail.price, detail.variants, modifiers, activeModifiers.value]);
+
+    Future<void> addToBasket({List<int>? mods}) async {
+      ModifierProduct? modifierProduct;
+      List<Map<String, int>>? selectedModifiers;
+      _isBasketLoading.value = true;
+      // await setCredentials()
+
+      if (mods == null) {
+        mods = activeModifiers.value;
+      }
+      if (modifiers != null) {
+        selectedModifiers = modifiers
+            .where((m) => mods!.contains(m.id))
+            .map((m) => ({'id': m.id}))
+            .toList();
+      }
+
+      int selectedProdId = 0;
+      if (detail.variants != null && detail.variants.length > 0) {
+        Variants activeVariant =
+            detail.variants.firstWhere((v) => v.customName == selectedVariant.value);
+        selectedProdId = activeVariant.id;
+        if (activeVariant.modifierProduct != null) {
+          modifierProduct = activeVariant.modifierProduct;
+        }
+
+        if (mods.length > 0 && modifierProduct != null) {
+          if (mods.contains(modifierProduct.id)) {
+            selectedProdId = modifierProduct.id;
+            List<int> currentProductModifiersPrices = [
+              ...modifiers
+                  .where((mod) => mod.id != modifierProduct!.id)
+                  .map((mod) => mod.price)
+                  .toList(),
+            ];
+            selectedModifiers = modifierProduct.modifiers!
+                .where(
+                    (mod) => currentProductModifiersPrices.contains(mod.price))
+                .map((m) => ({'id': m.id}))
+                .toList();
+          }
+        }
+      } else {
+        selectedProdId = detail.id;
+      }
+
+      Box userBox = Hive.box<User>('user');
+      User? user = userBox.get('user');
+      Box basketBox = Hive.box<Basket>('basket');
+      Basket? basket = basketBox.get('basket');
+      // let basketId = localStorage.getItem('basketId')
+      // const otpToken = Cookies.get('opt_token')
+
+      if (basket != null) {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+
+        if (user != null) {
+          requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+        }
+
+        var url = Uri.https('api.hq.fungeek.net', '/api/baskets-lines');
+        var formData = {
+          'basket_id': basket.encodedId,
+          'variants': [
+            {
+              'id': selectedProdId,
+              'quantity': 1,
+              'modifiers': selectedModifiers
+            }
+          ]
+        };
+        var response = await http.post(url,
+            headers: requestHeaders, body: jsonEncode(formData));
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var json = jsonDecode(response.body);
+          print(json);
+          BasketData basketData = new BasketData.fromJson(json['data']);
+          Basket newBasket = new Basket(
+              encodedId: basketData.encodedId,
+              lineCount: basketData.lines?.length ?? 0);
+          print(newBasket.lineCount);
+          basketBox.put('basket', newBasket);
+        }
+      } else {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+
+        if (user != null) {
+          requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+        }
+
+        var url = Uri.https('api.hq.fungeek.net', '/api/baskets');
+        var formData = {
+          'variants': [
+            {
+              'id': selectedProdId,
+              'quantity': 1,
+              'modifiers': selectedModifiers
+            }
+          ]
+        };
+        var response = await http.post(url,
+            headers: requestHeaders, body: jsonEncode(formData));
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var json = jsonDecode(response.body);
+          print(json);
+          BasketData basketData = new BasketData.fromJson(json['data']);
+          Basket newBasket = new Basket(
+              encodedId: basketData.encodedId,
+              lineCount: basketData.lines?.length ?? 0);
+          basketBox.put('basket', newBasket);
+        }
+      }
+      _isBasketLoading.value = true;
+      Navigator.of(context).pop();
+    }
 
     return makeDismisible(
         context: context,
@@ -356,9 +485,13 @@ class ProductDetail extends HookWidget {
                     Container(
                       padding: EdgeInsets.only(top: 10.0),
                       child: DefaultStyledButton(
+                          isLoading: _isBasketLoading.value == true ? _isBasketLoading.value : null,
                           width: MediaQuery.of(context).size.width,
-                          onPressed: () {},
-                          text: 'В корзину ${formatCurrency.format(totalPrice)}'),
+                          onPressed: () {
+                            addToBasket();
+                          },
+                          text:
+                              'В корзину ${formatCurrency.format(totalPrice)}'),
                     ),
                   ],
                 ))));

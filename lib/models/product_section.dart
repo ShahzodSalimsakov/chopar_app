@@ -467,8 +467,8 @@ class Assets {
   late String location;
   late String kind;
   late String subKind;
-  late String width;
-  late String height;
+  String? width;
+  String? height;
   late String title;
   late String originalFilename;
   Null caption;
@@ -486,8 +486,8 @@ class Assets {
       required this.location,
       required this.kind,
       required this.subKind,
-      required this.width,
-      required this.height,
+      this.width,
+      this.height,
       required this.title,
       required this.originalFilename,
       this.caption,
@@ -505,8 +505,8 @@ class Assets {
     location = json['location'];
     kind = json['kind'];
     subKind = json['sub_kind'];
-    width = json['width'];
-    height = json['height'];
+    width = json['width'] != null ? json['width'] : null;
+    height = json['height'] != null ? json['height'] : null;
     title = json['title'];
     originalFilename = json['original_filename'];
     caption = json['caption'];

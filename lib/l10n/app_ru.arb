@@ -1,0 +1,16 @@
+{
+  "prodCount": "{count,plural, =0{0 товаров} =1{1 товар} other{{count} товара} few{{count} товара}",
+  "@prodCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "orderStatusNotAccepted": "Не принят",
+  "orderStatusNotConfirmed": "Не подтверждён",
+  "orderStatusAwaitingPayment": "Ждём оплату",
+  "orderStatusAccepted": "Принят",
+  "orderStatusCooking": "Готовится",
+  "orderStatusCooked": "Готов и ждёт отправки",
+  "orderStatusDelivering": "В пути",
+  "orderStatusDone": "Доставлен"
+}

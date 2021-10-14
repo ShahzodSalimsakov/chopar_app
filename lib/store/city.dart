@@ -1,24 +1,26 @@
 import 'package:chopar_app/models/city.dart';
-import 'package:mobx/mobx.dart';
+import 'package:hive/hive.dart';
 part 'city.g.dart';
-class CurrentCity = _CurrentCity with _$CurrentCity;
 
-abstract class _CurrentCity with Store {
-  _CurrentCity();
-  @observable
+@HiveType(typeId: 0)
+class CurrentCity {
+  @HiveField(0)
   City? city;
 
-  @computed
   String get cityPlaceholder {
-    if (city == null) {
+    CurrentCity? currentCity = Hive.box<CurrentCity>('currentCity').get('currentCity');
+    if (currentCity == null) {
       return 'Ваш город';
     }
 
-    return city!.name;
+    return currentCity.city!.name;
   }
 
-  @action
   void setCurrentCity(City c) {
+    Box<CurrentCity> transaction = Hive.box<CurrentCity>('currentCity');
+    CurrentCity currentCity = new CurrentCity();
+    currentCity.city = c;
+    transaction.put('currentCity', currentCity);
     city = c;
   }
 }

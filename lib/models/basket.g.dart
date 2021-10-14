@@ -1,30 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'city.dart';
+part of 'basket.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class CurrentCityAdapter extends TypeAdapter<CurrentCity> {
+class BasketAdapter extends TypeAdapter<Basket> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
-  CurrentCity read(BinaryReader reader) {
+  Basket read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CurrentCity()..city = fields[0] as City?;
+    return Basket(
+      encodedId: fields[0] as String,
+      lineCount: fields[1] as int,
+    );
   }
 
   @override
-  void write(BinaryWriter writer, CurrentCity obj) {
+  void write(BinaryWriter writer, Basket obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.city);
+      ..write(obj.encodedId)
+      ..writeByte(1)
+      ..write(obj.lineCount);
   }
 
   @override
@@ -33,7 +38,7 @@ class CurrentCityAdapter extends TypeAdapter<CurrentCity> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CurrentCityAdapter &&
+      other is BasketAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

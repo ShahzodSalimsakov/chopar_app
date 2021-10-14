@@ -1,18 +1,22 @@
+import 'dart:convert';
+import 'package:chopar_app/models/basket.dart';
+import 'package:chopar_app/models/basket_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-class Basket extends StatefulWidget {
-  const Basket({Key? key}) : super(key: key);
-
-  @override
-  State<Basket> createState() => _BasketState();
-}
-
-class _BasketState extends State<Basket> {
-  int _itemCount = 1;
+class BasketWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget basketItems() {
+    Box<Basket> basketBox = Hive.box<Basket>('basket');
+    Basket? basket = basketBox.get('basket');
+    final basketData = useState<BasketData?>(null);
+    Widget basketItems(Lines lines) {
+      final formatCurrency = new NumberFormat.currency(
+          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       return Container(
           margin: EdgeInsets.symmetric(vertical: 40),
           padding: EdgeInsets.symmetric(
@@ -47,7 +51,7 @@ class _BasketState extends State<Basket> {
               Column(
                 children: [
                   Text(
-                    '92 000 сум',
+                    formatCurrency.format(lines.total),
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(
@@ -69,10 +73,10 @@ class _BasketState extends State<Basket> {
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.remove,
                               size: 20.0, color: Colors.yellow.shade600),
-                          onPressed: () => setState(() => _itemCount--),
+                          onPressed: () {},
                         ),
                         Text(
-                          _itemCount.toString(),
+                          lines.quantity.toString(),
                           style: TextStyle(
                               fontSize: 20,
                               color: Colors.yellow.shade600,
@@ -82,7 +86,7 @@ class _BasketState extends State<Basket> {
                             padding: EdgeInsets.zero,
                             icon: Icon(Icons.add,
                                 size: 20.0, color: Colors.yellow.shade600),
-                            onPressed: () => setState(() => _itemCount++))
+                            onPressed: () {})
                       ],
                     ),
                   )
@@ -91,6 +95,144 @@ class _BasketState extends State<Basket> {
             ],
           ));
     }
+
+    Widget renderPage() {
+      if (basket == null) {
+        return Center(
+          child: Column(
+            children: [
+              Image.asset('assets/images/empty_cart.png'),
+              Text('Корзина пуста', style: TextStyle(color: Colors.grey),)
+            ],
+          ),
+        );
+      } else if (basket != null && basket.lineCount == 0) {
+        return Center(
+          child: Column(
+            children: [
+              Image.asset('assets/images/empty_cart.png'),
+              Text('Корзина пуста', style: TextStyle(color: Colors.grey),)
+            ],
+          ),
+        );
+      } else {
+        return Container(
+            padding: EdgeInsets.symmetric(vertical: 30),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: basketData.value!.lines!.length ?? 0,
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
+                      itemBuilder: (context, index) {
+                        return basketItems(basketData.value!.lines![index]);
+                      }),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 60,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '1 товар',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 18),
+                            ),
+                            Text('92 000 сум',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400, fontSize: 18))
+                          ],
+                        ),
+                      ),
+                      // Container(
+                      //   height: 60,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       Text(
+                      //         'Доставка',
+                      //         style: TextStyle(
+                      //             fontWeight: FontWeight.w400, fontSize: 18),
+                      //       ),
+                      //       Text('10 000 сум',
+                      //           style: TextStyle(
+                      //               fontWeight: FontWeight.w400, fontSize: 18))
+                      //     ],
+                      //   ),
+                      // ),
+                      Container(
+                        height: 60,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Итого:',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 18),
+                            ),
+                            Text('92 000 сум',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700, fontSize: 18))
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () {},
+                              child: Text(
+                                'Оформить заказ',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w700),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.yellow.shade700),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(22.0),
+                                      )))))
+                    ],
+                  ),
+                )
+              ],
+            ));
+      }
+    }
+
+    Future<void> getBasket() async {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      };
+
+
+      var url = Uri.https('api.hq.fungeek.net', '/api/baskets/${basket!.encodedId}');
+      var response = await http.get(url,
+          headers: requestHeaders);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var json = jsonDecode(response.body);
+        print(json);
+        basketData.value = BasketData.fromJson(json['data']);
+      }
+    }
+
+    useEffect((){
+      getBasket();
+    }, []);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -111,99 +253,8 @@ class _BasketState extends State<Basket> {
           )
         ],
       ),
-      body: Container(
-          padding: EdgeInsets.symmetric(vertical: 30),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: 1,
-                    separatorBuilder: (context, index) {
-                      return Divider();
-                    },
-                    itemBuilder: (context, index) {
-                      return basketItems();
-                    }),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 60,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '1 товар',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 18),
-                          ),
-                          Text('92 000 сум',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18))
-                        ],
-                      ),
-                    ),
-                    // Container(
-                    //   height: 60,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       Text(
-                    //         'Доставка',
-                    //         style: TextStyle(
-                    //             fontWeight: FontWeight.w400, fontSize: 18),
-                    //       ),
-                    //       Text('10 000 сум',
-                    //           style: TextStyle(
-                    //               fontWeight: FontWeight.w400, fontSize: 18))
-                    //     ],
-                    //   ),
-                    // ),
-                    Container(
-                      height: 60,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Итого:',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 18),
-                          ),
-                          Text('92 000 сум',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 18))
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text(
-                              'Оформить заказ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
-                            ),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.yellow.shade700),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(22.0),
-                                )))))
-                  ],
-                ),
-              )
-            ],
-          )),
+      body: renderPage(),
     );
   }
 }
+

@@ -5,13 +5,15 @@ class DefaultStyledButton extends StatelessWidget {
   final onPressed;
   final String text;
   final List<Color>? color;
+  final bool? isLoading;
 
   const DefaultStyledButton(
       {Key? key,
       required this.width,
       required this.onPressed,
       required this.text,
-      this.color})
+      this.color,
+      this.isLoading})
       : super(key: key);
 
   @override
@@ -29,7 +31,7 @@ class DefaultStyledButton extends StatelessWidget {
                   end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(25.0)),
           child: Center(
-            child: Text(
+            child: isLoading != null ? CircularProgressIndicator(color: Colors.white,) : Text(
               text,
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
             ),
