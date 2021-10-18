@@ -1,4 +1,4 @@
-import 'package:chopar_app/models/sales.dart';
+import 'package:chopar_app/models/news.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:convert';
@@ -7,8 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-class SalesList extends HookWidget {
-  Widget modifierImage(Sales s) {
+class NewsList extends HookWidget {
+  Widget modifierImage(News s) {
     if (s.asset != null && s.asset!.isNotEmpty) {
       return Container(
         width: 150,
@@ -41,31 +41,31 @@ class SalesList extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sales = useState<List<Sales>>(List<Sales>.empty());
+    final news = useState<List<News>>(List<News>.empty());
 
-    Future<void> getSales() async {
+    Future<void> getNews() async {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
-      var url = Uri.https(
-          'api.hq.fungeek.net', '/api/sales/public', {'city_id': '7'});
+      var url =
+          Uri.https('api.hq.fungeek.net', '/api/news/public', {'city_id': '7'});
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        List<Sales> salesList = List<Sales>.from(
-            json['data'].map((s) => new Sales.fromJson(s)).toList());
-        sales.value = salesList;
+        List<News> newsList = List<News>.from(
+            json['data'].map((s) => new News.fromJson(s)).toList());
+        news.value = newsList;
       }
     }
 
     useEffect(() {
-      getSales();
+      getNews();
     }, []);
 
     return Expanded(
         child: ListView.separated(
-      itemCount: sales.value.length,
+      itemCount: news.value.length,
       itemBuilder: (BuildContext context, index) {
         return GestureDetector(
             onTap: () {
@@ -84,7 +84,7 @@ class SalesList extends HookWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                sales.value[index].name,
+                                news.value[index].name,
                                 style: TextStyle(fontSize: 22),
                               ),
                               SizedBox(
@@ -99,7 +99,7 @@ class SalesList extends HookWidget {
                                 height: 20,
                               ),
                               Text(
-                                sales.value[index].description,
+                                news.value[index].description,
                                 style: TextStyle(fontSize: 14),
                               )
                             ],
@@ -111,14 +111,14 @@ class SalesList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  modifierImage(sales.value[index]),
+                  modifierImage(news.value[index]),
                   Container(
                     width: 180,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          sales.value[index].name,
+                          news.value[index].name,
                           style: TextStyle(fontSize: 14),
                         ),
                         SizedBox(
