@@ -82,19 +82,19 @@ class Pickup extends HookWidget {
                                                     padding: EdgeInsets.all(8),
                                                     child: YandexMap())),
                                             Positioned(
-                                              top:  50,
+                                                top: 50,
                                                 child: RawMaterialButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              elevation: 2.0,
-                                              fillColor: Colors.white,
-                                              child: Icon(Icons.close,
-                                                  size: 14.0,
-                                                  color: Colors.black),
-                                              padding: EdgeInsets.all(10.0),
-                                              shape: CircleBorder(),
-                                            )),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  elevation: 2.0,
+                                                  fillColor: Colors.white,
+                                                  child: Icon(Icons.close,
+                                                      size: 14.0,
+                                                      color: Colors.black),
+                                                  padding: EdgeInsets.all(10.0),
+                                                  shape: CircleBorder(),
+                                                )),
                                             Positioned(
                                                 right: 0,
                                                 bottom: 40,
@@ -268,6 +268,7 @@ class Pickup extends HookWidget {
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Icon(
                                       Icons.check_circle_outline,
@@ -275,19 +276,26 @@ class Pickup extends HookWidget {
                                     SizedBox(
                                       width: 12,
                                     ),
-
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          terminals.value[index].name ?? '',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(terminals.value[index].desc ?? '',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ))
+                                      ],
+                                    )
                                   ],
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      terminals.value[index].name ?? '',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    Text(terminals.value[index].desc ?? '',
-                                    style: TextStyle(fontSize: 14))],)
-
                               ],
                             ));
                       }),

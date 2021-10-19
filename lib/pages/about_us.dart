@@ -26,13 +26,20 @@ class AboutUs extends StatelessWidget {
             child: Column(
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          RawMaterialButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Icon(Icons.close, size: 31.0, color: Colors.grey),
-            padding: EdgeInsets.all(10.0),
-            shape: CircleBorder(),
+          // RawMaterialButton(
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          //   child: Icon(Icons.close, size: 31.0, color: Colors.grey),
+          //   shape: CircleBorder(),
+          // ),
+          IconButton(
+            icon: Icon(
+              Icons.close,
+              color: Colors.grey,
+              size: 31,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ]),
         SvgPicture.asset('assets/images/logo.svg',

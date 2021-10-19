@@ -1,6 +1,7 @@
 import 'package:chopar_app/pages/about_us.dart';
 import 'package:chopar_app/pages/bonuses.dart';
 import 'package:chopar_app/pages/orders.dart';
+import 'package:chopar_app/pages/personal_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -53,6 +54,14 @@ class PagesList extends StatelessWidget {
           leading: Icon(Icons.person_outline),
           title: Text('Личные данные'),
           trailing: Icon(Icons.keyboard_arrow_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PersonalData(),
+              ),
+            );
+          },
         ),
         ListTile(
           contentPadding: EdgeInsets.all(0.00),
