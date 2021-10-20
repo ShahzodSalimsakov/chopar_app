@@ -111,9 +111,9 @@ class SalesList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  modifierImage(sales.value[index]),
-                  Container(
-                    width: 180,
+                  Flexible(child: modifierImage(sales.value[index])),
+                  Flexible(
+                    fit: FlexFit.tight,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
