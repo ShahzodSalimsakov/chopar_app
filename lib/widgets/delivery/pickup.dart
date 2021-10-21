@@ -89,113 +89,124 @@ class Pickup extends HookWidget {
                                                     padding: EdgeInsets.all(8),
                                                     child: YandexMap())),
                                             Positioned(
-                                              top:  50,
+                                                top: 50,
                                                 child: RawMaterialButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              elevation: 2.0,
-                                              fillColor: Colors.white,
-                                              child: Icon(Icons.close,
-                                                  size: 14.0,
-                                                  color: Colors.black),
-                                              padding: EdgeInsets.all(10.0),
-                                              shape: CircleBorder(),
-                                            )),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  elevation: 2.0,
+                                                  fillColor: Colors.white,
+                                                  child: Icon(Icons.close,
+                                                      size: 14.0,
+                                                      color: Colors.black),
+                                                  padding: EdgeInsets.all(10.0),
+                                                  shape: CircleBorder(),
+                                                )),
                                             Positioned(
                                                 right: 0,
                                                 bottom: 40,
                                                 child: RawMaterialButton(
                                                   onPressed: () {
                                                     showModalBottomSheet(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return Material(
-                                                              borderRadius: BorderRadius.only(
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
                                                                   topLeft: Radius
                                                                       .circular(
                                                                           20),
                                                                   topRight: Radius
                                                                       .circular(
                                                                           20)),
-                                                              child: Container(
-                                                                  padding: EdgeInsets.symmetric(
+                                                        ),
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return Container(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
                                                                       horizontal:
                                                                           15,
                                                                       vertical:
                                                                           33),
-                                                                  child: Column(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .min,
+                                                              child: Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  Row(
                                                                     children: [
-                                                                      Row(
+                                                                      Icon(
+                                                                        Icons
+                                                                            .control_point,
+                                                                        color: Colors
+                                                                            .yellow
+                                                                            .shade700,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            19,
+                                                                      ),
+                                                                      Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
                                                                         children: [
-                                                                          Icon(
-                                                                            Icons.control_point,
-                                                                            color:
-                                                                                Colors.yellow.shade700,
+                                                                          Text(
+                                                                            'Максим Горький-Фэмили',
+                                                                            style:
+                                                                                TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                                                                           ),
                                                                           SizedBox(
-                                                                            width:
-                                                                                19,
+                                                                            height:
+                                                                                5,
                                                                           ),
-                                                                          Column(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text(
-                                                                                'Максим Горький-Фэмили',
-                                                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                                                                              ),
-                                                                              SizedBox(
-                                                                                height: 5,
-                                                                              ),
-                                                                              Text(
-                                                                                'улица Буюк Ипак Йули, 2 Ориентир: Davr Bank',
-                                                                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                                                                              ),
-                                                                              SizedBox(
-                                                                                height: 5,
-                                                                              ),
-                                                                              Text(
-                                                                                'График работы: 10:00 - 03:00',
-                                                                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.green),
-                                                                              ),
-                                                                            ],
+                                                                          Text(
+                                                                            'улица Буюк Ипак Йули, 2 Ориентир: Davr Bank',
+                                                                            style:
+                                                                                TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                5,
+                                                                          ),
+                                                                          Text(
+                                                                            'График работы: 10:00 - 03:00',
+                                                                            style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.w400,
+                                                                                color: Colors.green),
                                                                           ),
                                                                         ],
                                                                       ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            15,
-                                                                      ),
-                                                                      Divider(
-                                                                        height:
-                                                                            1,
-                                                                        color: Colors
-                                                                            .grey,
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            15,
-                                                                      ),
-                                                                      SizedBox(
-                                                                          width:
-                                                                              double.infinity,
-                                                                          child: ElevatedButton(
-                                                                              onPressed: () {},
-                                                                              child: Text(
-                                                                                'Забрать здесь',
-                                                                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                                                                              ),
-                                                                              style: ButtonStyle(
-                                                                                  backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
-                                                                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
-                                                                                    borderRadius: BorderRadius.circular(22.0),
-                                                                                  )))))
                                                                     ],
-                                                                  )));
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 15,
+                                                                  ),
+                                                                  Divider(
+                                                                    height: 1,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 15,
+                                                                  ),
+                                                                  SizedBox(
+                                                                      width: double
+                                                                          .infinity,
+                                                                      child: ElevatedButton(
+                                                                          onPressed: () {},
+                                                                          child: Text(
+                                                                            'Забрать здесь',
+                                                                            style:
+                                                                                TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                          style: ButtonStyle(
+                                                                              backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
+                                                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(22.0),
+                                                                              )))))
+                                                                ],
+                                                              ));
                                                         });
                                                   },
                                                   elevation: 2.0,
@@ -275,6 +286,7 @@ class Pickup extends HookWidget {
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Icon(
                                       Icons.check_circle_outline,
@@ -282,19 +294,26 @@ class Pickup extends HookWidget {
                                     SizedBox(
                                       width: 12,
                                     ),
-
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          terminals.value[index].name ?? '',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(terminals.value[index].desc ?? '',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ))
+                                      ],
+                                    )
                                   ],
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      terminals.value[index].name ?? '',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    Text(terminals.value[index].desc ?? '',
-                                    style: TextStyle(fontSize: 14))],)
-
                               ],
                             ));
                       }),

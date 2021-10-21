@@ -14,6 +14,7 @@ import 'package:chopar_app/widgets/sales/sales.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -79,29 +80,55 @@ class _HomeState extends State<Home> {
                     valueListenable: Hive.box<Basket>('basket').listenable(),
                     builder: (context, box, _) {
                       Basket? basket = box.get('basket');
-
                       return BottomNavigationBar(
                         backgroundColor: Colors.white,
-                        selectedItemColor: Colors.orange,
+                        selectedItemColor: Colors.yellow.shade700,
                         unselectedItemColor: Colors.grey,
                         type: BottomNavigationBarType.fixed,
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.local_pizza),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset('assets/images/menu.svg',
+                                  color: _selectedIndex != 0
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Меню',
                           ),
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.ac_unit),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset(
+                                  'assets/images/discount.svg',
+                                  color: _selectedIndex != 1
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Акции',
                           ),
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.person),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset(
+                                  'assets/images/profile.svg',
+                                  color: _selectedIndex != 2
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Профиль',
                           ),
                           BottomNavigationBarItem(
                             icon: Stack(
                               children: <Widget>[
-                                Icon(Icons.shopping_bag_outlined),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 6, top: 10),
+                                  child: SvgPicture.asset(
+                                      'assets/images/bag.svg',
+                                      color: _selectedIndex != 3
+                                          ? Colors.grey
+                                          : Colors.yellow.shade700),
+                                ),
                                 Positioned(
                                     top: 0,
                                     right: 0,
@@ -110,10 +137,16 @@ class _HomeState extends State<Home> {
                                             // color: Colors.yellow.shade600,
                                             width: 15,
                                             height: 15,
-                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.yellow.shade600),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: Colors.yellow.shade600),
                                             child: Center(
                                               child: Text(
-                                                  basket.lineCount.toString(), style: TextStyle(color: Colors.white),),
+                                                basket.lineCount.toString(),
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           )
                                         : SizedBox())

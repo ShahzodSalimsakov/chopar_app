@@ -111,9 +111,9 @@ class NewsList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  modifierImage(news.value[index]),
-                  Container(
-                    width: 180,
+                  Flexible(child: modifierImage(news.value[index])),
+                  Flexible(
+                    fit: FlexFit.tight,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -130,7 +130,7 @@ class NewsList extends HookWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ]));
       },
       separatorBuilder: (context, index) {
