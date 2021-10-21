@@ -369,7 +369,7 @@ class ProductDetail extends HookWidget {
           print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
-              encodedId: basketData.encodedId,
+              encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
           print(newBasket.lineCount);
           basketBox.put('basket', newBasket);
@@ -401,7 +401,7 @@ class ProductDetail extends HookWidget {
           print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
-              encodedId: basketData.encodedId,
+              encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
           basketBox.put('basket', newBasket);
         }

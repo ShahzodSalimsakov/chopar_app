@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/control_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
@@ -22,18 +24,23 @@ class Pickup extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final terminals = useState<List<Terminals>>(List<Terminals>.empty());
+    City? currentCity = Hive.box<City>('currentCity').get('currentCity');
 
     Future<void> getTerminals() async {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
-      var url = Uri.https('api.hq.fungeek.net', 'api/terminals/pickup');
+      var url = Uri.https('api.hq.fungeek.net', 'api/terminals/pickup', {
+        'city_id': currentCity?.id.toString()
+      });
+      print('api/terminals/pickup?city_id=${currentCity?.id}');
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         List<Terminals> terminal = List<Terminals>.from(
             json['data'].map((m) => new Terminals.fromJson(m)).toList());
+        print(terminal);
         terminals.value = terminal;
       }
     }

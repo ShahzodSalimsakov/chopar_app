@@ -17,10 +17,10 @@ class BasketData {
   List<Lines>? lines;
   late int total;
   late int subTotal;
-  late String encodedId;
+  String? encodedId;
 
   BasketData(
-      {required this.id, this.userId, this.mergedId, this.completedAt, required this.currency, required this.createdAt, required this.updatedAt, this.otp, this.order, this.lines, required this.total, required this.subTotal, required this.encodedId});
+      {required this.id, this.userId, this.mergedId, this.completedAt, required this.currency, required this.createdAt, required this.updatedAt, this.otp, this.order, this.lines, required this.total, required this.subTotal, this.encodedId});
 
   BasketData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -37,7 +37,7 @@ class BasketData {
     }
     total = json['total'];
     subTotal = json['sub_total'];
-    encodedId = json['encoded_id'];
+    encodedId = json['encoded_id'] != null ? json['encoded_id'] : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -56,7 +56,9 @@ class BasketData {
     }
     data['total'] = this.total;
     data['sub_total'] = this.subTotal;
-    data['encoded_id'] = this.encodedId;
+    if (this.encodedId != null) {
+      data['encoded_id'] = this.encodedId;
+    }
     return data;
   }
 }
@@ -70,7 +72,7 @@ class Lines {
   late String createdAt;
   late String updatedAt;
   List<BasketModifiers>? modifiers;
-  int? parentId;
+  String? parentId;
   Variant? variant;
   List<Child>? child;
 

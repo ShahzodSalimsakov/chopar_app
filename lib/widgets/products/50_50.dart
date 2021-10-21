@@ -345,7 +345,7 @@ class CreateOwnPizza extends HookWidget {
           var json = jsonDecode(response.body);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
-              encodedId: basketData.encodedId,
+              encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
           basketBox.put('basket', newBasket);
         }
@@ -385,7 +385,7 @@ class CreateOwnPizza extends HookWidget {
           print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
-              encodedId: basketData.encodedId,
+              encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
           basketBox.put('basket', newBasket);
         }
