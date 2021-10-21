@@ -80,42 +80,55 @@ class _HomeState extends State<Home> {
                     valueListenable: Hive.box<Basket>('basket').listenable(),
                     builder: (context, box, _) {
                       Basket? basket = box.get('basket');
-
                       return BottomNavigationBar(
-
                         backgroundColor: Colors.white,
                         selectedItemColor: Colors.yellow.shade700,
                         unselectedItemColor: Colors.grey,
                         type: BottomNavigationBarType.fixed,
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
-                            icon: SvgPicture.asset('assets/images/menu.svg',
-                                color: _selectedIndex != 0
-                                    ? Colors.grey
-                                    : Colors.yellow.shade700),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset('assets/images/menu.svg',
+                                  color: _selectedIndex != 0
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Меню',
                           ),
                           BottomNavigationBarItem(
-                            icon: SvgPicture.asset('assets/images/discount.svg',
-                                color: _selectedIndex != 1
-                                    ? Colors.grey
-                                    : Colors.yellow.shade700),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset(
+                                  'assets/images/discount.svg',
+                                  color: _selectedIndex != 1
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Акции',
                           ),
                           BottomNavigationBarItem(
-                            icon: SvgPicture.asset('assets/images/profile.svg',
-                                color: _selectedIndex != 2
-                                    ? Colors.grey
-                                    : Colors.yellow.shade700),
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              child: SvgPicture.asset(
+                                  'assets/images/profile.svg',
+                                  color: _selectedIndex != 2
+                                      ? Colors.grey
+                                      : Colors.yellow.shade700),
+                            ),
                             label: 'Профиль',
                           ),
                           BottomNavigationBarItem(
                             icon: Stack(
                               children: <Widget>[
-                                SvgPicture.asset('assets/images/bag.svg',
-                                    color: _selectedIndex != 3
-                                        ? Colors.grey
-                                        : Colors.yellow.shade700),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 6, top: 10),
+                                  child: SvgPicture.asset(
+                                      'assets/images/bag.svg',
+                                      color: _selectedIndex != 3
+                                          ? Colors.grey
+                                          : Colors.yellow.shade700),
+                                ),
                                 Positioned(
                                     top: 0,
                                     right: 0,

@@ -1,5 +1,6 @@
 import 'package:chopar_app/pages/about_us.dart';
 import 'package:chopar_app/pages/bonuses.dart';
+import 'package:chopar_app/pages/order_registration.dart';
 import 'package:chopar_app/pages/orders.dart';
 import 'package:chopar_app/pages/personal_data.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,19 @@ class PagesList extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => AboutUs(),
+              ),
+            );
+          },
+        ),ListTile(
+          contentPadding: EdgeInsets.all(0.00),
+          leading: Icon(Icons.info_outline),
+          title: Text('Оформление заказа'),
+          trailing: Icon(Icons.keyboard_arrow_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OrderRegistration(),
               ),
             );
           },

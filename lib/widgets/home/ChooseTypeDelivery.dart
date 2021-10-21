@@ -124,11 +124,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     child: Row(
                       children: [
                         Text('Выберите ресторан'),
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {},
-                        )
+                        Spacer(),SvgPicture.asset('assets/images/edit.svg',),
                       ],
                     ),
                     style: TextButton.styleFrom(primary: Colors.grey))
