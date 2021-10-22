@@ -24,27 +24,34 @@ class OrderRegistration extends StatelessWidget {
           title: Text('Оформление заказа',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
         ),
-        body: Container(
-          color: Colors.grey.shade200,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 6,
+        body: ListView(
+
+          shrinkWrap: true,
+          children: [
+            Container(
+              color: Colors.grey.shade200,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      color: Colors.white,
+                      child: ChooseTypeDelivery()),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  DeliveryTime(),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  PayType()
+                ],
               ),
-              Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  color: Colors.white,
-                  child: ChooseTypeDelivery()),
-              SizedBox(
-                height: 5,
-              ),
-              DeliveryTime(),
-              SizedBox(
-                height: 5,
-              ),
-              PayType()
-            ],
-          ),
+            )
+          ],
         ));
   }
 }
