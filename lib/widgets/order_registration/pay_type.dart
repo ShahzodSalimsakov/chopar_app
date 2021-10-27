@@ -1,30 +1,39 @@
+import 'package:chopar_app/models/pay_type.dart';
+import 'package:chopar_app/models/terminals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class PayType extends StatefulWidget {
-  const PayType({Key? key}) : super(key: key);
+class PayTypeWidget extends StatefulWidget {
+  const PayTypeWidget({Key? key}) : super(key: key);
 
   @override
-  State<PayType> createState() => _PayTypeState();
+  State<PayTypeWidget> createState() => _PayTypeState();
 }
 
-class _PayTypeState extends State<PayType> with SingleTickerProviderStateMixin {
+class _PayTypeState extends State<PayTypeWidget>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool selected = false;
   final myTabs = [
     Container(
       height: 30,
-      width: 130,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      // width: 130,
       child: Tab(text: 'Наличными'),
     ),
     Container(
       height: 30,
-      width: 130,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      // color: Colors.grey.shade200,
+      // width: 130,
       child: Tab(text: 'Онлайн'),
     ),
     Container(
         height: 30,
-        width: 130,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        // width: 130,
         child: Tab(
           text: 'Картой',
         ))
@@ -34,6 +43,18 @@ class _PayTypeState extends State<PayType> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
+
+    _tabController.addListener(() {
+      if (_tabController.index == 0) {
+        PayType newPayType = new PayType();
+        newPayType.value = 'offline';
+        Hive.box<PayType>('payType').put('payType', newPayType);
+      }
+      FocusScopeNode currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    });
   }
 
   @override
@@ -50,14 +71,12 @@ class _PayTypeState extends State<PayType> with SingleTickerProviderStateMixin {
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.transparent,
-          ),
+          borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(23),
         ),
-        fillColor: Colors.grey.shade300,
+        fillColor: Colors.grey.shade200,
         filled: true,
-        hintText: 'С какой суммы подготовить сдачу ?',
+        hintText: 'С какой суммы подготовить сдачу?',
         contentPadding: EdgeInsets.symmetric(horizontal: 30),
       ),
       onChanged: (value) {},
@@ -65,134 +84,136 @@ class _PayTypeState extends State<PayType> with SingleTickerProviderStateMixin {
   }
 
   Widget online() {
-    return Row(children: [
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.yellow.shade700)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/payme.png',
-        ),
-      ),
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.grey)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        margin: EdgeInsets.symmetric(horizontal: 10),
-        child: Image.asset(
-          'assets/images/click.png',
-        ),
-      ),
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.grey)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/oson.png',
-        ),
-      )
-    ]);
+    Terminals? currentTerminal =
+        Hive.box<Terminals>('currentTerminal').get('currentTerminal');
+    PayType? payType = Hive.box<PayType>('payType').get('payType');
+
+    List<String> payments = [];
+
+    if (currentTerminal != null) {
+      Map<String, dynamic> terminalJson = currentTerminal.toJson();
+      terminalJson.keys.forEach((key) {
+        if (key.indexOf('_active') > 1 && terminalJson[key] == true) {
+          payments.add(key.replaceAll('_active', ''));
+        }
+      });
+    }
+
+    return Row(
+        children: payments
+            .map((payment) => GestureDetector(
+                  onTap: () {
+                    PayType newPayType = new PayType();
+                    newPayType.value = payment;
+                    Hive.box<PayType>('payType').put('payType', newPayType);
+                  },
+                  child: Container(
+                    height: 78,
+                    width: 78,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: payType != null && payType.value == payment
+                            ? Border.all(color: Colors.yellow.shade700)
+                            : Border.all(width: 0)),
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Image.asset(
+                      'assets/images/$payment.png',
+                    ),
+                  ),
+                ))
+            .toList());
   }
 
   Widget byCard() {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.yellow.shade700)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/uzcard.png',
-        ),
-      ),
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.grey)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/humo.png',
-        ),
-      ),
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.grey)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/visa.png',
-        ),
-      ),
-      Container(
-        height: 78,
-        width: 78,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.grey)),
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Image.asset(
-          'assets/images/mastercard.png',
-        ),
-      )
+    PayType? payType = Hive.box<PayType>('payType').get('payType');
+    return Row(children: [
+      GestureDetector(
+          onTap: () {
+            PayType newPayType = new PayType();
+            newPayType.value = 'uzcard';
+            Hive.box<PayType>('payType').put('payType', newPayType);
+          },
+          child: Container(
+            height: 78,
+            width: 78,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: payType != null && payType.value == 'uzcard'
+                    ? Border.all(color: Colors.yellow.shade700)
+                    : Border.all(width: 0)),
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Image.asset(
+              'assets/images/uzcard.png',
+            ),
+          )),
+      SizedBox(width: 10,),
+      GestureDetector(
+          onTap: () {
+            PayType newPayType = new PayType();
+            newPayType.value = 'humo';
+            Hive.box<PayType>('payType').put('payType', newPayType);
+          },
+          child: Container(
+            height: 78,
+            width: 78,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: payType != null && payType.value == 'humo'
+                    ? Border.all(color: Colors.yellow.shade700)
+                    : Border.all(width: 0)),
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Image.asset(
+              'assets/images/humo.png',
+            ),
+          )),
     ]);
   }
 
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Выберите способ оплаты',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            DefaultTabController(
-                length: 2,
-                child: TabBar(
-                  isScrollable: true,
-
-                  labelColor: Colors.white,
-                  labelStyle:
-                      TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                  tabs: myTabs,
-                  controller: _tabController,
-                  // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
-                  indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.yellow.shade700,
+    return ValueListenableBuilder<Box<PayType>>(
+        valueListenable: Hive.box<PayType>('payType').listenable(),
+        builder: (context, box, _) {
+          return Container(
+              color: Colors.white,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Выберите способ оплаты',
+                    style: TextStyle(fontSize: 18),
                   ),
-                  unselectedLabelColor: Colors.grey,
-                )),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: TabBarView(
-                    controller: _tabController,
-                    children: [inCash(), online(), byCard()]))
-          ],
-        ));
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DefaultTabController(
+                      length: 2,
+                      child: TabBar(
+                        isScrollable: true,
+
+                        labelColor: Colors.white,
+                        labelStyle: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16),
+                        tabs: myTabs,
+                        controller: _tabController,
+                        // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Colors.yellow.shade700,
+                        ),
+                        unselectedLabelColor: Colors.grey,
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      child: TabBarView(
+                          controller: _tabController,
+                          children: [inCash(), online(), byCard()]))
+                ],
+              ));
+        });
   }
 }

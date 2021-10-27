@@ -21,9 +21,9 @@ class DeliveryLocationDataAdapter extends TypeAdapter<DeliveryLocationData> {
       flat: fields[1] as String?,
       entrance: fields[2] as String?,
       doorCode: fields[3] as String?,
-      notes: fields[4] as String?,
       lat: fields[5] as double?,
       lon: fields[6] as double?,
+      address: fields[7] as String?,
     );
   }
 
@@ -39,12 +39,12 @@ class DeliveryLocationDataAdapter extends TypeAdapter<DeliveryLocationData> {
       ..write(obj.entrance)
       ..writeByte(3)
       ..write(obj.doorCode)
-      ..writeByte(4)
-      ..write(obj.notes)
       ..writeByte(5)
       ..write(obj.lat)
       ..writeByte(6)
-      ..write(obj.lon);
+      ..write(obj.lon)
+      ..writeByte(7)
+      ..write(obj.address);
   }
 
   @override

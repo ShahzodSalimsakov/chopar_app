@@ -17,17 +17,17 @@ class DeliveryModalSheet extends HookWidget {
   DeliveryModalSheet({required this.currentPoint});
 
   Widget build(BuildContext context) {
-
     final _formKey = useMemoized(() => GlobalKey<FormBuilderState>());
     final geoData = useState<YandexGeoData?>(null);
-    final Box<DeliveryLocationData> deliveryLocationBox = Hive.box<DeliveryLocationData>('deliveryLocationData');
-    DeliveryLocationData? deliveryLocationData = deliveryLocationBox.get('deliveryLocationData');
+    final Box<DeliveryLocationData> deliveryLocationBox =
+        Hive.box<DeliveryLocationData>('deliveryLocationData');
+    DeliveryLocationData? deliveryLocationData =
+        deliveryLocationBox.get('deliveryLocationData');
     final isShowForm = useState<bool>(false);
     final houseText = useState<String>(deliveryLocationData?.house ?? '');
     final flatText = useState<String>(deliveryLocationData?.flat ?? '');
     final entranceText = useState<String>(deliveryLocationData?.entrance ?? '');
     final doorCodeText = useState<String>(deliveryLocationData?.doorCode ?? '');
-    final notesText = useState<String>(deliveryLocationData?.notes ?? '');
 
     Future<void> getPointData() async {
       Map<String, String> requestHeaders = {
@@ -90,7 +90,8 @@ class DeliveryModalSheet extends HookWidget {
                 return Divider();
               },
               itemCount: 1),
-          Container(margin: EdgeInsets.symmetric(horizontal: 15), child: Divider()),
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 15), child: Divider()),
           Form(
               child: Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
@@ -125,11 +126,6 @@ class DeliveryModalSheet extends HookWidget {
                       decoration: InputDecoration(labelText: 'Домофон'),
                       initialValue: doorCodeText.value,
                     ),
-                    FormBuilderTextField(
-                      name: 'notes',
-                      decoration: InputDecoration(labelText: 'Комментарий'),
-                      initialValue: notesText.value,
-                    ),
                   ],
                 )),
           )),
@@ -141,24 +137,38 @@ class DeliveryModalSheet extends HookWidget {
                 _formKey.currentState!.save();
                 print(_formKey.currentState!.value);
                 var formValue = _formKey.currentState!.value;
-                DeliveryLocationData deliveryData = DeliveryLocationData(house: formValue['house'] ?? '', flat: formValue['flat'] ?? '', entrance: formValue['entrance'] ?? '', doorCode: formValue['doorCode'] ?? '', notes: formValue['notes'] ?? '', lat: currentPoint.latitude, lon: currentPoint.longitude);
+                DeliveryLocationData deliveryData = DeliveryLocationData(
+                    house: formValue['house'] ?? '',
+                    flat: formValue['flat'] ?? '',
+                    entrance: formValue['entrance'] ?? '',
+                    doorCode: formValue['doorCode'] ?? '',
+                    lat: currentPoint.latitude,
+                    lon: currentPoint.longitude,
+                    address: geoData.value?.formatted ?? '');
                 deliveryLocationBox.put('deliveryLocationData', deliveryData);
                 Map<String, String> requestHeaders = {
                   'Content-type': 'application/json',
                   'Accept': 'application/json'
                 };
-                var url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest',
-                    {'lat': currentPoint.latitude.toString(), 'lon': currentPoint.longitude.toString()});
+                var url = Uri.https(
+                    'api.choparpizza.uz', 'api/terminals/find_nearest', {
+                  'lat': currentPoint.latitude.toString(),
+                  'lon': currentPoint.longitude.toString()
+                });
                 var response = await http.get(url, headers: requestHeaders);
                 if (response.statusCode == 200) {
                   var json = jsonDecode(response.body);
-                  List<Terminals> terminal = List<Terminals>.from(
-                      json['data']['items'].map((m) => new Terminals.fromJson(m)).toList());
+                  List<Terminals> terminal = List<Terminals>.from(json['data']
+                          ['items']
+                      .map((m) => new Terminals.fromJson(m))
+                      .toList());
                   Box<Terminals> transaction =
-                  Hive.box<Terminals>('currentTerminal');
-                  transaction.put(
-                      'currentTerminal', terminal[0]);
-                  Navigator.of(context)..pop()..pop()..pop();
+                      Hive.box<Terminals>('currentTerminal');
+                  transaction.put('currentTerminal', terminal[0]);
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop()
+                    ..pop();
                 }
               },
               text: 'Готово',
@@ -214,7 +224,6 @@ class DeliveryModalSheet extends HookWidget {
             child: DefaultStyledButton(
                 width: MediaQuery.of(context).size.width,
                 onPressed: () {
-
                   geoData.value!.addressItems!.forEach((element) {
                     if (element.kind == 'house') {
                       houseText.value = element.name;

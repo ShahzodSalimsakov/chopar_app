@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/modal_fit.dart';
 import 'package:chopar_app/models/terminals.dart';
@@ -39,7 +40,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
       if (currentDeliver.value == DeliveryTypeEnum.pickup) {
         currentTabIndex = 1;
       }
-      _tabController = TabController(vsync: this, length: myTabs.length, initialIndex: currentTabIndex);
+      _tabController = TabController(
+          vsync: this, length: myTabs.length, initialIndex: currentTabIndex);
     } else {
       _tabController = TabController(vsync: this, length: myTabs.length);
     }
@@ -72,7 +74,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     } else {
                       deliveryType.value = DeliveryTypeEnum.pickup;
                     }
-                    Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+                    Box<DeliveryType> box = Hive.box<DeliveryType>(
+                        'deliveryType');
                     box.put('deliveryType', deliveryType);
                   },
                   // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
@@ -87,29 +90,47 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
               physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
-                TextButton(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Укажите адрес доставки',
-                        ),
-                        Spacer(),
-                        SvgPicture.asset(
-                          'assets/images/edit.svg',
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DeliveryWidget()));
-                    },
-                    style: TextButton.styleFrom(primary: Colors.grey)),
+                ValueListenableBuilder<Box<DeliveryLocationData>>(
+                    valueListenable:
+                    Hive.box<DeliveryLocationData>('deliveryLocationData').listenable(),
+                    builder: (context, box, _) {
+                      DeliveryLocationData? deliveryLocationData = box.get('deliveryLocationData');
+                      String deliveryText = 'Укажите адрес доставки';
+                      if (deliveryLocationData != null) {
+                        deliveryText = deliveryLocationData?.address ?? '';
+                        String house = deliveryLocationData.house != null ? ', дом: ${deliveryLocationData.house}' : '';
+                        String flat = deliveryLocationData.flat != null ? ', кв.: ${deliveryLocationData.flat}' : '';
+                        String entrance =
+                        deliveryLocationData.entrance != null ? ', подъезд: ${deliveryLocationData.entrance}' : '';
+                        deliveryText =
+                            '${deliveryText}${house}${flat}${entrance}';
+                      }
+                      print(deliveryText);
+                      return TextButton(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(child:
+                              Text(
+                                deliveryText,
+                              )),
+                              // Spacer(),
+                              SvgPicture.asset(
+                                'assets/images/edit.svg',
+                              ),
+                            ],
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DeliveryWidget()));
+                          },
+                          style: TextButton.styleFrom(primary: Colors.grey));
+                    }),
                 ValueListenableBuilder<Box<Terminals>>(
                     valueListenable:
-                        Hive.box<Terminals>('currentTerminal').listenable(),
+                    Hive.box<Terminals>('currentTerminal').listenable(),
                     builder: (context, box, _) {
                       Terminals? currentTerminal = box.get('currentTerminal');
                       return TextButton(
@@ -117,7 +138,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Scaffold(
+                                    builder: (context) =>
+                                        Scaffold(
                                           appBar: AppBar(
                                             leading: IconButton(
                                               icon: Icon(

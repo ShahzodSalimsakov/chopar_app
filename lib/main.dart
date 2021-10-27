@@ -1,7 +1,10 @@
 import 'package:chopar_app/app.dart';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/delivery_notes.dart';
 import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/store/city.dart';
@@ -27,6 +30,9 @@ void main() async {
   Hive.registerAdapter(DeliveryTypeEnumAdapter());
   Hive.registerAdapter(DeliveryTimeAdapter());
   Hive.registerAdapter(DeliveryTimeEnumAdapter());
+  Hive.registerAdapter(DeliverLaterTimeAdapter());
+  Hive.registerAdapter(PayTypeAdapter());
+  Hive.registerAdapter(DeliveryNotesAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -34,24 +40,29 @@ void main() async {
   await Hive.openBox<DeliveryLocationData>('deliveryLocationData');
   await Hive.openBox<DeliveryType>('deliveryType');
   await Hive.openBox<DeliveryTime>('deliveryTime');
+  await Hive.openBox<DeliverLaterTime>('deliveryLaterTime');
+  await Hive.openBox<PayType>('payType');
+  await Hive.openBox<DeliveryNotes>('deliveryNotes');
 
-  runApp(
-    MainApp()
-  );
+  runApp(MainApp());
 }
-
 
 class MainApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
-      home: Home(),
-      debugShowCheckedModeBanner: false,
-    );
+    return GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
+          home: Home(),
+          debugShowCheckedModeBanner: false,
+        ));
   }
 }
-

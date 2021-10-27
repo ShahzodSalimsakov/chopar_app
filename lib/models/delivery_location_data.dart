@@ -16,14 +16,14 @@ class DeliveryLocationData {
   @HiveField(3)
   late String? doorCode;
 
-  @HiveField(4)
-  late String? notes;
-
   @HiveField(5)
   late double? lat;
 
   @HiveField(6)
   late double? lon;
 
-  DeliveryLocationData({this.house, this.flat, this.entrance, this.doorCode, this.notes, this.lat, this.lon});
+  @HiveField(7)
+  late String? address;
+
+  DeliveryLocationData({this.house, this.flat, this.entrance, this.doorCode, this.lat, this.lon, this.address});
 }
