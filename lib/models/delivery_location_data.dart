@@ -1,0 +1,29 @@
+import 'package:hive/hive.dart';
+
+part 'delivery_location_data.g.dart';
+
+@HiveType(typeId: 4)
+class DeliveryLocationData {
+  @HiveField(0)
+  late String? house;
+
+  @HiveField(1)
+  late String? flat;
+
+  @HiveField(2)
+  late String? entrance;
+
+  @HiveField(3)
+  late String? doorCode;
+
+  @HiveField(4)
+  late String? notes;
+
+  @HiveField(5)
+  late double? lat;
+
+  @HiveField(6)
+  late double? lon;
+
+  DeliveryLocationData({this.house, this.flat, this.entrance, this.doorCode, this.notes, this.lat, this.lon});
+}

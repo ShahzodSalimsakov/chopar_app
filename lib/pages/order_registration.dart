@@ -38,7 +38,7 @@ class OrderRegistration extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              DeliveryTime(),
+              DeliveryTimeWidget(),
               SizedBox(
                 height: 5,
               ),

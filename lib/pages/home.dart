@@ -132,7 +132,7 @@ class _HomeState extends State<Home> {
                                 Positioned(
                                     top: 0,
                                     right: 0,
-                                    child: basket != null
+                                    child: basket != null && basket.lineCount > 0
                                         ? Container(
                                             // color: Colors.yellow.shade600,
                                             width: 15,

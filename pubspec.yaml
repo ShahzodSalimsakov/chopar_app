@@ -52,6 +52,9 @@ dependencies:
   timer_count_down: ^2.2.0
   flutter_hooks: ^0.18.0
   group_list_view: ^1.1.1
+  geolocator: ^7.7.0
+  flutter_form_builder: ^6.2.0
+  dart_date: ^1.1.0
   flutter_html: ^2.1.4
   authentication_repository:
     path: packages/authentication_repository

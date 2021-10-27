@@ -426,12 +426,12 @@ class ProductDetail extends HookWidget {
                         child: ListView(
                       children: [
                         Center(
-                            child: Image.network(
-                          detail.image,
-                          width: 300.0,
-                          height: 300.0,
-                          // width: MediaQuery.of(context).size.width / 2.5,
-                        )),
+                            child: Hero(child: Image.network(
+                              detail.image,
+                              width: 300.0,
+                              height: 300.0,
+                              // width: MediaQuery.of(context).size.width / 2.5,
+                            ), tag: detail.image)),
                         SizedBox(
                           height: 30,
                         ),

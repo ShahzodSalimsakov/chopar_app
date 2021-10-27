@@ -170,12 +170,12 @@ class ProductsList extends HookWidget {
         ),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
-            child: Image.network(
+            child: Hero(child: Image.network(
               image,
               width: 170.0,
               height: 170.0,
               // width: MediaQuery.of(context).size.width / 2.5,
-            ),
+            ), tag: image,),
           ),
           Expanded(
             child: Container(

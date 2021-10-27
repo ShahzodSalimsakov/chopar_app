@@ -1,5 +1,8 @@
 import 'package:chopar_app/app.dart';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/store/city.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +13,7 @@ import 'authentication_repository.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'models/basket.dart';
+import 'models/delivery_time.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +21,19 @@ void main() async {
   Hive.registerAdapter(CityAdapter());
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(BasketAdapter());
+  Hive.registerAdapter(TerminalsAdapter());
+  Hive.registerAdapter(DeliveryLocationDataAdapter());
+  Hive.registerAdapter(DeliveryTypeAdapter());
+  Hive.registerAdapter(DeliveryTypeEnumAdapter());
+  Hive.registerAdapter(DeliveryTimeAdapter());
+  Hive.registerAdapter(DeliveryTimeEnumAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
+  await Hive.openBox<Terminals>('currentTerminal');
+  await Hive.openBox<DeliveryLocationData>('deliveryLocationData');
+  await Hive.openBox<DeliveryType>('deliveryType');
+  await Hive.openBox<DeliveryTime>('deliveryTime');
 
   runApp(
     MainApp()

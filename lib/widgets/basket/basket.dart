@@ -43,10 +43,15 @@ class BasketWidget extends HookWidget {
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          basket.lineCount = basketData.value!.lines!.length;
+          BasketData newBasket = BasketData.fromJson(json['data']);
+          if (newBasket!.lines == null) {
+            basket.lineCount = 0;
+          } else {
+            basket.lineCount = newBasket!.lines!.length ?? 0;
+          }
 
           basketBox.put('basket', basket);
-          basketData.value = BasketData.fromJson(json['data']);
+          basketData.value = newBasket;
         }
       }
     }

@@ -5,6 +5,9 @@ class DefaultStyledButton extends StatelessWidget {
   final onPressed;
   final String text;
   final List<Color>? color;
+  final double? height;
+  final Color? textColor;
+  final double? textSize;
   final bool? isLoading;
 
   const DefaultStyledButton(
@@ -13,6 +16,9 @@ class DefaultStyledButton extends StatelessWidget {
       required this.onPressed,
       required this.text,
       this.color,
+      this.height,
+      this.textColor,
+      this.textSize,
       this.isLoading})
       : super(key: key);
 
@@ -22,7 +28,7 @@ class DefaultStyledButton extends StatelessWidget {
       width: width,
       child: ElevatedButton(
         child: Ink(
-          height: 45.0,
+          height: height != null ? height : 45.0,
           width: double.maxFinite,
           decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -33,7 +39,7 @@ class DefaultStyledButton extends StatelessWidget {
           child: Center(
             child: isLoading != null ? CircularProgressIndicator(color: Colors.white,) : Text(
               text,
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: textSize != null ? textSize : 18.0, color: textColor != null ? textColor : Colors.white, fontWeight: FontWeight.w700),
             ),
           ),
         ),

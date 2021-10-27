@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/modal_fit.dart';
 import 'package:chopar_app/models/terminals.dart';
+import 'package:chopar_app/widgets/delivery/delivery.dart';
 import 'package:chopar_app/widgets/delivery/pickup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,7 +32,17 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: myTabs.length);
+    Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+    DeliveryType? currentDeliver = box.get('deliveryType');
+    if (currentDeliver != null) {
+      var currentTabIndex = 0;
+      if (currentDeliver.value == DeliveryTypeEnum.pickup) {
+        currentTabIndex = 1;
+      }
+      _tabController = TabController(vsync: this, length: myTabs.length, initialIndex: currentTabIndex);
+    } else {
+      _tabController = TabController(vsync: this, length: myTabs.length);
+    }
   }
 
   @override
@@ -51,6 +65,16 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                 child: TabBar(
                   tabs: myTabs,
                   controller: _tabController,
+                  onTap: (index) {
+                    DeliveryType deliveryType = DeliveryType();
+                    if (index == 0) {
+                      deliveryType.value = DeliveryTypeEnum.deliver;
+                    } else {
+                      deliveryType.value = DeliveryTypeEnum.pickup;
+                    }
+                    Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+                    box.put('deliveryType', deliveryType);
+                  },
                   // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
                   indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(25.0),
@@ -71,63 +95,59 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                           'Укажите адрес доставки',
                         ),
                         Spacer(),
-                        SvgPicture.asset('assets/images/edit.svg',),
+                        SvgPicture.asset(
+                          'assets/images/edit.svg',
+                        ),
                       ],
                     ),
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                    appBar: AppBar(
-                                      leading: IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_back_ios_outlined,
-                                            color: Colors.black),
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      centerTitle: true,
-                                      title: Text('Укажите адрес доставки',
-                                          style: TextStyle(fontSize: 20)),
-                                    ),
-                                    body: SafeArea(
-                                        child: Text('Укажите адрес доставки')),
-                                  )));
+                              builder: (context) => DeliveryWidget()));
                     },
                     style: TextButton.styleFrom(primary: Colors.grey)),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                    appBar: AppBar(
-                                      leading: IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_back_ios_outlined,
-                                            color: Colors.black),
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      centerTitle: true,
-                                      title: Text('Выберите ресторан',
-                                          style: TextStyle(fontSize: 20)),
-                                    ),
-                                    body: Pickup(),
-                                  )));
-                    },
-                    child: Row(
-                      children: [
-                        Text('Выберите ресторан'),
-                        Spacer(),SvgPicture.asset('assets/images/edit.svg',),
-                      ],
-                    ),
-                    style: TextButton.styleFrom(primary: Colors.grey))
+                ValueListenableBuilder<Box<Terminals>>(
+                    valueListenable:
+                        Hive.box<Terminals>('currentTerminal').listenable(),
+                    builder: (context, box, _) {
+                      Terminals? currentTerminal = box.get('currentTerminal');
+                      return TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                          appBar: AppBar(
+                                            leading: IconButton(
+                                              icon: Icon(
+                                                  Icons.arrow_back_ios_outlined,
+                                                  color: Colors.black),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                            ),
+                                            backgroundColor: Colors.white,
+                                            foregroundColor: Colors.black,
+                                            centerTitle: true,
+                                            title: Text('Выберите ресторан',
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                          body: Pickup(),
+                                        )));
+                          },
+                          child: Row(
+                            children: [
+                              Text(currentTerminal != null
+                                  ? currentTerminal.name!
+                                  : 'Выберите ресторан'),
+                              Spacer(),
+                              SvgPicture.asset(
+                                'assets/images/edit.svg',
+                              ),
+                            ],
+                          ),
+                          style: TextButton.styleFrom(primary: Colors.grey));
+                    }),
               ],
             )),
       ],
