@@ -43,8 +43,7 @@ class OrderRegistration extends StatelessWidget {
                 height: 5,
               ),
               PayType()
-            ],
-          ),
-        ));
+          ],
+        )));
   }
 }

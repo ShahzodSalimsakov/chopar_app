@@ -110,6 +110,7 @@ class PersonalData extends StatelessWidget {
                         child: Container(
                           height: 45,
                           child: TextField(
+                            keyboardType: TextInputType.emailAddress,
                             textAlignVertical: TextAlignVertical.center,
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                             decoration: InputDecoration(
