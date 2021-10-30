@@ -32,7 +32,7 @@ class DefaultStyledButton extends StatelessWidget {
           width: double.maxFinite,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: color != null ? color! : [Colors.yellow.shade200, Colors.yellow.shade600],
+                  colors: color != null ? color! : [Colors.yellow.shade300, Colors.yellow.shade700],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(25.0)),

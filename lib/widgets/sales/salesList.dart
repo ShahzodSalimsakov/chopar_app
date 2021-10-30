@@ -63,8 +63,8 @@ class SalesList extends HookWidget {
       getSales();
     }, []);
 
-    return Expanded(
-        child: ListView.separated(
+    return /*Expanded(
+        child: */ListView.separated(
       itemCount: sales.value.length,
       itemBuilder: (BuildContext context, index) {
         return GestureDetector(
@@ -136,6 +136,6 @@ class SalesList extends HookWidget {
       separatorBuilder: (context, index) {
         return Divider();
       },
-    ));
+    )/*)*/;
   }
 }

@@ -67,7 +67,7 @@ class Order {
   int? isPayed;
   String? iikoId;
   String? laterTime;
-  Basket? basket;
+  OrderBasket? basket;
   TerminalData? terminalData;
 
   Order(
@@ -213,7 +213,7 @@ class Order {
     iikoId = json['iiko_id'] != null ? json['iiko_id'] : '';
     laterTime = json['later_time'] != null ? json['later_time'] : '';
     basket =
-    json['basket'] != null ? new Basket.fromJson(json['basket']) : null;
+    json['basket'] != null ? new OrderBasket.fromJson(json['basket']) : null;
     terminalData = json['terminalData'] != null
         ? new TerminalData.fromJson(json['terminalData'])
         : null;
@@ -299,7 +299,7 @@ class Order {
   }
 }
 
-class Basket {
+class OrderBasket {
   late int id;
   int? userId;
   Null mergedId;
@@ -311,7 +311,7 @@ class Basket {
   String? otp;
   List<Lines>? lines;
 
-  Basket(
+  OrderBasket(
       {required this.id,
         this.userId,
         this.mergedId,
@@ -322,7 +322,7 @@ class Basket {
         this.otp,
         this.lines});
 
-  Basket.fromJson(Map<String, dynamic> json) {
+  OrderBasket.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'] != null ? json['user_id'] : 0;
     mergedId = json['merged_id'];
@@ -361,7 +361,7 @@ class Lines {
   late String total;
   late String createdAt;
   late String updatedAt;
-  String? modifiers;
+  dynamic modifiers;
   Null parentId;
   Variant? variant;
   List<Child>? child;
@@ -387,7 +387,15 @@ class Lines {
     total = json['total'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    modifiers = json['modifiers'] != null ? json['modifiers'] : '';
+    if (json['modifiers'] != null) {
+      if (json['modifiers'] is String) {
+        modifiers = List<Modifiers>.empty();
+      } else {
+        modifiers = json['modifiers'].map<Modifiers>((m) => new Modifiers.fromJson(m)).toList();
+      }
+    } else {
+      modifiers = List<Modifiers>.empty();
+    }
     parentId = json['parent_id'];
     variant =
     json['variant'] != null ? new Variant.fromJson(json['variant']) : null;
@@ -405,7 +413,9 @@ class Lines {
     data['total'] = this.total;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['modifiers'] = this.modifiers;
+    if (this.modifiers != null) {
+      data['modifiers'] = this.modifiers.map((v) => v.toJson()).toList();
+    }
     data['parent_id'] = this.parentId;
     if (this.variant != null) {
       data['variant'] = this.variant?.toJson();
@@ -416,6 +426,56 @@ class Lines {
     return data;
   }
 }
+
+class Modifiers {
+  late int id;
+  late String createdAt;
+  late String updatedAt;
+  late String name;
+  late String xmlId;
+  late int price;
+  late int weight;
+  late String groupId;
+  late String nameUz;
+
+  Modifiers(
+      {required this.id,
+        required this.createdAt,
+        required this.updatedAt,
+        required this.name,
+        required this.xmlId,
+        required this.price,
+        required this.weight,
+        required this.groupId,
+        required this.nameUz});
+
+  Modifiers.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    name = json['name'];
+    xmlId = json['xml_id'];
+    price = json['price'];
+    weight = json['weight'];
+    groupId = json['groupId'];
+    nameUz = json['name_uz'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['name'] = this.name;
+    data['xml_id'] = this.xmlId;
+    data['price'] = this.price;
+    data['weight'] = this.weight;
+    data['groupId'] = this.groupId;
+    data['name_uz'] = this.nameUz;
+    return data;
+  }
+}
+
 
 class Variant {
   late int id;

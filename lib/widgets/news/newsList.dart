@@ -63,8 +63,8 @@ class NewsList extends HookWidget {
       getNews();
     }, []);
 
-    return Expanded(
-        child: ListView.separated(
+    return /*Expanded(
+        child:*/ ListView.separated(
       itemCount: news.value.length,
       itemBuilder: (BuildContext context, index) {
         return GestureDetector(
@@ -136,6 +136,6 @@ class NewsList extends HookWidget {
       separatorBuilder: (context, index) {
         return Divider();
       },
-    ));
+    )/*)*/;
   }
 }

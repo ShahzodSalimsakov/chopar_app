@@ -1,3 +1,4 @@
+import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,8 @@ class _PayTypeState extends State<PayTypeWidget>
         PayType newPayType = new PayType();
         newPayType.value = 'offline';
         Hive.box<PayType>('payType').put('payType', newPayType);
+      } else {
+        Hive.box<PayCash>('payCash').delete('payCash');
       }
       FocusScopeNode currentFocus = FocusScope.of(context);
       if (!currentFocus.hasPrimaryFocus) {
@@ -79,7 +82,11 @@ class _PayTypeState extends State<PayTypeWidget>
         hintText: 'С какой суммы подготовить сдачу?',
         contentPadding: EdgeInsets.symmetric(horizontal: 30),
       ),
-      onChanged: (value) {},
+      onChanged: (value) {
+        PayCash payCash = new PayCash();
+        payCash.value = value;
+        Hive.box<PayCash>('payCash').put('payCash', payCash);
+      },
     );
   }
 

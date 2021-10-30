@@ -4,6 +4,7 @@ import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_notes.dart';
 import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
@@ -33,6 +34,7 @@ void main() async {
   Hive.registerAdapter(DeliverLaterTimeAdapter());
   Hive.registerAdapter(PayTypeAdapter());
   Hive.registerAdapter(DeliveryNotesAdapter());
+  Hive.registerAdapter(PayCashAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -43,6 +45,7 @@ void main() async {
   await Hive.openBox<DeliverLaterTime>('deliveryLaterTime');
   await Hive.openBox<PayType>('payType');
   await Hive.openBox<DeliveryNotes>('deliveryNotes');
+  await Hive.openBox<PayCash>('payCash');
 
   runApp(MainApp());
 }

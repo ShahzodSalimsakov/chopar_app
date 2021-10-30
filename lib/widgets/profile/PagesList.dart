@@ -11,9 +11,10 @@ class PagesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded( // wrap in Expanded
+    return Expanded(
+        // wrap in Expanded
         child: ListView(
-          shrinkWrap: true,
+      shrinkWrap: true,
       children: [
         // ListTile(
         //   contentPadding: EdgeInsets.all(0.00),
@@ -77,20 +78,21 @@ class PagesList extends StatelessWidget {
               ),
             );
           },
-        ),ListTile(
-          contentPadding: EdgeInsets.all(0.00),
-          leading: Icon(Icons.info_outline),
-          title: Text('Оформление заказа'),
-          trailing: Icon(Icons.keyboard_arrow_right),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OrderRegistration(),
-              ),
-            );
-          },
         ),
+        // ListTile(
+        //   contentPadding: EdgeInsets.all(0.00),
+        //   leading: Icon(Icons.info_outline),
+        //   title: Text('Оформление заказа'),
+        //   trailing: Icon(Icons.keyboard_arrow_right),
+        //   onTap: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => OrderRegistration(),
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     ));
   }

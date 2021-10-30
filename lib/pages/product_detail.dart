@@ -53,7 +53,7 @@ class ProductDetail extends HookWidget {
   }
 
   List<Widget> modifiersList(
-      List<Modifiers> modifiers, addModifier, activeModifiers) {
+      List<Modifiers> modifiers, addModifier, activeModifiers, BuildContext context) {
     if (detail.variants.length > 0) {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
@@ -64,73 +64,81 @@ class ProductDetail extends HookWidget {
           style: TextStyle(color: Colors.yellow.shade600, fontSize: 16.0),
         ),
         SizedBox(height: 10.0),
-        ...List<InkWell>.from(modifiers
-            .map((m) => InkWell(
-                onTap: () {
-                  addModifier(m.id);
-                },
-                child: Container(
-                    height: 75,
-                    padding: EdgeInsets.only(
-                        left: 20, top: 10, bottom: 10, right: 20),
-                    margin: EdgeInsets.symmetric(horizontal: 2, vertical: 10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      border: Border.all(
-                          color: activeModifiers.value.contains(m.id)
-                              ? Colors.yellow.shade600
-                              : Colors.grey),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 3, // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      fit: StackFit.loose,
-                      children: [
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+        ...List<LimitedBox>.from(modifiers
+            .map((m) => LimitedBox(
+                  maxHeight: 100,
+                  child: InkWell(
+                      onTap: () {
+                        addModifier(m.id);
+                      },
+                      child: Container(
+                          height: 75,
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.only(
+                              left: 20, top: 10, bottom: 10, right: 20),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 2, vertical: 10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            border: Border.all(
+                                color: activeModifiers.value.contains(m.id)
+                                    ? Colors.yellow.shade600
+                                    : Colors.grey),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 3, // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            fit: StackFit.loose,
+                            children: [
+                              /*Expanded(
+                                  child: */Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Text(
-                                    m.name,
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  SizedBox(height: 10),
-                                  DecoratedBox(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(12))),
-                                      child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 3, horizontal: 10),
-                                          child: Text(
-                                              formatCurrency.format(m.price)))),
-                                ]),
-                            Spacer(),
-                            modifierImage(m)
-                          ],
-                        )),
-                        Positioned(
-                          child: activeModifiers.value.contains(m.id)
-                              ? Icon(Icons.check_circle_outline,
-                                  color: Colors.yellow.shade600)
-                              : SizedBox(width: 0.0),
-                          width: 10.0,
-                          height: 10.0,
-                          top: 5.0,
-                          right: 5.0,
-                        )
-                      ],
-                    ))))
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          m.name,
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                        SizedBox(height: 10),
+                                        DecoratedBox(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(12))),
+                                            child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 3,
+                                                    horizontal: 10),
+                                                child: Text(formatCurrency
+                                                    .format(m.price)))),
+                                      ]),
+                                  Spacer(),
+                                  modifierImage(m)
+                                ],
+                              )/*)*/,
+                              Positioned(
+                                child: activeModifiers.value.contains(m.id)
+                                    ? Icon(Icons.check_circle_outline,
+                                        color: Colors.yellow.shade600)
+                                    : SizedBox(width: 0.0),
+                                width: 10.0,
+                                height: 10.0,
+                                top: 5.0,
+                                right: 5.0,
+                              )
+                            ],
+                          ))),
+                ))
             .toList()),
       ];
     } else {
@@ -307,8 +315,8 @@ class ProductDetail extends HookWidget {
 
       int selectedProdId = 0;
       if (detail.variants != null && detail.variants.length > 0) {
-        Variants activeVariant =
-            detail.variants.firstWhere((v) => v.customName == selectedVariant.value);
+        Variants activeVariant = detail.variants
+            .firstWhere((v) => v.customName == selectedVariant.value);
         selectedProdId = activeVariant.id;
         if (activeVariant.modifierProduct != null) {
           modifierProduct = activeVariant.modifierProduct;
@@ -416,84 +424,99 @@ class ProductDetail extends HookWidget {
             initialChildSize: 0.9,
             minChildSize: 0.5,
             maxChildSize: 1,
-            builder: (_, controller) => Container(
-                padding:
-                    EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 20),
-                color: Colors.white,
-                child: Column(
+            builder: (_, controller) => Stack(
                   children: [
-                    Expanded(
-                        child: ListView(
-                      children: [
-                        Center(
-                            child: Hero(child: Image.network(
-                              detail.image,
-                              width: 300.0,
-                              height: 300.0,
-                              // width: MediaQuery.of(context).size.width / 2.5,
-                            ), tag: detail.image)),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Text(
-                          detail.attributeData?.name?.chopar?.ru ?? '',
-                          style: TextStyle(fontSize: 26),
-                        ),
-                        Html(
-                          data: detail.attributeData?.description?.chopar?.ru ??
-                              '',
-                          // style: TextStyle(
-                          //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List<Widget>.generate(
-                                detail.variants.length, (index) {
-                              return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 3.0),
-                                  child: ElevatedButton(
-                                      style: ButtonStyle(
-                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(25.0))),
-                                          backgroundColor: MaterialStateProperty.all(
-                                              selectedVariant.value ==
-                                                      detail.variants[index]
-                                                          .customName
-                                                  ? Colors.yellow.shade600
-                                                  : Colors.grey.shade100)),
-                                      child: Text(detail.variants[index].customName,
-                                          style: TextStyle(
-                                              fontSize: 13.0,
-                                              color: selectedVariant.value ==
-                                                      detail.variants[index].customName
-                                                  ? Colors.white
-                                                  : Colors.grey)),
-                                      onPressed: () {
-                                        selectedVariant.value =
-                                            detail.variants[index].customName;
-                                      }));
-                            }),
-                          ),
-                        ),
-                        ...modifiersList(
-                            modifiers, addModifier, activeModifiers),
-                      ],
-                    )),
                     Container(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: DefaultStyledButton(
-                          isLoading: _isBasketLoading.value == true ? _isBasketLoading.value : null,
-                          width: MediaQuery.of(context).size.width,
-                          onPressed: () {
-                            addToBasket();
-                          },
-                          text:
-                              'В корзину ${formatCurrency.format(totalPrice)}'),
+                      padding: EdgeInsets.only(
+                          top: 20, left: 15, right: 15, bottom: 20),
+                      color: Colors.white,
+                      child: SingleChildScrollView(
+                          child: Column(
+                        children: [
+                          // Expanded(
+                          //     child: ListView(
+                          //   children: [
+                          Center(
+                              child: Hero(
+                                  child: Image.network(
+                                    detail.image,
+                                    width: 300.0,
+                                    height: 300.0,
+                                    // width: MediaQuery.of(context).size.width / 2.5,
+                                  ),
+                                  tag: detail.image)),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text(
+                            detail.attributeData?.name?.chopar?.ru ?? '',
+                            style: TextStyle(fontSize: 26),
+                          ),
+                          Html(
+                            data:
+                                detail.attributeData?.description?.chopar?.ru ??
+                                    '',
+                            // style: TextStyle(
+                            //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                          ),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List<Widget>.generate(
+                                  detail.variants.length, (index) {
+                                return Container(
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 3.0),
+                                    child: ElevatedButton(
+                                        style: ButtonStyle(
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(
+                                                        25.0))),
+                                            backgroundColor: MaterialStateProperty.all(
+                                                selectedVariant.value == detail.variants[index].customName
+                                                    ? Colors.yellow.shade600
+                                                    : Colors.grey.shade100)),
+                                        child: Text(detail.variants[index].customName,
+                                            style: TextStyle(
+                                                fontSize: 13.0,
+                                                color: selectedVariant.value == detail.variants[index].customName
+                                                    ? Colors.white
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          selectedVariant.value =
+                                              detail.variants[index].customName;
+                                        }));
+                              }),
+                            ),
+                          ),
+                          ...modifiersList(
+                              modifiers, addModifier, activeModifiers, context),
+                          SizedBox(height: 50,)
+                          //   ],
+                          // )),
+                        ],
+                      )),
+                    ),
+                    Positioned(
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        color: Colors.white,
+                        child: DefaultStyledButton(
+                            isLoading: _isBasketLoading.value == true
+                                ? _isBasketLoading.value
+                                : null,
+                            width: MediaQuery.of(context).size.width - 30,
+                            onPressed: () {
+                              addToBasket();
+                            },
+                            text:
+                            'В корзину ${formatCurrency.format(totalPrice)}'),
+                      ),
+                      bottom: 0,
                     ),
                   ],
-                ))));
+                )));
   }
 }
