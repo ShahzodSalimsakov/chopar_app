@@ -11,7 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:collection/collection.dart';
 class CreateOwnPizza extends HookWidget {
   final formatCurrency = new NumberFormat.currency(
       locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
@@ -50,15 +50,11 @@ class CreateOwnPizza extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final activeModifiers = useState<List<int>>(List<int>.empty());
-    final activeCustomName = useState<String>('');
     final leftSelectedProduct = useState<Items?>(null);
     final rightSelectedProduct = useState<Items?>(null);
     final isSecondPage = useState<bool>(false);
     final isBasketLoading = useState<bool>(false);
 
-    changeCustomName(String name) {
-      activeCustomName.value = name;
-    }
 
     changeToSecondPage() {
       if (leftSelectedProduct.value == null ||
@@ -79,6 +75,9 @@ class CreateOwnPizza extends HookWidget {
       });
       return names.keys.toList();
     }, [items]);
+
+
+    final activeCustomName = useState<String>(customNames[0]);
 
     final readyProductList = useMemoized(() {
       return items?.map((Items item) {
@@ -119,8 +118,8 @@ class CreateOwnPizza extends HookWidget {
       });
 
       if (activeVariant != null && activeVariant?.modifierProduct != null) {
-        Modifiers? isExistSausage = leftModifiers
-            ?.firstWhere((mod) => mod.id == activeVariant?.modifierProduct?.id);
+        var isExistSausage = leftModifiers
+            ?.firstWhereOrNull((mod) => mod.id == activeVariant?.modifierProduct?.id);
         if (isExistSausage != null) {
           leftModifiers?.add(new Modifiers(
             id: activeVariant?.modifierProduct?.id ?? 0,

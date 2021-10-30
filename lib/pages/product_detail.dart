@@ -136,7 +136,7 @@ class ProductDetail extends HookWidget {
     } else {
       return [
         SizedBox(
-          height: 1.0,
+          // height: 1.0,
         )
       ];
     }
@@ -420,10 +420,16 @@ class ProductDetail extends HookWidget {
                 padding:
                     EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 20),
                 color: Colors.white,
+                // height: double.maxFinite,
+                // constraints: BoxConstraints.expand(),
                 child: Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     Expanded(
+                      flex: 1,
                         child: ListView(
+
+                          shrinkWrap: true,
                       children: [
                         Center(
                             child: Hero(child: Image.network(
@@ -484,6 +490,7 @@ class ProductDetail extends HookWidget {
                     )),
                     Container(
                       padding: EdgeInsets.only(top: 10.0),
+                      color: Colors.white,
                       child: DefaultStyledButton(
                           isLoading: _isBasketLoading.value == true ? _isBasketLoading.value : null,
                           width: MediaQuery.of(context).size.width,

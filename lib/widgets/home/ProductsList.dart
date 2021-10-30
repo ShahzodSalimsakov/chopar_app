@@ -14,10 +14,13 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:niku/niku.dart';
 
 class ProductsList extends HookWidget {
+
   @override
   Widget build(BuildContext context) {
     final products =
         useState<List<ProductSection>>(List<ProductSection>.empty());
+    final scrolledIndex = useState<int>(0);
+
 
     Future<void> getProducts() async {
       Map<String, String> requestHeaders = {
@@ -41,61 +44,88 @@ class ProductsList extends HookWidget {
     ScrollController scrollController = new ScrollController();
 
     return Expanded(
-        child: GroupListView(
-      controller: scrollController,
-      sectionsCount: products.value.length,
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      countOfItemInSection: (int section) {
-        if (products.value[section].halfMode == 1) {
-          return 1;
-        } else {
-          return products.value[section].items?.length ?? 0;
-        }
-      },
-      itemBuilder: (BuildContext context, IndexPath index) {
-        if (products.value[index.section].halfMode == 1) {
-          return renderCreatePizza(
-              context, products.value[index.section].items);
-        } else {
-          return renderProduct(
-              context, products.value[index.section].items?[index.index]);
-        }
-      },
-      groupHeaderBuilder: (BuildContext context, int section) {
-        if (products.value[section].halfMode == 1) {
-          return SizedBox();
-        } else {
-          return Container(
-            child: Stack(
-              children: [
-                NikuText(
-                    products.value[section].attributeData?.name?.chopar?.ru ??
+        child: Column(
+      children: [
+        LimitedBox(
+          maxHeight: 30,
+          child:
+          ListView.separated(separatorBuilder: (context, index) {
+            return SizedBox(width: 5);
+          }, itemCount: products.value.length, itemBuilder: (context, index){
+            return GestureDetector(onTap: (){
+              scrolledIndex.value = index;
+              // print(scrollController.);
+            }, child: Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              decoration: BoxDecoration(
+                  color: scrolledIndex.value == index ? Colors.yellow.shade600 : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(20)
+              ),
+              child: Text(products.value[index].attributeData?.name?.chopar?.ru ?? '', style: TextStyle(color: scrolledIndex.value == index ? Colors.white : Colors.black, fontWeight: FontWeight.w400),),
+            ),);
+            return Text(products.value[index].attributeData?.name?.chopar?.ru ?? '');
+          }, scrollDirection: Axis.horizontal,),
+        ),
+        SizedBox(height: 10,),
+        Expanded(
+            child: GroupListView(
+          controller: scrollController,
+          sectionsCount: products.value.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          countOfItemInSection: (int section) {
+            if (products.value[section].halfMode == 1) {
+              return 1;
+            } else {
+              return products.value[section].items?.length ?? 0;
+            }
+          },
+          itemBuilder: (BuildContext context, IndexPath index) {
+            if (products.value[index.section].halfMode == 1) {
+              return renderCreatePizza(
+                  context, products.value[index.section].items);
+            } else {
+              return renderProduct(
+                  context, products.value[index.section].items?[index.index]);
+            }
+          },
+          groupHeaderBuilder: (BuildContext context, int section) {
+            if (products.value[section].halfMode == 1) {
+              return SizedBox();
+            } else {
+              return Container(
+                child: Stack(
+                  children: [
+                    NikuText(products
+                            .value[section].attributeData?.name?.chopar?.ru ??
                         '')
-                  ..textDecoration(TextDecoration.underline)
-                  ..textDecorationColor(Colors.yellow)
-                  ..fontSize(24.0)
-                  ..w400()
-                  ..fontFamily('Ubuntu'),
-                SizedBox(
-                  height: 40.0,
-                ),
+                      ..textDecoration(TextDecoration.underline)
+                      ..textDecorationColor(Colors.yellow)
+                      ..fontSize(24.0)
+                      ..w400()
+                      ..fontFamily('Ubuntu'),
+                    SizedBox(
+                      height: 40.0,
+                    ),
 
-                /// stack requires empty non positioned widget to work properly. refer: https://github.com/flutter/flutter/issues/49631#issuecomment-582090992
-                // Container(),
-              ],
-            ),
-            width: MediaQuery.of(context).size.width,
-          );
-        }
-      },
-      separatorBuilder: (context, index) => Divider(
-        color: Colors.black,
-        height: 1,
-      ),
-      sectionSeparatorBuilder: (context, section) => SizedBox(
-        height: 20.0,
-      ),
+                    /// stack requires empty non positioned widget to work properly. refer: https://github.com/flutter/flutter/issues/49631#issuecomment-582090992
+                    // Container(),
+                  ],
+                ),
+                width: MediaQuery.of(context).size.width,
+              );
+            }
+          },
+          separatorBuilder: (context, index) => Divider(
+            color: Colors.black,
+            height: 1,
+          ),
+          sectionSeparatorBuilder: (context, section) => SizedBox(
+            height: 20.0,
+          ),
+        )),
+      ],
     ));
   }
 
@@ -120,8 +150,11 @@ class ProductsList extends HookWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Соберите свою пиццу', style:
-                            TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),),
+                            Text(
+                              'Соберите свою пиццу',
+                              style: TextStyle(
+                                  fontSize: 20.0, fontWeight: FontWeight.w700),
+                            ),
                             OutlinedButton(
                               child: Text(
                                 'Собрать пиццу',
@@ -129,16 +162,20 @@ class ProductsList extends HookWidget {
                               ),
                               style: ButtonStyle(
                                   side: MaterialStateProperty.all(BorderSide(
-                                      width: 1.0, color: Colors.yellow.shade600)),
-                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25.0)))),
+                                      width: 1.0,
+                                      color: Colors.yellow.shade600)),
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25.0)))),
                               onPressed: () {
                                 showMaterialModalBottomSheet(
                                     expand: false,
                                     context: context,
                                     isDismissible: true,
                                     backgroundColor: Colors.transparent,
-                                    builder: (context) => CreateOwnPizza(items));
+                                    builder: (context) =>
+                                        CreateOwnPizza(items));
                               },
                             )
                           ])))
@@ -170,12 +207,15 @@ class ProductsList extends HookWidget {
         ),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
-            child: Hero(child: Image.network(
-              image,
-              width: 170.0,
-              height: 170.0,
-              // width: MediaQuery.of(context).size.width / 2.5,
-            ), tag: image,),
+            child: Hero(
+              child: Image.network(
+                image,
+                width: 170.0,
+                height: 170.0,
+                // width: MediaQuery.of(context).size.width / 2.5,
+              ),
+              tag: image,
+            ),
           ),
           Expanded(
             child: Container(
