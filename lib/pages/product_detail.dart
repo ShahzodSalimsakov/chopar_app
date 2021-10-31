@@ -428,7 +428,6 @@ class ProductDetail extends HookWidget {
                     Expanded(
                         flex: 1,
                         child: ListView(
-
                           shrinkWrap: true,
                           children: [
                             Center(
