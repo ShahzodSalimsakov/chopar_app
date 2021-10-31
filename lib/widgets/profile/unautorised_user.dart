@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 
 class UnAuthorisedUserPage extends StatelessWidget {
 
+  final String? title;
+  const UnAuthorisedUserPage({this.title});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Профиль'),
+        title: Text(this.title ?? 'Профиль'),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

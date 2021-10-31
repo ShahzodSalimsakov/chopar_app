@@ -521,7 +521,7 @@ class BasketWidget extends HookWidget {
                   );
                 });
           } else {
-            return UnAuthorisedUserPage();
+            return UnAuthorisedUserPage(title: 'Корзина',);
           }
         });
   }
