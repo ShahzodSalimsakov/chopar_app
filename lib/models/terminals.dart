@@ -74,6 +74,8 @@ class Terminals {
   String? clickMerchantId;
   @HiveField(34)
   int? cityId;
+  @HiveField(35)
+  bool? isWorking;
 
   Terminals(
       {required this.id,
@@ -110,7 +112,8 @@ class Terminals {
       required this.clickMerchantUserId,
       required this.clickSecretKey,
       required this.clickMerchantId,
-      required this.cityId});
+      required this.cityId,
+      this.isWorking});
 
   Terminals.fromJson(Map<String, dynamic> json) {
     id = json['id'];

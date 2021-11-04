@@ -94,10 +94,14 @@ class _TerminalModalState extends State<TerminalsModal> {
   }
 
   setCurrentTerminal(Terminals terminal) {
-    setState(() {
-      _currentTerminal = terminal;
-    });
-    showBottomSheet(terminal);
+    if (terminal.isWorking!) {
+      setState(() {
+        _currentTerminal = terminal;
+      });
+      showBottomSheet(terminal);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данный терминал сейчас не работает')));
+    }
   }
 
   @override
@@ -136,7 +140,6 @@ class _TerminalModalState extends State<TerminalsModal> {
                       if (currentTerminal != null && currentTerminal.id == element.id) {
                         scale = 4;
                       }
-                      print(scale);
                       var placemark = Placemark(
                         point: Point(
                             latitude: double.parse(element!.latitude!),
@@ -145,7 +148,7 @@ class _TerminalModalState extends State<TerminalsModal> {
                         style: PlacemarkStyle(
                             scale: scale,
                             opacity: 0.95,
-                            iconName: 'assets/images/place.png'),
+                            iconName: element.isWorking! ? 'assets/images/place.png' : 'assets/images/place_disabled.png'),
                       );
                       await controller.addPlacemark(placemark);
                     }
