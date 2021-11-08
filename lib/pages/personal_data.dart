@@ -1,222 +1,253 @@
+import 'package:chopar_app/models/user.dart';
+import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_phone_field/form_builder_phone_field.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class PersonalData extends StatelessWidget {
+class PersonalData extends StatefulWidget {
   const PersonalData({Key? key}) : super(key: key);
 
   @override
+  State<PersonalData> createState() => _PersonalDataState();
+}
+
+class _PersonalDataState extends State<PersonalData> {
+  final _formKey = GlobalKey<FormBuilderState>();
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_outlined,
-              color: Colors.black,
-              size: 20,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          centerTitle: true,
-          title: Text('Личные данные',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
-        ),
-        body: Stack(
-          children: [
-            Container(
-                margin: EdgeInsets.only(top: 5),
-                height: MediaQuery.of(context).size.height * 0.53,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
+    return ValueListenableBuilder<Box<User>>(
+        valueListenable: Hive.box<User>('user').listenable(),
+        builder: (context, box, _) {
+          User? currentUser = box.get('user');
+          return Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_outlined,
+                    color: Colors.black,
+                    size: 20,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Имя',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Container(
-                          height: 45,
-                          child: TextField(
-                            textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10.0),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              suffixIcon: IconButton(
-                                padding: EdgeInsets.only(right: 17),
-                                iconSize: 20,
-                                onPressed: () {},
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                centerTitle: true,
+                title: Text('Личные данные',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
+              ),
+              body: Stack(
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(top: 5),
+                      height: MediaQuery.of(context).size.height * 0.53,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3), // changes position of shadow
                           ),
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Номер телефона',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Container(
-                          height: 45,
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10.0),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              suffixIcon: IconButton(
-                                padding: EdgeInsets.only(right: 17),
-                                iconSize: 20,
-                                onPressed: () {},
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Эл. почта',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Container(
-                          height: 45,
-                          child: TextField(
-                            keyboardType: TextInputType.emailAddress,
-                            textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10.0),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              suffixIcon: IconButton(
-                                padding: EdgeInsets.only(right: 17),
-                                iconSize: 20,
-                                onPressed: () {},
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'День рождения',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Flexible(
-                            child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          maxLength: 2,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            contentPadding: EdgeInsets.all(10.0),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                          ),
-                        )),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Flexible(
-                            child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          maxLength: 2,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            contentPadding: EdgeInsets.all(10.0),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                          ),
-                        )),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Flexible(
-                            child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          maxLength: 4,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            contentPadding: EdgeInsets.all(10.0),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                          ),
-                        )),
-                      ],
-                    )
-                  ],
-                )),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                    height: 45,
-                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 33),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.0))),
-                            backgroundColor: MaterialStateProperty.all(
-                                Colors.yellow.shade600)),
-                        child: Text('Сохранить',
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.white)),
-                        onPressed: () {}))),
-          ],
-        ));
+                        ],
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FormBuilder(
+                              key: _formKey,
+                              autovalidateMode: AutovalidateMode.always,
+                              child: Column(
+                                children: [
+                                  FormBuilderTextField(
+                                    name: 'name',
+                                    initialValue: currentUser?.name ?? '',
+                                    // validator: (value) => value?.length == 0 ? 'Поле обязательно для заполнения' : '',
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(context, errorText: 'Поле обязательно для заполнения')
+                                    ]),
+                                    decoration: InputDecoration(
+                                      labelText: 'Имя',
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 30),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(width: 1.0),
+                                        borderRadius: BorderRadius.circular(40),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0),
+                                          borderRadius:
+                                              BorderRadius.circular(40)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0, color: Colors.red),
+                                          borderRadius:
+                                          BorderRadius.circular(40)),
+                                      focusedErrorBorder:OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0, color: Colors.red),
+                                          borderRadius:
+                                          BorderRadius.circular(40))
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  FormBuilderPhoneField(
+                                    name: 'phone',
+                                    initialValue: currentUser?.phone ?? '',
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(context, errorText: 'Поле обязательно для заполнения'),
+                                      FormBuilderValidators.minLength(context, 13, errorText: 'Заполнено неверно')
+                                    ]),
+                                    decoration: InputDecoration(
+                                        labelText: 'Номер телефона',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 30),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0),
+                                          borderRadius:
+                                              BorderRadius.circular(40),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(width: 1.0),
+                                            borderRadius:
+                                                BorderRadius.circular(40)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(width: 1.0, color: Colors.red),
+                                            borderRadius:
+                                            BorderRadius.circular(40)),
+                                        focusedErrorBorder:OutlineInputBorder(
+                                            borderSide: BorderSide(width: 1.0, color: Colors.red),
+                                            borderRadius:
+                                            BorderRadius.circular(40))),
+                                    // onChanged: _onChanged,
+                                    priorityListByIsoCode: ['UZ'],
+                                    defaultSelectedCountryIsoCode: 'UZ',
+                                    countryFilterByIsoCode: ['Uz'],
+                                    isSearchable: false,
+                                    autocorrect: true,
+                                    // validator: ,
+                                    // validator: FormBuilderValidators.compose([
+                                    //   FormBuilderValidators.numeric(context),
+                                    //   FormBuilderValidators.required(context),
+                                    // ]),
+                                  ),
+                                  SizedBox(height: 20,),
+                                  FormBuilderTextField(name: 'email',
+                                    initialValue: currentUser?.email ?? '',
+                                    decoration: InputDecoration(
+                                      labelText: 'Эл. почта',
+                                      contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 30),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(width: 1.0),
+                                        borderRadius: BorderRadius.circular(40),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0),
+                                          borderRadius:
+                                          BorderRadius.circular(40)),
+                                    ), ),
+                                  SizedBox(height: 20,),
+                                  FormBuilderDateTimePicker(
+                                    name: 'birth',
+                                    // onChanged: _onChanged,
+                                    inputType: InputType.date,
+
+                                    decoration: InputDecoration(
+                                      labelText: 'День рождения',
+                                      contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 30),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(width: 1.0),
+                                        borderRadius: BorderRadius.circular(40),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 1.0),
+                                          borderRadius:
+                                          BorderRadius.circular(40)),
+                                    ),
+                                    initialTime: TimeOfDay(hour: 8, minute: 0),
+                                    // initialValue: DateTime.now(),
+                                    // enabled: true,
+                                  ),
+                                ],
+                              )),
+                        ],
+                      )),
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          height: 60,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: DefaultStyledButton(
+                            width: MediaQuery.of(context).size.width - 30,
+                            isLoading: isLoading == true ? isLoading : null,
+                            text: 'Сохранить',
+                            onPressed: () async {
+                              _formKey.currentState!.save();
+                              if (_formKey.currentState != null &&
+                                  _formKey.currentState!.validate()) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                Map<String, String> requestHeaders = {
+                                  'Content-type': 'application/json',
+                                  'Accept': 'application/json',
+                                  'Authorization': 'Bearer ${currentUser!.userToken}'
+                                };
+                                var url = Uri.https(
+                                    'api.hq.fungeek.net', '/api/me');
+                                var values = _formKey.currentState!.value;
+                                if (values['email'] == null) {
+                                  values['email'] = '';
+                                }
+                                var response = await http.post(url, headers: requestHeaders, body: jsonEncode(values));
+                                print(response.body);
+                                if (response.statusCode == 200) {
+
+                                  var result = jsonDecode(response.body);
+                                  User authorizedUser = User.fromJson(result['data']);
+                                  Box<User> transaction = Hive.box<User>('user');
+                                  transaction.put('user', authorizedUser);
+                                  Navigator.of(context).pop();
+                                }
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            },
+                          ))),
+                ],
+              ));
+        });
   }
 }
