@@ -52,13 +52,14 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       clickSecretKey: fields[32] as String?,
       clickMerchantId: fields[33] as String?,
       cityId: fields[34] as int?,
+      isWorking: fields[35] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Terminals obj) {
     writer
-      ..writeByte(35)
+      ..writeByte(36)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -128,7 +129,9 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       ..writeByte(33)
       ..write(obj.clickMerchantId)
       ..writeByte(34)
-      ..write(obj.cityId);
+      ..write(obj.cityId)
+      ..writeByte(35)
+      ..write(obj.isWorking);
   }
 
   @override

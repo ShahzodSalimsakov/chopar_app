@@ -46,7 +46,7 @@ class User {
   @HiveField(0)
   late int id;
   @HiveField(1)
-  Null languageId;
+  int? languageId;
   @HiveField(2)
   late String name;
   @HiveField(3)
