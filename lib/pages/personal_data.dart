@@ -224,7 +224,7 @@ class _PersonalDataState extends State<PersonalData> {
                                   'Authorization': 'Bearer ${currentUser!.userToken}'
                                 };
                                 var url = Uri.https(
-                                    'api.hq.fungeek.net', '/api/me');
+                                    'api.choparpizza.uz', '/api/me');
                                 var values = _formKey.currentState!.value;
                                 if (values['email'] == null) {
                                   values['email'] = '';

@@ -34,7 +34,7 @@ class BasketWidget extends HookWidget {
       };
 
       var url = Uri.https(
-          'api.hq.fungeek.net', '/api/basket-lines/${hashids.encode(lineId)}');
+          'api.choparpizza.uz', '/api/basket-lines/${hashids.encode(lineId)}');
       var response = await http.delete(url, headers: requestHeaders);
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
@@ -45,7 +45,7 @@ class BasketWidget extends HookWidget {
         };
 
         url = Uri.https(
-            'api.hq.fungeek.net', '/api/baskets/${basket!.encodedId}');
+            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
@@ -73,7 +73,7 @@ class BasketWidget extends HookWidget {
       };
 
       var url = Uri.https(
-          'api.hq.fungeek.net',
+          'api.choparpizza.uz',
           '/api/v1/basket-lines/${hashids.encode(line.id.toString())}/remove',
           {'quantity': '1'});
       var response = await http.put(url, headers: requestHeaders);
@@ -85,7 +85,7 @@ class BasketWidget extends HookWidget {
         };
 
         url = Uri.https(
-            'api.hq.fungeek.net', '/api/baskets/${basket!.encodedId}');
+            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           json = jsonDecode(response.body);
@@ -101,7 +101,7 @@ class BasketWidget extends HookWidget {
       };
 
       var url = Uri.https(
-          'api.hq.fungeek.net',
+          'api.choparpizza.uz',
           '/api/v1/basket-lines/${hashids.encode(line.id.toString())}/add',
           {'quantity': '1'});
       var response = await http.post(url, headers: requestHeaders);
@@ -113,7 +113,7 @@ class BasketWidget extends HookWidget {
         };
 
         url = Uri.https(
-            'api.hq.fungeek.net', '/api/baskets/${basket!.encodedId}');
+            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           json = jsonDecode(response.body);
@@ -142,7 +142,7 @@ class BasketWidget extends HookWidget {
                       left: 0,
                       child: Container(
                         child: Image.network(
-                          'https://api.hq.fungeek.net/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                           height: 50,
                         ),
                         width: 50,
@@ -157,7 +157,7 @@ class BasketWidget extends HookWidget {
                       child: Container(
                         width: 50,
                         child: Image.network(
-                          'https://api.hq.fungeek.net/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                          'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
                           height: 50,
                         ),
                       ))
@@ -169,7 +169,7 @@ class BasketWidget extends HookWidget {
       } else if (lineItem.variant?.product?.assets != null &&
           lineItem.variant!.product!.assets!.isNotEmpty) {
         return Image.network(
-          'https://api.hq.fungeek.net/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
           width: 50.0,
           height: 50.0,
           // width: MediaQuery.of(context).size.width / 2.5,
@@ -470,7 +470,7 @@ class BasketWidget extends HookWidget {
         };
 
         var url = Uri.https(
-            'api.hq.fungeek.net', '/api/baskets/${basket!.encodedId}');
+            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);

@@ -30,7 +30,7 @@ class OrderDetail extends HookWidget {
                         left: 0,
                         child: Container(
                           child: Image.network(
-                            'https://api.hq.fungeek.net/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
                           width:
@@ -49,7 +49,7 @@ class OrderDetail extends HookWidget {
                           MediaQuery.of(context).size.width -
                               30,
                           child: Image.network(
-                            'https://api.hq.fungeek.net/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                            'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
                         ))
@@ -60,7 +60,7 @@ class OrderDetail extends HookWidget {
       );
     } else if (lineItem.variant?.product?.assets != null) {
       return Image.network(
-        'https://api.hq.fungeek.net/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+        'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
         width: 50.0,
         height: 50.0,
         // width: MediaQuery.of(context).size.width / 2.5,

@@ -76,7 +76,7 @@ class ChooseCity extends HookWidget {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
-      var url = Uri.https('api.hq.fungeek.net', '/api/cities/public');
+      var url = Uri.https('api.choparpizza.uz', '/api/cities/public');
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);

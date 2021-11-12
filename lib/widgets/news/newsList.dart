@@ -49,7 +49,7 @@ class NewsList extends HookWidget {
         'Accept': 'application/json'
       };
       var url =
-          Uri.https('api.hq.fungeek.net', '/api/news/public', {'city_id': '7'});
+          Uri.https('api.choparpizza.uz', '/api/news/public', {'city_id': '7'});
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);

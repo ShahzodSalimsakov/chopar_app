@@ -21,9 +21,9 @@ class CreateOwnPizza extends HookWidget {
 
   Widget modifierImage(Modifiers mod) {
     if (mod.assets != null && mod.assets!.isNotEmpty) {
-      // print('https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}');
+      // print('https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}');
       return Image.network(
-        'https://api.hq.fungeek.net/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+        'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
         width: 100.0,
         height: 73.0,
         // width: MediaQuery.of(context).size.width / 2.5,
@@ -322,7 +322,7 @@ class CreateOwnPizza extends HookWidget {
           requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
         }
 
-        var url = Uri.https('api.hq.fungeek.net', '/api/baskets-lines');
+        var url = Uri.https('api.choparpizza.uz', '/api/baskets-lines');
         var formData = {
           'basket_id': basket.encodedId,
           'variants': [
@@ -364,7 +364,7 @@ class CreateOwnPizza extends HookWidget {
           requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
         }
 
-        var url = Uri.https('api.hq.fungeek.net', '/api/baskets');
+        var url = Uri.https('api.choparpizza.uz', '/api/baskets');
         var formData = {
           'variants': [
             {

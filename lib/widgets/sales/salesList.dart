@@ -1,9 +1,11 @@
+import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/sales.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -17,8 +19,8 @@ class SalesList extends HookWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             image: DecorationImage(
-              image: NetworkImage(s.asset.link),
-              fit: BoxFit.cover,
+              image: NetworkImage(s.asset![0].link),
+              fit: BoxFit.fitHeight,
             )),
       );
     } else {
@@ -48,8 +50,9 @@ class SalesList extends HookWidget {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
+      City? currentUser = Hive.box<City>('currentCity').get('currentCity');
       var url = Uri.https(
-          'api.hq.fungeek.net', '/api/sales/public', {'city_id': '7'});
+          'api.choparpizza.uz', '/api/sales/public', {'city_id': currentUser!.id.toString(), 'locale': 'ru'});
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -67,6 +70,7 @@ class SalesList extends HookWidget {
         child: */ListView.separated(
       itemCount: sales.value.length,
       itemBuilder: (BuildContext context, index) {
+
         return GestureDetector(
             onTap: () {
               showMaterialModalBottomSheet(
@@ -90,11 +94,11 @@ class SalesList extends HookWidget {
                               SizedBox(
                                 height: 5,
                               ),
-                              Text(
-                                '12 август 2021',
-                                style:
-                                    TextStyle(fontSize: 10, color: Colors.grey),
-                              ),
+                              // Text(
+                              //   '12 август 2021',
+                              //   style:
+                              //       TextStyle(fontSize: 10, color: Colors.grey),
+                              // ),
                               SizedBox(
                                 height: 20,
                               ),
@@ -124,10 +128,10 @@ class SalesList extends HookWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Text(
-                          '12 август 2021',
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
-                        ),
+                        // Text(
+                        //   '12 август 2021',
+                        //   style: TextStyle(fontSize: 10, color: Colors.grey),
+                        // ),
                       ],
                     ),
                   )

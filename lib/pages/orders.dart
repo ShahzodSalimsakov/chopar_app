@@ -24,7 +24,7 @@ class Orders extends HookWidget {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${currentUser.userToken}'
       };
-      var url = Uri.https('api.hq.fungeek.net', '/api/my-orders');
+      var url = Uri.https('api.choparpizza.uz', '/api/my-orders');
       var response = await http.get(url, headers: requestHeaders);
       print(response.statusCode);
       if (response.statusCode == 200) {
