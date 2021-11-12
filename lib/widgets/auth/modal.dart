@@ -36,7 +36,7 @@ class AuthModal extends HookWidget {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${otpToken.value}'
       };
-      var url = Uri.https('api.hq.fungeek.net', '/api/auth_otp');
+      var url = Uri.https('api.choparpizza.uz', '/api/auth_otp');
       var formData = {'phone': phoneNumber.value, 'code': otpCode.value};
       var response = await http.post(url,
           headers: requestHeaders, body: jsonEncode(formData));
@@ -65,7 +65,8 @@ class AuthModal extends HookWidget {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
-      var url = Uri.https('api.hq.fungeek.net', '/api/send_otp');
+      var url = Uri.https(
+          'api.choparpizza.uz', '/api/send_otp');
       var formData = {'phone': phoneNumber.value};
       if (_isShowNameField.value) {
         formData['name'] = nameFieldController.text;
@@ -338,7 +339,7 @@ class AuthModal extends HookWidget {
                               'Accept': 'application/json'
                             };
                             var url =
-                                Uri.https('api.hq.fungeek.net', '/api/keldi');
+                                Uri.https('api.choparpizza.uz', '/api/keldi');
                             var response =
                                 await http.get(url, headers: requestHeaders);
                             if (response.statusCode == 200) {
@@ -353,7 +354,7 @@ class AuthModal extends HookWidget {
                                 'Accept': 'application/json'
                               };
                               url = Uri.https(
-                                  'api.hq.fungeek.net', '/api/send_otp');
+                                  'api.choparpizza.uz', '/api/send_otp');
                               var formData = {'phone': phoneNumber.value};
                               if (_isShowNameField.value) {
                                 formData['name'] = nameFieldController.text;

@@ -170,7 +170,7 @@ class OrderRegistration extends StatelessWidget {
                                         requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
                                       }
 
-                                      var url = Uri.https('api.hq.fungeek.net', '/api/orders');
+                                      var url = Uri.https('api.choparpizza.uz', '/api/orders');
                                       Map<String, dynamic> formData = {
                                         'basket_id': basket!.encodedId,
                                         'formData': <String, dynamic>{
@@ -244,7 +244,7 @@ class OrderRegistration extends StatelessWidget {
                                           requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
                                         }
 
-                                        url = Uri.https('api.hq.fungeek.net', '/api/orders', {
+                                        url = Uri.https('api.choparpizza.uz', '/api/orders', {
                                           'id': json['order']['id']
                                         });
 

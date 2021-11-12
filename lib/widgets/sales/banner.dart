@@ -59,7 +59,7 @@ class BannerWidget extends HookWidget {
                         image: NetworkImage((slide.asset[1] != null
                             ? slide.asset[1].link
                             : slide.asset[0].link)),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fitWidth,
                       )),
                 );
               },

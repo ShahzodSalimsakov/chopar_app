@@ -10,7 +10,7 @@ class UserProvider {
       'Content-type': 'application/json',
       'Accept': 'application/json'
     };
-    var url = Uri.https('api.hq.fungeek.net', '/api/keldi');
+    var url = Uri.https('api.choparpizza.uz', '/api/keldi');
     var response = await http.get(url, headers: requestHeaders);
     if (response.statusCode == 200) {
 
