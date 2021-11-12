@@ -66,6 +66,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         body: SafeArea(child: tabs[_selectedIndex]),
         bottomNavigationBar: Container(
+            height: 80.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(50)),
               boxShadow: <BoxShadow>[
@@ -132,7 +133,8 @@ class _HomeState extends State<Home> {
                                 Positioned(
                                     top: 0,
                                     right: 0,
-                                    child: basket != null && basket.lineCount > 0
+                                    child: basket != null &&
+                                            basket.lineCount > 0
                                         ? Container(
                                             // color: Colors.yellow.shade600,
                                             width: 15,

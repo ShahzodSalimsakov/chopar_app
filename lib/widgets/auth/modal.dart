@@ -72,17 +72,13 @@ class AuthModal extends HookWidget {
         formData['name'] = nameFieldController.text;
       }
       var response = await http.post(url,
-          headers: requestHeaders,
-          body: jsonEncode(formData));
+          headers: requestHeaders, body: jsonEncode(formData));
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         if (json['success'] != null) {
-          Codec<String, String> stringToBase64 =
-          utf8.fuse(base64);
-          String decoded =
-          stringToBase64.decode(json['success']);
-          otpToken.value =
-          jsonDecode(decoded)['user_token'];
+          Codec<String, String> stringToBase64 = utf8.fuse(base64);
+          String decoded = stringToBase64.decode(json['success']);
+          otpToken.value = jsonDecode(decoded)['user_token'];
         }
         _isFinishedTimer.value = false;
       }
@@ -171,7 +167,7 @@ class AuthModal extends HookWidget {
                                     color: Colors.yellow.shade600,
                                     decoration: TextDecoration.underline),
                               ),
-                              onTap: (){
+                              onTap: () {
                                 tryResendCode();
                               },
                             ),

@@ -5,7 +5,7 @@ part 'terminals.g.dart';
 @HiveType(typeId: 3)
 class Terminals {
   @HiveField(0)
-  int? id;
+  String? id;
   @HiveField(1)
   String? createdAt;
   @HiveField(2)
@@ -29,9 +29,9 @@ class Terminals {
   @HiveField(11)
   String? pickupTime;
   @HiveField(12)
-   String? latitude;
+  String? latitude;
   @HiveField(13)
-   String? longitude;
+  String? longitude;
   @HiveField(14)
   String? openWork;
   @HiveField(15)
@@ -44,8 +44,6 @@ class Terminals {
   String? tgGroup;
   @HiveField(19)
   bool? active;
-  @HiveField(20)
-  Null location;
   @HiveField(21)
   String? deliveryType;
   @HiveField(22)
@@ -98,7 +96,6 @@ class Terminals {
       this.closeWeekend,
       required this.tgGroup,
       required this.active,
-      this.location,
       required this.deliveryType,
       required this.paymeActive,
       required this.paymeTestMode,
@@ -136,7 +133,6 @@ class Terminals {
     closeWeekend = json['close_weekend'];
     tgGroup = json['tg_group'];
     active = json['active'];
-    location = json['location'];
     deliveryType = json['delivery_type'];
     paymeActive = json['payme_active'];
     paymeTestMode = json['payme_test_mode'];
@@ -175,7 +171,6 @@ class Terminals {
     data['close_weekend'] = this.closeWeekend;
     data['tg_group'] = this.tgGroup;
     data['active'] = this.active;
-    data['location'] = this.location;
     data['delivery_type'] = this.deliveryType;
     data['payme_active'] = this.paymeActive;
     data['payme_test_mode'] = this.paymeTestMode;

@@ -17,7 +17,7 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Terminals(
-      id: fields[0] as int?,
+      id: fields[0] as String?,
       createdAt: fields[1] as String?,
       updatedAt: fields[2] as String?,
       terminalId: fields[3] as String?,
@@ -37,7 +37,6 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       closeWeekend: fields[17] as String?,
       tgGroup: fields[18] as String?,
       active: fields[19] as bool?,
-      location: fields[20] as Null,
       deliveryType: fields[21] as String?,
       paymeActive: fields[22] as bool?,
       paymeTestMode: fields[23] as bool?,
@@ -52,6 +51,7 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       clickSecretKey: fields[32] as String?,
       clickMerchantId: fields[33] as String?,
       cityId: fields[34] as int?,
+      isWorking: fields[35] as bool?,
     );
   }
 
@@ -99,8 +99,6 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       ..write(obj.tgGroup)
       ..writeByte(19)
       ..write(obj.active)
-      ..writeByte(20)
-      ..write(obj.location)
       ..writeByte(21)
       ..write(obj.deliveryType)
       ..writeByte(22)
@@ -128,7 +126,9 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       ..writeByte(33)
       ..write(obj.clickMerchantId)
       ..writeByte(34)
-      ..write(obj.cityId);
+      ..write(obj.cityId)
+      ..writeByte(35)
+      ..write(obj.isWorking);
   }
 
   @override
