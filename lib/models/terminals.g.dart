@@ -17,7 +17,7 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Terminals(
-      id: fields[0] as String?,
+      id: fields[0] as int?,
       createdAt: fields[1] as String?,
       updatedAt: fields[2] as String?,
       terminalId: fields[3] as String?,
@@ -58,7 +58,7 @@ class TerminalsAdapter extends TypeAdapter<Terminals> {
   @override
   void write(BinaryWriter writer, Terminals obj) {
     writer
-      ..writeByte(36)
+      ..writeByte(35)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)

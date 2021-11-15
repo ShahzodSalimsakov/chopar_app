@@ -30,11 +30,7 @@ class CreateOwnPizza extends HookWidget {
       );
     } else {
       if (mod.xmlId.isNotEmpty) {
-        return SvgPicture.network(
-          'https://choparpizza.uz/no_photo.svg',
-          width: 100.0,
-          height: 73.0,
-        );
+        return SizedBox();
       } else {
         return Image.network(
           'https://choparpizza.uz/sausage_modifier.png',

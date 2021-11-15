@@ -5,7 +5,7 @@ part 'terminals.g.dart';
 @HiveType(typeId: 3)
 class Terminals {
   @HiveField(0)
-  String? id;
+  int? id;
   @HiveField(1)
   String? createdAt;
   @HiveField(2)
