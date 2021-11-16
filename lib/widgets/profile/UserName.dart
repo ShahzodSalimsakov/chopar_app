@@ -1,3 +1,4 @@
+import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -47,6 +48,8 @@ class UserName extends StatelessWidget {
                   children: [
                     InkWell(child: SvgPicture.asset('assets/images/logout.svg'), onTap: () {
                       box.delete('user');
+                      Box<Basket> basketBox = Hive.box<Basket>('basket');
+                      basketBox.delete('basket');
                     },),
                   ],
                 ),

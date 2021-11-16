@@ -505,17 +505,17 @@ class BasketWidget extends HookWidget {
                           TextStyle(fontSize: 20, color: Colors.black),
                       centerTitle: true,
                       backgroundColor: Colors.white,
-                      actions: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            // do something
-                          },
-                        )
-                      ],
+                      // actions: <Widget>[
+                      //   IconButton(
+                      //     icon: Icon(
+                      //       Icons.delete,
+                      //       color: Colors.grey,
+                      //     ),
+                      //     onPressed: () {
+                      //       // do something
+                      //     },
+                      //   )
+                      // ],
                     ),
                     body: renderPage(),
                   );

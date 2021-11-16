@@ -122,7 +122,7 @@ class DeliveryModalSheet extends HookWidget {
                     ),
                     FormBuilderTextField(
                       name: 'doorCode',
-                      keyboardType: TextInputType.number,
+                      // keyboardType: TextInputType.number,
                       decoration: InputDecoration(labelText: 'Домофон'),
                       initialValue: doorCodeText.value,
                     ),
@@ -224,6 +224,10 @@ class DeliveryModalSheet extends HookWidget {
             child: DefaultStyledButton(
                 width: MediaQuery.of(context).size.width,
                 onPressed: () {
+                  houseText.value = '';
+                  flatText.value = '';
+                  entranceText.value = '';
+                  doorCodeText.value = '';
                   geoData.value!.addressItems!.forEach((element) {
                     if (element.kind == 'house') {
                       houseText.value = element.name;

@@ -94,11 +94,20 @@ class ProductsList extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                  child: Image.network(
-                'https://store.hq.fungeek.net/createYourPizza.png',
-                width: 170.0,
-                height: 170.0,
-              )),
+                  child: InkWell(child: Image.network(
+                    'https://store.hq.fungeek.net/createYourPizza.png',
+                    width: 170.0,
+                    height: 170.0,
+                  ), onTap: () {
+
+                    showMaterialModalBottomSheet(
+                        expand: false,
+                        context: context,
+                        isDismissible: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) =>
+                            CreateOwnPizza(items));
+                  },)),
               Expanded(
                   child: Container(
                       padding: EdgeInsets.only(left: 15.0, right: 15.0),
@@ -163,7 +172,7 @@ class ProductsList extends HookWidget {
         ),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
-            child: Hero(
+            child: InkWell(child: Hero(
               child: Image.network(
                 image,
                 width: 170.0,
@@ -171,7 +180,16 @@ class ProductsList extends HookWidget {
                 // width: MediaQuery.of(context).size.width / 2.5,
               ),
               tag: image,
-            ),
+            ), onTap: () {
+              showMaterialModalBottomSheet(
+                  expand: false,
+                  context: context,
+                  isDismissible: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => ProductDetail(
+                    detail: product,
+                  ));
+            },),
           ),
           Expanded(
             child: Container(

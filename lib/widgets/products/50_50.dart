@@ -12,6 +12,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
+
 class CreateOwnPizza extends HookWidget {
   final formatCurrency = new NumberFormat.currency(
       locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
@@ -50,7 +51,6 @@ class CreateOwnPizza extends HookWidget {
     final isSecondPage = useState<bool>(false);
     final isBasketLoading = useState<bool>(false);
 
-
     changeToSecondPage() {
       if (leftSelectedProduct.value == null ||
           rightSelectedProduct.value == null) {
@@ -70,7 +70,6 @@ class CreateOwnPizza extends HookWidget {
       });
       return names.keys.toList();
     }, [items]);
-
 
     final activeCustomName = useState<String>(customNames[0]);
 
@@ -113,9 +112,9 @@ class CreateOwnPizza extends HookWidget {
       });
 
       if (activeVariant != null && activeVariant?.modifierProduct != null) {
-        var isExistSausage = leftModifiers
-            ?.firstWhereOrNull((mod) => mod.id == activeVariant?.modifierProduct?.id);
-        if (isExistSausage != null) {
+        var isExistSausage = leftModifiers?.firstWhereOrNull(
+            (mod) => mod.id == activeVariant?.modifierProduct?.id);
+        if (isExistSausage == null) {
           leftModifiers?.add(new Modifiers(
             id: activeVariant?.modifierProduct?.id ?? 0,
             createdAt: '',
@@ -385,7 +384,6 @@ class CreateOwnPizza extends HookWidget {
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
               encodedId: basketData.encodedId ?? '',
@@ -554,7 +552,8 @@ class CreateOwnPizza extends HookWidget {
                                             fit: StackFit.loose,
                                             children: [
                                               /*Expanded(
-                                                  child: */Row(
+                                                  child: */
+                                              Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceAround,
@@ -594,7 +593,7 @@ class CreateOwnPizza extends HookWidget {
                                                   Spacer(),
                                                   modifierImage(m)
                                                 ],
-                                              )/*)*/,
+                                              ) /*)*/,
                                               Positioned(
                                                 child: activeModifiers.value
                                                         .contains(m.id)
@@ -645,9 +644,14 @@ class CreateOwnPizza extends HookWidget {
           children: [
             Container(
               margin: EdgeInsets.all(15.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List<Widget>.generate(customNames.length, (index) {
+              height: 40,
+              child: ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return SizedBox(width: 5);
+                  },
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 3,
+                  itemBuilder: (ctx, index) {
                     return Container(
                         margin: EdgeInsets.symmetric(horizontal: 3.0),
                         child: ElevatedButton(
@@ -662,7 +666,7 @@ class CreateOwnPizza extends HookWidget {
                                         : Colors.grey.shade100)),
                             child: Text(customNames[index],
                                 style: TextStyle(
-                                    fontSize: 13.0,
+                                    fontSize: 18.0,
                                     color: activeCustomName.value ==
                                             customNames[index]
                                         ? Colors.white
@@ -670,11 +674,11 @@ class CreateOwnPizza extends HookWidget {
                             onPressed: () {
                               activeCustomName.value = customNames[index];
                             }));
-                  })),
+                  }),
             ),
-            SizedBox(
-              height: 20.0,
-            ),
+            // SizedBox(
+            //   height: 5.0,
+            // ),
             Expanded(
                 child: Container(
               margin: EdgeInsets.only(left: 15.0),
@@ -910,8 +914,23 @@ class CreateOwnPizza extends HookWidget {
       }
     }
 
-    return Scaffold(
+    Future<bool> _onBackPressed() {
+      if (isSecondPage.value) {
+        isSecondPage.value = false;
+      } else {
+        Navigator.of(context).pop();
+      }
+      return Future.value(false);
+    }
+
+    return WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
       appBar: AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: _onBackPressed
+        ),
         title: Text(
           'Пицца 50/50\nСоедини 2 любимых вкуса',
           textAlign: TextAlign.center,
@@ -923,6 +942,6 @@ class CreateOwnPizza extends HookWidget {
       body: Container(
         child: renderPage(context),
       ),
-    );
+    ));
   }
 }
