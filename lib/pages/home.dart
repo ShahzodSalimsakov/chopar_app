@@ -58,11 +58,11 @@ class Home extends HookWidget {
     Future<void> lookupForBonus(BuildContext context) async {
       try {
         Box box = Hive.box<User>('user');
-        User currentUser = box.get('user');
+        User? currentUser = box.get('user');
         Map<String, String> requestHeaders = {
           'Content-type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer ${currentUser.userToken}'
+          'Authorization': 'Bearer ${currentUser?.userToken}'
         };
         var url = Uri.https(
             'api.choparpizza.uz', '/api/bonus_prods/check');
@@ -80,7 +80,12 @@ class Home extends HookWidget {
           }
         }
       } catch (e) {
-
+        DialogHelper().show(
+            context,
+            DialogWidget.custom(
+                child: BonusModal()
+            )
+        );
       }
 
     }

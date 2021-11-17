@@ -95,7 +95,7 @@ class ProductsList extends HookWidget {
             children: [
               Expanded(
                   child: InkWell(child: Image.network(
-                    'https://store.hq.fungeek.net/createYourPizza.png',
+                    'https://choparpizza.uz/createYourPizza.png',
                     width: 170.0,
                     height: 170.0,
                   ), onTap: () {
