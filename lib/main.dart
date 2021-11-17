@@ -15,12 +15,17 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'authentication_repository.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
+import 'utils/http_locale_loader.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(CityAdapter());
   Hive.registerAdapter(UserAdapter());
@@ -47,12 +52,19 @@ void main() async {
   await Hive.openBox<DeliveryNotes>('deliveryNotes');
   await Hive.openBox<PayCash>('payCash');
 
-  runApp(MainApp());
+  runApp(EasyLocalization(
+      supportedLocales: [Locale('ru'), Locale('uz')],
+      path: 'https://api.choparpizza.uz/api/get_langs',
+      fallbackLocale: Locale('ru'),
+      assetLoader: HttpAssetLoader(),
+      useOnlyLangCode: true,
+      child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -61,8 +73,9 @@ class MainApp extends StatelessWidget {
           }
         },
         child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
           theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
           home: Home(),
           debugShowCheckedModeBanner: false,

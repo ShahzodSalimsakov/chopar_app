@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -133,55 +134,29 @@ class AboutUs extends StatelessWidget {
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
                             centerTitle: true,
-                            title: Text('Пользовательское соглашение',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w400)),
-                          ),
-                          body: SafeArea(
-                              child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
-                          )),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.all(0.00),
-                  title: Text(
-                    'Политика конфиденциальности',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios_outlined,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
+                            title: SingleChildScrollView(
+                              child: Text('Пользовательское соглашение',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              scrollDirection: Axis.vertical,
                             ),
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            centerTitle: true,
-                            title: Text('Политика конфиденциальности',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w400)),
                           ),
-                          body: SafeArea(
-                              child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
-                          )),
+                          body: SafeArea(child: LayoutBuilder(builder:
+                              (BuildContext context,
+                                  BoxConstraints viewportConstraints) {
+                            return SingleChildScrollView(
+                                child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        minHeight:
+                                            viewportConstraints.maxHeight),
+                                    child: Column(children: [
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        child: Html(data: tr('privacy_text')),
+                                      )
+                                    ])));
+                          })),
                         ),
                       ),
                     );
@@ -215,51 +190,21 @@ class AboutUs extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w400)),
                           ),
-                          body: SafeArea(
-                              child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
-                          )),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.all(0.00),
-                  title: Text(
-                    'Правила акций',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios_outlined,
-                                color: Colors.black,
-                                size: 20,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            centerTitle: true,
-                            title: Text('Правила акций',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w400)),
-                          ),
-                          body: SafeArea(
-                              child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                                'Possedit usu sole erant grandia quisque caelo. Diremit mea corpore temperiemque. Subdita quisque nuper ignotas. Natus locoque illi ensis. Indigestaque tegit nova quarum uno et? Vis auroram habentia deducite. Adsiduis longo fratrum tegit lucis humanas. Calidis alta mixtam nebulas satus grandia altae naturae.'),
-                          )),
+                          body: SafeArea(child: LayoutBuilder(builder:
+                              (BuildContext context,
+                              BoxConstraints viewportConstraints) {
+                            return SingleChildScrollView(
+                                child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        minHeight:
+                                        viewportConstraints.maxHeight),
+                                    child: Column(children: [
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        child: Html(data: tr('public_offer')),
+                                      )
+                                    ])));
+                          })),
                         ),
                       ),
                     );
