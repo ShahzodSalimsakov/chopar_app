@@ -1,4 +1,5 @@
 import 'package:chopar_app/models/order.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -90,28 +91,6 @@ class OrderDetail extends HookWidget {
     String address =
         '${order.billingAddress}${house}${flat}${entrance}${doorCode}';
 
-    String currentStatus(String status) {
-      switch (status) {
-        case 'not-accepted':
-          return t!.orderStatusNotAccepted;
-        case 'not-confirmed':
-          return t!.orderStatusNotConfirmed;
-        case 'awaiting-payment':
-          return t!.orderStatusAwaitingPayment;
-        case 'accepted':
-          return t!.orderStatusAccepted;
-        case 'cooking':
-          return t!.orderStatusCooking;
-        case 'cooked':
-          return t!.orderStatusCooked;
-        case 'delivering':
-          return t!.orderStatusDelivering;
-        case 'done':
-          return t!.orderStatusDone;
-        default:
-          return t!.orderStatusAccepted;
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -144,7 +123,7 @@ class OrderDetail extends HookWidget {
                   '№ ${order.id}',
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
                 ),
-                Text(currentStatus(order.status),
+                Text(tr('order_status_${order.status}'),
                     style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
@@ -208,10 +187,10 @@ class OrderDetail extends HookWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  t!.prodCount(order.basket?.lines?.length ?? 0),
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                ),
+                // Text(
+                //   t!.prodCount(order.basket?.lines?.length ?? 0),
+                //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                // ),
                 Text(formatCurrency.format(order.orderTotal / 100),
                     style: TextStyle(
                       fontWeight: FontWeight.w400,

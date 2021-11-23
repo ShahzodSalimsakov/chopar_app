@@ -71,13 +71,14 @@ class Lines {
   late String total;
   late String createdAt;
   late String updatedAt;
+  late String? bonusId;
   List<BasketModifiers>? modifiers;
   String? parentId;
   Variant? variant;
   List<Child>? child;
 
   Lines(
-      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.modifiers, this.parentId, this.variant, this.child});
+      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.bonusId, this.modifiers, this.parentId, this.variant, this.child});
 
   Lines.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -87,6 +88,7 @@ class Lines {
     total = json['total'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    bonusId = json['bonus_id'];
     if (json['modifiers'] != null) {
       if (json['modifiers'] is String) {
         modifiers = jsonDecode(json['modifiers']).map<BasketModifiers>((m) => new BasketModifiers.fromJson(m)).toList();
@@ -114,6 +116,7 @@ class Lines {
     data['total'] = this.total;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['bonus_id'] = this.bonusId;
     if (this.modifiers != null) {
       data['modifiers'] = this.modifiers?.map((v) => v.toJson()).toList();
     }
