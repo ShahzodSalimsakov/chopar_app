@@ -382,7 +382,7 @@ class BasketWidget extends HookWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '1 товар',
+                               '${basket.lineCount} товар',
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 18),
                             ),
