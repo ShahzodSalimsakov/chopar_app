@@ -5,6 +5,7 @@ import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_registration.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/profile/unautorised_user.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -200,7 +201,7 @@ class BasketWidget extends HookWidget {
           productName = '$productName + $childsName';
         }
       } else {
-        productName = lines.variant!.product!.attributeData!.name!.ru;
+        productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 40),
@@ -224,8 +225,10 @@ class BasketWidget extends HookWidget {
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
+                      lines.bonusId != null ? Text(tr('bonus'), style: TextStyle(fontSize: 18, color: Colors.yellow.shade600),) : SizedBox()
                     ],
-                  )
+                  ),
+
                 ],
               ),
               Column(
@@ -239,6 +242,7 @@ class BasketWidget extends HookWidget {
                   SizedBox(
                     height: 10,
                   ),
+                  lines.bonusId == null ?
                   Container(
                     height: 30.0,
                     decoration: BoxDecoration(
@@ -276,7 +280,7 @@ class BasketWidget extends HookWidget {
                             })
                       ],
                     ),
-                  )
+                  ) : SizedBox()
                 ],
               )
             ],
@@ -287,6 +291,7 @@ class BasketWidget extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       Basket? basket = basketBox.get('basket');
+      print(basketData.value);
       if (basket == null) {
         return Center(
           child: Column(
@@ -344,7 +349,7 @@ class BasketWidget extends HookWidget {
                       },
                       itemBuilder: (context, index) {
                         final item = basketData.value!.lines![index];
-                        return Slidable(
+                        return item.bonusId != null ? basketItems(item) : Slidable(
                           child: basketItems(item),
                           key: Key(index.toString()),
                           actionPane: SlidableDrawerActionPane(),

@@ -55,6 +55,7 @@ dependencies:
   flutter_hooks: ^0.18.0
   group_list_view: ^1.1.1
   overlay_dialog: ^0.2.1
+  flutter_staggered_animations: ^1.0.0
   easy_localization: ^3.0.0
   easy_localization_loader: ^1.0.0
   geolocator: ^7.7.0

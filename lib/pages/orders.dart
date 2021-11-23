@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:chopar_app/models/order.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_detail.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
@@ -80,29 +81,6 @@ class Orders extends HookWidget {
                 String address =
                     '${order.billingAddress}${house}${flat}${entrance}${doorCode}';
 
-                String currentStatus(String status) {
-                  switch (status) {
-                    case 'not-accepted':
-                      return t!.orderStatusNotAccepted;
-                    case 'not-confirmed':
-                      return t!.orderStatusNotConfirmed;
-                    case 'awaiting-payment':
-                      return t!.orderStatusAwaitingPayment;
-                    case 'accepted':
-                      return t!.orderStatusAccepted;
-                    case 'cooking':
-                      return t!.orderStatusCooking;
-                    case 'cooked':
-                      return t!.orderStatusCooked;
-                    case 'delivering':
-                      return t!.orderStatusDelivering;
-                    case 'done':
-                      return t!.orderStatusDone;
-                    default:
-                      return t!.orderStatusAccepted;
-                  }
-                }
-
                 final formatCurrency = new NumberFormat.currency(
                     locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
                 return Container(
@@ -131,7 +109,7 @@ class Orders extends HookWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.w400, fontSize: 20),
                           ),
-                          Text(currentStatus(order.status),
+                          Text(tr('order_status_${order.status}'),
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 14,
@@ -178,11 +156,11 @@ class Orders extends HookWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            t!.prodCount(order.basket?.lines?.length ?? 0),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 16),
-                          ),
+                          // Text(
+                          //   t!.prodCount(order.basket?.lines?.length ?? 0),
+                          //   style: TextStyle(
+                          //       fontWeight: FontWeight.w400, fontSize: 16),
+                          // ), // TODO: fix plural data
                           Text(formatCurrency.format(order.orderTotal / 100),
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
