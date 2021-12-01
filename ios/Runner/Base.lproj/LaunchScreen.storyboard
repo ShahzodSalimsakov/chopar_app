@@ -21,7 +21,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" image="LaunchBackground" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
-                                <rect key="frame" x="51" y="275" width="288" height="294"/>
+                                <rect key="frame" x="95" y="322" width="200" height="201"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.23473270471698932" green="0.57283117321689569" blue="0.96611279249191284" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
