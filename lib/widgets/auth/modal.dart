@@ -7,6 +7,7 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
 class AuthModal extends HookWidget {
@@ -65,8 +66,7 @@ class AuthModal extends HookWidget {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
-      var url = Uri.https(
-          'api.choparpizza.uz', '/api/send_otp');
+      var url = Uri.https('api.choparpizza.uz', '/api/send_otp');
       var formData = {'phone': phoneNumber.value};
       if (_isShowNameField.value) {
         formData['name'] = nameFieldController.text;
@@ -128,35 +128,24 @@ class AuthModal extends HookWidget {
                       height: 30,
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      child: OtpTextField(
-                        numberOfFields: 4,
-                        fieldWidth:
-                            ((MediaQuery.of(context).size.width - 30) / 4) - 10,
-                        autoFocus: true,
-                        borderColor: Color(0xFF512DA8),
-                        //set to true to show as box or false to show as dash
-                        // showFieldAsBox: true,
-                        hasCustomInputDecoration: true,
-
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                            counterStyle: TextStyle(
-                              height: double.minPositive,
-                            ),
-                            counterText: ""),
-                        //runs when a code is typed in
-                        // onCodeChanged: (String code) {
-                        //   print(code);
-                        //   otpCode.value = code;
-                        // },
-                        onSubmit: (String code) {
-                          otpCode.value = code;
-                          trySignIn();
-                        },
-                      ),
-                    ),
+                        margin: EdgeInsets.symmetric(horizontal: 15),
+                        child: PinCodeTextField(
+                          length: 4,
+                          onChanged: (String value) {},
+                          appContext: context,
+                          keyboardType: TextInputType.number,
+                          onCompleted: (String code) {
+                            otpCode.value = code;
+                            trySignIn();
+                          },
+                          pinTheme: PinTheme(
+                              borderRadius: BorderRadius.circular(25),
+                              fieldWidth: 55,
+                              shape: PinCodeFieldShape.box,
+                              inactiveColor: Colors.grey,
+                              activeColor: Colors.yellow.shade600,
+                              selectedColor: Colors.yellow.shade600),
+                        )),
                     Spacer(),
                     _isFinishedTimer.value
                         ? Container(
@@ -275,8 +264,7 @@ class AuthModal extends HookWidget {
                           textFieldController: controller,
                           formatInput: true,
                           countrySelectorScrollControlled: false,
-                          keyboardType: TextInputType.numberWithOptions(
-                              signed: true, decimal: true),
+                          keyboardType: TextInputType.number,
                           inputBorder: InputBorder.none,
                           hintText: '',
                           errorMessage: 'Неверный номер',

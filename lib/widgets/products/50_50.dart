@@ -31,7 +31,13 @@ class CreateOwnPizza extends HookWidget {
       );
     } else {
       if (mod.xmlId.isNotEmpty) {
-        return SizedBox();
+        return ClipOval(
+          child: SvgPicture.network(
+            'https://choparpizza.uz/no_photo.svg',
+            width: 100.0,
+            height: 73.0,
+          ),
+        );
       } else {
         return Image.network(
           'https://choparpizza.uz/sausage_modifier.png',
@@ -121,11 +127,11 @@ class CreateOwnPizza extends HookWidget {
             updatedAt: '',
             name: 'Сосисочный борт',
             xmlId: '',
-            price: int.parse(double.parse(
+            price: (int.parse(double.parse(
                         activeVariant?.modifierProduct?.price ?? '0.0000')
                     .toStringAsFixed(0)) -
                 int.parse(double.parse(activeVariant?.price ?? '0.00')
-                    .toStringAsFixed(0)),
+                    .toStringAsFixed(0)))*2,
             weight: 0,
             groupId: '',
             nameUz: 'Sosiskali tomoni',
@@ -134,7 +140,7 @@ class CreateOwnPizza extends HookWidget {
       }
 
       if (leftModifiers != null) {
-        leftModifiers?.sort((a, b) => a.price.compareTo(b.price));
+        leftModifiers?.sort((a, b) => b.price.compareTo(a.price));
       }
       if (leftModifiers == null) {
         return List<Modifiers>.empty();
@@ -513,104 +519,101 @@ class CreateOwnPizza extends HookWidget {
                                 color: Colors.yellow.shade600, fontSize: 16.0),
                           ),
                           SizedBox(height: 10.0),
-                          ...List<LimitedBox>.from(modifiers!
-                              .map((m) => LimitedBox(
-                                  maxHeight: 100,
-                                  child: InkWell(
-                                      onTap: () {
-                                        addModifier(m.id);
-                                      },
-                                      child: Container(
-                                          height: 75,
-                                          padding: EdgeInsets.only(
-                                              left: 20,
-                                              top: 10,
-                                              bottom: 10,
-                                              right: 20),
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 2, vertical: 10.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(15)),
-                                            border: Border.all(
-                                                color: activeModifiers.value
-                                                        .contains(m.id)
-                                                    ? Colors.yellow.shade600
-                                                    : Colors.grey),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                spreadRadius: 2,
-                                                blurRadius:
-                                                    3, // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                          child: Stack(
-                                            fit: StackFit.loose,
-                                            children: [
-                                              /*Expanded(
-                                                  child: */
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          m.name,
-                                                          style: TextStyle(
-                                                              fontSize: 18),
-                                                        ),
-                                                        SizedBox(height: 10),
-                                                        DecoratedBox(
-                                                            decoration: BoxDecoration(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade300,
-                                                                borderRadius:
-                                                                    BorderRadius.all(
-                                                                        Radius.circular(
-                                                                            12))),
-                                                            child: Container(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                        vertical:
-                                                                            3,
-                                                                        horizontal:
-                                                                            10),
-                                                                child: Text(
-                                                                    formatCurrency
-                                                                        .format(
-                                                                            m.price)))),
-                                                      ]),
-                                                  Spacer(),
-                                                  modifierImage(m)
-                                                ],
-                                              ) /*)*/,
-                                              Positioned(
-                                                child: activeModifiers.value
-                                                        .contains(m.id)
-                                                    ? Icon(
-                                                        Icons
-                                                            .check_circle_outline,
-                                                        color: Colors
-                                                            .yellow.shade600)
-                                                    : SizedBox(width: 0.0),
-                                                width: 10.0,
-                                                height: 10.0,
-                                                top: 5.0,
-                                                right: 5.0,
-                                              )
-                                            ],
-                                          )))))
-                              .toList()),
+                          Container(height: 400, margin: EdgeInsets.symmetric(horizontal: 15), child:
+                          GridView.count(
+                            // shrinkWrap: true,
+                            crossAxisCount: 2,
+                            children: List.generate(modifiers!.length, (index) {
+                              var m = modifiers![index];
+                              return LimitedBox(
+                                maxHeight: 100,
+                                child: InkWell(
+                                    onTap: () {
+                                      addModifier(m.id);
+                                    },
+                                    child: Container(
+                                        height: 75,
+                                        padding: EdgeInsets.all(10),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 5.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
+                                          border: Border.all(
+                                              color: activeModifiers.value
+                                                  .contains(m.id)
+                                                  ? Colors.yellow.shade600
+                                                  : Colors.grey),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                              Colors.grey.withOpacity(0.3),
+                                              spreadRadius: 2,
+                                              blurRadius:
+                                              3, // changes position of shadow
+                                            ),
+                                          ],
+                                        ),
+                                        child: Stack(
+                                          fit: StackFit.loose,
+                                          children: [
+                                            /*Expanded(
+                                  child: */
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                              children: [
+                                                Column(children: [
+                                                  modifierImage(m),
+                                                  SizedBox(height: 10),
+                                                  Text(
+                                                    m.name,
+                                                    style:
+                                                    TextStyle(fontSize: 18),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors
+                                                              .grey.shade300,
+                                                          borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius
+                                                                  .circular(
+                                                                  12))),
+                                                      child: Container(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                              vertical: 3,
+                                                              horizontal:
+                                                              10),
+                                                          child: Text(
+                                                              formatCurrency
+                                                                  .format(m
+                                                                  .price)))),
+                                                ]),
+                                              ],
+                                            ) /*)*/,
+                                            Positioned(
+                                              child: activeModifiers.value
+                                                  .contains(m.id)
+                                                  ? Icon(
+                                                  Icons
+                                                      .check_circle_outline,
+                                                  color: Colors
+                                                      .yellow.shade600)
+                                                  : SizedBox(width: 0.0),
+                                              width: 10.0,
+                                              height: 10.0,
+                                              top: 0,
+                                              right: 10.0,
+                                            )
+                                          ],
+                                        ))),
+                              );
+                            }),
+                          ),),
                           SizedBox(
                             height: 100,
                           )
@@ -926,22 +929,20 @@ class CreateOwnPizza extends HookWidget {
     return WillPopScope(
         onWillPop: _onBackPressed,
         child: Scaffold(
-      appBar: AppBar(
-        leading: new IconButton(
-            icon: new Icon(Icons.arrow_back),
-            onPressed: _onBackPressed
-        ),
-        title: Text(
-          'Пицца 50/50\nСоедини 2 любимых вкуса',
-          textAlign: TextAlign.center,
-        ),
-        centerTitle: true,
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-      ),
-      body: Container(
-        child: renderPage(context),
-      ),
-    ));
+          appBar: AppBar(
+            leading: new IconButton(
+                icon: new Icon(Icons.arrow_back), onPressed: _onBackPressed),
+            title: Text(
+              'Пицца 50/50\nСоедини 2 любимых вкуса',
+              textAlign: TextAlign.center,
+            ),
+            centerTitle: true,
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+          ),
+          body: Container(
+            child: renderPage(context),
+          ),
+        ));
   }
 }

@@ -44,27 +44,27 @@ class ProductsList extends HookWidget {
 
     return Expanded(
         child: ScrollableListTabView(
-            tabHeight: 40,
+            tabHeight: 50,
             bodyAnimationDuration: const Duration(milliseconds: 150),
             tabAnimationCurve: Curves.easeOut,
             tabAnimationDuration: const Duration(milliseconds: 200),
             tabs: products.value.map((section) {
               if (section.halfMode == 1) {
                 return ScrollableListTab(
-                    tab: ListTab(
-                        label:
-                            Text(section.attributeData?.name?.chopar?.ru ?? ''),
-                        // icon: Icon(Icons.group),
-                        showIconOnList: false,
-                        activeBackgroundColor: Colors.yellow.shade600,
-                        borderRadius: BorderRadius.circular(20)),
-                    body: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 1,
-                      itemBuilder: (_, index) =>
-                          renderCreatePizza(context, section.items),
-                    ),
+                  tab: ListTab(
+                      label:
+                          Text(section.attributeData?.name?.chopar?.ru ?? ''),
+                      // icon: Icon(Icons.group),
+                      showIconOnList: false,
+                      activeBackgroundColor: Colors.yellow.shade600,
+                      borderRadius: BorderRadius.circular(20)),
+                  body: ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 1,
+                    itemBuilder: (_, index) =>
+                        renderCreatePizza(context, section.items),
+                  ),
                 );
               }
               return ScrollableListTab(
@@ -86,65 +86,74 @@ class ProductsList extends HookWidget {
   }
 
   Widget renderCreatePizza(BuildContext context, List<Items>? items) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 15.0),
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: InkWell(child: Image.network(
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: InkWell(
+                  child: Image.network(
                     'https://choparpizza.uz/createYourPizza.png',
                     width: 170.0,
                     height: 170.0,
-                  ), onTap: () {
-
+                  ),
+                  onTap: () {
                     showMaterialModalBottomSheet(
                         expand: false,
                         context: context,
                         isDismissible: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            CreateOwnPizza(items));
-                  },)),
-              Expanded(
-                  child: Container(
-                      padding: EdgeInsets.only(left: 15.0, right: 15.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Соберите свою пиццу',
-                              style: TextStyle(
-                                  fontSize: 20.0, fontWeight: FontWeight.w700),
-                            ),
-                            OutlinedButton(
-                              child: Text(
-                                'Собрать пиццу',
-                                style: TextStyle(color: Colors.yellow.shade600),
+                        builder: (context) => CreateOwnPizza(items));
+                  },
+                )),
+                Expanded(
+                    child: Container(
+                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Соберите свою пиццу',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w700),
+                                textAlign: TextAlign.center,
                               ),
-                              style: ButtonStyle(
-                                  side: MaterialStateProperty.all(BorderSide(
-                                      width: 1.0,
-                                      color: Colors.yellow.shade600)),
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0)))),
-                              onPressed: () {
-                                showMaterialModalBottomSheet(
-                                    expand: false,
-                                    context: context,
-                                    isDismissible: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) =>
-                                        CreateOwnPizza(items));
-                              },
-                            )
-                          ])))
-            ],
+                              OutlinedButton(
+                                child: Text(
+                                  'Собрать пиццу',
+                                  style:
+                                      TextStyle(color: Colors.yellow.shade600),
+                                ),
+                                style: ButtonStyle(
+                                    side: MaterialStateProperty.all(BorderSide(
+                                        width: 1.0,
+                                        color: Colors.yellow.shade600)),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25.0)))),
+                                onPressed: () {
+                                  showMaterialModalBottomSheet(
+                                      expand: false,
+                                      context: context,
+                                      isDismissible: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) =>
+                                          CreateOwnPizza(items));
+                                },
+                              )
+                            ])))
+              ],
+            ),
           )
         ],
       ),
@@ -165,79 +174,89 @@ class ProductsList extends HookWidget {
 
     productPrice = formatCurrency.format(double.tryParse(productPrice));
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 15.0,
-        ),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-            child: InkWell(child: Hero(
-              child: Image.network(
-                image,
-                width: 170.0,
-                height: 170.0,
-                // width: MediaQuery.of(context).size.width / 2.5,
-              ),
-              tag: image,
-            ), onTap: () {
-              showMaterialModalBottomSheet(
-                  expand: false,
-                  context: context,
-                  isDismissible: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => ProductDetail(
-                    detail: product,
-                  ));
-            },),
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 15.0,
           ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(left: 15.0, right: 15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    product.attributeData?.name?.chopar?.ru ?? '',
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(
+              child: InkWell(
+                child: Hero(
+                  child: Image.network(
+                    image,
+                    width: 170.0,
+                    height: 170.0,
+                    // width: MediaQuery.of(context).size.width / 2.5,
                   ),
-                  Html(
-                    data: product.attributeData?.description?.chopar?.ru ?? '',
-                    // style: TextStyle(
-                    //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                  ),
-                  OutlinedButton(
-                    child: Text(
-                      'от ' + productPrice,
-                      style: TextStyle(color: Colors.yellow.shade600),
-                    ),
-                    style: ButtonStyle(
-                        side: MaterialStateProperty.all(BorderSide(
-                            width: 1.0, color: Colors.yellow.shade600)),
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0)))),
-                    onPressed: () {
-                      showMaterialModalBottomSheet(
-                          expand: false,
-                          context: context,
-                          isDismissible: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => ProductDetail(
-                                detail: product,
-                              ));
-                    },
-                  ),
-                ],
+                  tag: image,
+                ),
+                onTap: () {
+                  showMaterialModalBottomSheet(
+                      expand: false,
+                      context: context,
+                      isDismissible: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => ProductDetail(
+                            detail: product,
+                          ));
+                },
               ),
             ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      product.attributeData?.name?.chopar?.ru ?? '',
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w700),
+                    ),
+                    Html(
+                      data:
+                          product.attributeData?.description?.chopar?.ru ?? '',
+                      // style: TextStyle(
+                      //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                    ),
+                    OutlinedButton(
+                      child: Text(
+                        'от ' + productPrice,
+                        style: TextStyle(color: Colors.yellow.shade600),
+                      ),
+                      style: ButtonStyle(
+                          side: MaterialStateProperty.all(BorderSide(
+                              width: 1.0, color: Colors.yellow.shade600)),
+                          shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25.0)))),
+                      onPressed: () {
+                        showMaterialModalBottomSheet(
+                            expand: false,
+                            context: context,
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => ProductDetail(
+                                  detail: product,
+                                ));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ]),
+          SizedBox(
+            height: 15.0,
           )
-        ]),
-        SizedBox(
-          height: 15.0,
-        )
-      ],
+        ],
+      ),
     );
   }
 }

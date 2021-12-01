@@ -20,7 +20,7 @@ class ProductDetail extends HookWidget {
   final detail;
 
   Widget makeDismisible(
-      {required BuildContext context, required Widget child}) =>
+          {required BuildContext context, required Widget child}) =>
       GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => Navigator.of(context).pop(),
@@ -36,7 +36,13 @@ class ProductDetail extends HookWidget {
       );
     } else {
       if (mod.xmlId.isNotEmpty) {
-        return SizedBox();
+        return ClipOval(
+          child: SvgPicture.network(
+            'https://choparpizza.uz/no_photo.svg',
+            width: 100.0,
+            height: 73.0,
+          ),
+        );
       } else {
         return Image.network(
           'https://choparpizza.uz/sausage_modifier.png',
@@ -48,8 +54,8 @@ class ProductDetail extends HookWidget {
     }
   }
 
-  List<Widget> modifiersList(
-      List<Modifiers> modifiers, addModifier, activeModifiers, BuildContext context) {
+  List<Widget> modifiersList(List<Modifiers> modifiers, addModifier,
+      activeModifiers, BuildContext context) {
     if (detail.variants.length > 0) {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
@@ -60,82 +66,161 @@ class ProductDetail extends HookWidget {
           style: TextStyle(color: Colors.yellow.shade600, fontSize: 16.0),
         ),
         SizedBox(height: 10.0),
-        ...List<LimitedBox>.from(modifiers
-            .map((m) => LimitedBox(
-          maxHeight: 100,
-          child: InkWell(
-              onTap: () {
-                addModifier(m.id);
-              },
-              child: Container(
-                  height: 75,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(
-                      left: 20, top: 10, bottom: 10, right: 20),
-                  margin: EdgeInsets.symmetric(
-                      /*horizontal: 2,*/ vertical: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    border: Border.all(
-                        color: activeModifiers.value.contains(m.id)
-                            ? Colors.yellow.shade600
-                            : Colors.grey),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 3, // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    fit: StackFit.loose,
-                    children: [
-                      /*Expanded(
-                                  child: */Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  m.name,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                                SizedBox(height: 10),
-                                DecoratedBox(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey.shade300,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(12))),
-                                    child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 3,
-                                            horizontal: 10),
-                                        child: Text(formatCurrency
-                                            .format(m.price)))),
-                              ]),
-                          Spacer(),
-                          modifierImage(m)
+        GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 2,
+          children: List.generate(modifiers.length, (index) {
+            var m = modifiers[index];
+            return LimitedBox(
+              maxHeight: 100,
+              child: InkWell(
+                  onTap: () {
+                    addModifier(m.id);
+                  },
+                  child: Container(
+                      height: 75,
+                      padding: EdgeInsets.all(10),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        border: Border.all(
+                            color: activeModifiers.value.contains(m.id)
+                                ? Colors.yellow.shade600
+                                : Colors.grey),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 3, // changes position of shadow
+                          ),
                         ],
-                      )/*)*/,
-                      Positioned(
-                        child: activeModifiers.value.contains(m.id)
-                            ? Icon(Icons.check_circle_outline,
-                            color: Colors.yellow.shade600)
-                            : SizedBox(width: 0.0),
-                        width: 10.0,
-                        height: 10.0,
-                        top: 5.0,
-                        right: 5.0,
-                      )
-                    ],
-                  ))),
-        ))
-            .toList()),
+                      ),
+                      child: Stack(
+                        fit: StackFit.loose,
+                        children: [
+                          /*Expanded(
+                                  child: */
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                  children: [
+                                    modifierImage(m),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      m.name,
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    SizedBox(height: 10),
+                                    DecoratedBox(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade300,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(12))),
+                                        child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 3, horizontal: 10),
+                                            child: Text(formatCurrency
+                                                .format(m.price)))),
+                                  ]),
+                            ],
+                          ) /*)*/,
+                          Positioned(
+                            child: activeModifiers.value.contains(m.id)
+                                ? Icon(Icons.check_circle_outline,
+                                    color: Colors.yellow.shade600)
+                                : SizedBox(width: 0.0),
+                            width: 10.0,
+                            height: 10.0,
+                            top: 0,
+                            right: 10.0,
+                          )
+                        ],
+                      ))),
+            );
+          }),
+        ),
+        // ...List<LimitedBox>.from(modifiers
+        //     .map((m) => LimitedBox(
+        //           maxHeight: 100,
+        //           child: InkWell(
+        //               onTap: () {
+        //                 addModifier(m.id);
+        //               },
+        //               child: Container(
+        //                   height: 75,
+        //                   width: MediaQuery.of(context).size.width,
+        //                   padding: EdgeInsets.only(
+        //                       left: 20, top: 10, bottom: 10, right: 20),
+        //                   margin: EdgeInsets.symmetric(
+        //                       /*horizontal: 2,*/
+        //                       vertical: 10.0),
+        //                   decoration: BoxDecoration(
+        //                     color: Colors.white,
+        //                     borderRadius: BorderRadius.all(Radius.circular(15)),
+        //                     border: Border.all(
+        //                         color: activeModifiers.value.contains(m.id)
+        //                             ? Colors.yellow.shade600
+        //                             : Colors.grey),
+        //                     boxShadow: [
+        //                       BoxShadow(
+        //                         color: Colors.grey.withOpacity(0.3),
+        //                         spreadRadius: 2,
+        //                         blurRadius: 3, // changes position of shadow
+        //                       ),
+        //                     ],
+        //                   ),
+        //                   child: Stack(
+        //                     fit: StackFit.loose,
+        //                     children: [
+        //                       /*Expanded(
+        //                           child: */
+        //                       Row(
+        //                         mainAxisAlignment:
+        //                             MainAxisAlignment.spaceAround,
+        //                         children: [
+        //                           Column(
+        //                               crossAxisAlignment:
+        //                                   CrossAxisAlignment.start,
+        //                               children: [
+        //                                 Text(
+        //                                   m.name,
+        //                                   style: TextStyle(fontSize: 18),
+        //                                 ),
+        //                                 SizedBox(height: 10),
+        //                                 DecoratedBox(
+        //                                     decoration: BoxDecoration(
+        //                                         color: Colors.grey.shade300,
+        //                                         borderRadius: BorderRadius.all(
+        //                                             Radius.circular(12))),
+        //                                     child: Container(
+        //                                         padding: EdgeInsets.symmetric(
+        //                                             vertical: 3,
+        //                                             horizontal: 10),
+        //                                         child: Text(formatCurrency
+        //                                             .format(m.price)))),
+        //                               ]),
+        //                           Spacer(),
+        //                           modifierImage(m)
+        //                         ],
+        //                       ) /*)*/,
+        //                       Positioned(
+        //                         child: activeModifiers.value.contains(m.id)
+        //                             ? Icon(Icons.check_circle_outline,
+        //                                 color: Colors.yellow.shade600)
+        //                             : SizedBox(width: 0.0),
+        //                         width: 10.0,
+        //                         height: 10.0,
+        //                         top: 5.0,
+        //                         right: 5.0,
+        //                       )
+        //                     ],
+        //                   ))),
+        //         ))
+        //     .toList()),
       ];
     } else {
       return [
@@ -153,7 +238,7 @@ class ProductDetail extends HookWidget {
 
     String defaultSelectedVariant = '';
     if (detail.variants != null && detail.variants.length > 0) {
-      defaultSelectedVariant = detail.variants[0].customName;
+      defaultSelectedVariant = detail.variants[1].customName;
     }
     final selectedVariant = useState<String>(defaultSelectedVariant);
     final activeModifiers = useState<List<int>>([]);
@@ -177,8 +262,8 @@ class ProductDetail extends HookWidget {
                 name: 'Сосисочный борт',
                 xmlId: '',
                 price: int.parse(double.parse(
-                    activeValue.modifierProduct?.price ?? '0.0000')
-                    .toStringAsFixed(0)) -
+                            activeValue.modifierProduct?.price ?? '0.0000')
+                        .toStringAsFixed(0)) -
                     int.parse(
                         double.parse(activeValue.price).toStringAsFixed(0)),
                 weight: 0,
@@ -198,7 +283,7 @@ class ProductDetail extends HookWidget {
       }
 
       if (modifier.isNotEmpty) {
-        modifier.sort((a, b) => a.price.compareTo(b.price));
+        modifier.sort((a, b) => b.price.compareTo(a.price));
       }
 
       return modifier;
@@ -218,7 +303,7 @@ class ProductDetail extends HookWidget {
       Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
       if (activeModifiers.value.contains(modId)) {
         Modifiers currentModifier =
-        modifiers.firstWhere((mod) => mod.id == modId);
+            modifiers.firstWhere((mod) => mod.id == modId);
         if (currentModifier == null) return;
         if (currentModifier.price == 0) return;
         List<int> resultModifiers = activeModifiers.value
@@ -231,7 +316,7 @@ class ProductDetail extends HookWidget {
         activeModifiers.value = resultModifiers;
       } else {
         Modifiers currentModifier =
-        modifiers.firstWhere((mod) => mod.id == modId);
+            modifiers.firstWhere((mod) => mod.id == modId);
         if (currentModifier.price == 0) {
           activeModifiers.value = [modId].toList();
         } else {
@@ -242,7 +327,7 @@ class ProductDetail extends HookWidget {
 
           if (modifierProduct != null) {
             Modifiers sausage =
-            modifiers.firstWhere((mod) => mod.id == modifierProduct?.id);
+                modifiers.firstWhere((mod) => mod.id == modifierProduct?.id);
             if (selectedModifiers.contains(modifierProduct.id) &&
                 sausage.price < currentModifier.price) {
               selectedModifiers = [
@@ -267,7 +352,7 @@ class ProductDetail extends HookWidget {
 
     final totalPrice = useMemoized(() {
       int price =
-      int.parse(double.parse(detail.price ?? '0.0000').toStringAsFixed(0));
+          int.parse(double.parse(detail.price ?? '0.0000').toStringAsFixed(0));
       if (detail.variants != null && detail.variants.length > 0) {
         try {
           Variants? activeValue = detail.variants
@@ -421,14 +506,14 @@ class ProductDetail extends HookWidget {
             minChildSize: 0.5,
             maxChildSize: 1,
             builder: (_, controller) => Stack(
-              children: [
-                Container(
-                  height: double.maxFinite,
-                  padding: EdgeInsets.only(
-                      top: 20, left: 15, right: 25, bottom: 20),
-                  color: Colors.white,
-                  child: SingleChildScrollView(
-                      child: Column(
+                  children: [
+                    Container(
+                      height: double.maxFinite,
+                      padding: EdgeInsets.only(
+                          top: 20, left: 15, right: 25, bottom: 20),
+                      color: Colors.white,
+                      child: SingleChildScrollView(
+                          child: Column(
                         children: [
                           // Expanded(
                           //     child: ListView(
@@ -451,8 +536,8 @@ class ProductDetail extends HookWidget {
                           ),
                           Html(
                             data:
-                            detail.attributeData?.description?.chopar?.ru ??
-                                '',
+                                detail.attributeData?.description?.chopar?.ru ??
+                                    '',
                             // style: TextStyle(
                             //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
                           ),
@@ -464,7 +549,7 @@ class ProductDetail extends HookWidget {
                                   detail.variants.length, (index) {
                                 return Container(
                                     margin:
-                                    EdgeInsets.symmetric(horizontal: 3.0),
+                                        EdgeInsets.symmetric(horizontal: 3.0),
                                     child: ElevatedButton(
                                         style: ButtonStyle(
                                             shape: MaterialStateProperty.all(
@@ -490,31 +575,33 @@ class ProductDetail extends HookWidget {
                           ),
                           ...modifiersList(
                               modifiers, addModifier, activeModifiers, context),
-                          SizedBox(height: 50,)
+                          SizedBox(
+                            height: 50,
+                          )
                           //   ],
                           // )),
                         ],
                       )),
-                ),
-                Positioned(
-                  child: Container(
-                    // width: double.maxFinite,
-                    padding: EdgeInsets.all(10.0),
-                    color: Colors.white,
-                    child: DefaultStyledButton(
-                        isLoading: _isBasketLoading.value == true
-                            ? _isBasketLoading.value
-                            : null,
-                        width: MediaQuery.of(context).size.width - 30,
-                        onPressed: () {
-                          addToBasket();
-                        },
-                        text:
-                        'В корзину ${formatCurrency.format(totalPrice)}'),
-                  ),
-                  bottom: 0,
-                ),
-              ],
-            )));
+                    ),
+                    Positioned(
+                      child: Container(
+                        // width: double.maxFinite,
+                        padding: EdgeInsets.all(10.0),
+                        color: Colors.white,
+                        child: DefaultStyledButton(
+                            isLoading: _isBasketLoading.value == true
+                                ? _isBasketLoading.value
+                                : null,
+                            width: MediaQuery.of(context).size.width - 30,
+                            onPressed: () {
+                              addToBasket();
+                            },
+                            text:
+                                'В корзину ${formatCurrency.format(totalPrice)}'),
+                      ),
+                      bottom: 0,
+                    ),
+                  ],
+                )));
   }
 }
