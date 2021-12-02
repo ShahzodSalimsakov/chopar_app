@@ -87,6 +87,7 @@ class _PayTypeState extends State<PayTypeWidget>
         payCash.value = value;
         Hive.box<PayCash>('payCash').put('payCash', payCash);
       },
+      scrollPadding: EdgeInsets.all(100),
     );
   }
 

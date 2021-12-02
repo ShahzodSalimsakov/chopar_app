@@ -10,13 +10,16 @@ import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
+import 'package:chopar_app/pages/home.dart';
 import 'package:chopar_app/pages/order_detail.dart';
 import 'package:chopar_app/widgets/order_registration/comment.dart';
 import 'package:chopar_app/widgets/order_registration/delivery_time.dart';
 import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
 import 'package:chopar_app/widgets/order_registration/pay_type.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -85,7 +88,9 @@ class OrderRegistration extends StatelessWidget {
                                       height: 5,
                                     ),
                                     OrderCommentWidget(),
-                                    SizedBox(height: 50,)
+                                    SizedBox(
+                                      height: 50,
+                                    )
                                   ],
                                 ))),
                             Positioned(
@@ -95,42 +100,79 @@ class OrderRegistration extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 15),
                                   child: DefaultStyledButton(
-                                    width: MediaQuery.of(context).size.width - 30,
+                                    width:
+                                        MediaQuery.of(context).size.width - 30,
                                     text: 'Оформить заказ',
                                     onPressed: () async {
-                                      Box<DeliveryType> box = Hive.box<DeliveryType>(
-                                          'deliveryType');
-                                      DeliveryType? deliveryType = box.get('deliveryType');
-                                      DeliveryLocationData? deliveryLocationData = Hive.box<DeliveryLocationData>('deliveryLocationData').get('deliveryLocationData');
-                                      Terminals? currentTerminal = Hive.box<Terminals>('currentTerminal').get('currentTerminal');
-                                      DeliverLaterTime? deliverLaterTime = Hive.box<DeliverLaterTime>('deliveryLaterTime').get('deliveryLaterTime');
-                                      DeliveryTime? deliveryTime = Hive.box<DeliveryTime>('deliveryTime').get('deliveryTime');
-                                      PayType? payType = Hive.box<PayType>('payType').get('payType');
-                                      PayCash? payCash = Hive.box<PayCash>('payCash').get('payCash');
-                                      DeliveryNotes? deliveryNotes = Hive.box<DeliveryNotes>('deliveryNotes').get('deliveryNotes');
+                                      Box<DeliveryType> box =
+                                          Hive.box<DeliveryType>(
+                                              'deliveryType');
+                                      DeliveryType? deliveryType =
+                                          box.get('deliveryType');
+                                      DeliveryLocationData?
+                                          deliveryLocationData =
+                                          Hive.box<DeliveryLocationData>(
+                                                  'deliveryLocationData')
+                                              .get('deliveryLocationData');
+                                      Terminals? currentTerminal =
+                                          Hive.box<Terminals>('currentTerminal')
+                                              .get('currentTerminal');
+                                      DeliverLaterTime? deliverLaterTime =
+                                          Hive.box<DeliverLaterTime>(
+                                                  'deliveryLaterTime')
+                                              .get('deliveryLaterTime');
+                                      DeliveryTime? deliveryTime =
+                                          Hive.box<DeliveryTime>('deliveryTime')
+                                              .get('deliveryTime');
+                                      PayType? payType =
+                                          Hive.box<PayType>('payType')
+                                              .get('payType');
+                                      PayCash? payCash =
+                                          Hive.box<PayCash>('payCash')
+                                              .get('payCash');
+                                      DeliveryNotes? deliveryNotes =
+                                          Hive.box<DeliveryNotes>(
+                                                  'deliveryNotes')
+                                              .get('deliveryNotes');
                                       // Check deliveryType is chosen
                                       if (deliveryType == null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не выбран способ доставки')));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Не выбран способ доставки')));
                                         return;
                                       }
 
                                       //Check pickup terminal
-                                      if (deliveryType != null && deliveryType.value == DeliveryTypeEnum.pickup) {
-
+                                      if (deliveryType != null &&
+                                          deliveryType.value ==
+                                              DeliveryTypeEnum.pickup) {
                                         if (currentTerminal == null) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не выбран филиал самовывоза')));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Не выбран филиал самовывоза')));
                                           return;
                                         }
                                       }
 
                                       // Check delivery address
-                                      if (deliveryType != null && deliveryType.value == DeliveryTypeEnum.deliver) {
-
+                                      if (deliveryType != null &&
+                                          deliveryType.value ==
+                                              DeliveryTypeEnum.deliver) {
                                         if (deliveryLocationData == null) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указан адрес доставки')));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Не указан адрес доставки')));
                                           return;
-                                        } else if (deliveryLocationData.address == null) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указан адрес доставки')));
+                                        } else if (deliveryLocationData
+                                                .address ==
+                                            null) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Не указан адрес доставки')));
                                           return;
                                         }
                                       }
@@ -138,26 +180,42 @@ class OrderRegistration extends StatelessWidget {
                                       // Check delivery time selected
 
                                       if (deliveryTime == null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указано время доставки')));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Не указано время доставки')));
                                         return;
-                                      } else if (deliveryTime.value == DeliveryTimeEnum.later) {
-
+                                      } else if (deliveryTime.value ==
+                                          DeliveryTimeEnum.later) {
                                         if (deliverLaterTime == null) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указано время доставки')));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Не указано время доставки')));
                                           return;
-                                        } else if (deliverLaterTime.value == null || deliverLaterTime.value.length == 0) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указано время доставки')));
+                                        } else if (deliverLaterTime.value ==
+                                                null ||
+                                            deliverLaterTime.value.length ==
+                                                0) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Не указано время доставки')));
                                           return;
                                         }
                                       }
 
-
                                       if (payType == null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не указан способ оплаты')));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Не указан способ оплаты')));
                                         return;
                                       }
 
-                                      Basket? basket = Hive.box<Basket>('basket').get('basket');
+                                      Basket? basket =
+                                          Hive.box<Basket>('basket')
+                                              .get('basket');
                                       Box userBox = Hive.box<User>('user');
                                       User? user = userBox.get('user');
 
@@ -167,10 +225,12 @@ class OrderRegistration extends StatelessWidget {
                                       };
 
                                       if (user != null) {
-                                        requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+                                        requestHeaders['Authorization'] =
+                                            'Bearer ${user.userToken}';
                                       }
 
-                                      var url = Uri.https('api.choparpizza.uz', '/api/orders');
+                                      var url = Uri.https(
+                                          'api.choparpizza.uz', '/api/orders');
                                       Map<String, dynamic> formData = {
                                         'basket_id': basket!.encodedId,
                                         'formData': <String, dynamic>{
@@ -182,56 +242,77 @@ class OrderRegistration extends StatelessWidget {
                                           'deliveryType': ''
                                         }
                                       };
-                                      if (deliveryType!.value == DeliveryTypeEnum.deliver) {
-                                        formData['formData']['address'] = deliveryLocationData!.address;
-                                        formData['formData']['flat'] = deliveryLocationData.flat ?? '';
-                                        formData['formData']['house'] = deliveryLocationData.house ?? '';
-                                        formData['formData']['entrance'] = deliveryLocationData.entrance ?? '';
-                                        formData['formData']['door_code'] = deliveryLocationData.doorCode ?? '';
-                                        formData['formData']['deliveryType'] = 'deliver';
+                                      if (deliveryType!.value ==
+                                          DeliveryTypeEnum.deliver) {
+                                        formData['formData']['address'] =
+                                            deliveryLocationData!.address;
+                                        formData['formData']['flat'] =
+                                            deliveryLocationData.flat ?? '';
+                                        formData['formData']['house'] =
+                                            deliveryLocationData.house ?? '';
+                                        formData['formData']['entrance'] =
+                                            deliveryLocationData.entrance ?? '';
+                                        formData['formData']['door_code'] =
+                                            deliveryLocationData.doorCode ?? '';
+                                        formData['formData']['deliveryType'] =
+                                            'deliver';
                                         formData['formData']['location'] = [
                                           deliveryLocationData.lat,
                                           deliveryLocationData.lon
                                         ];
                                       } else {
-                                        formData['formData']['deliveryType'] = 'pickup';
+                                        formData['formData']['deliveryType'] =
+                                            'pickup';
                                       }
 
-                                      formData['formData']['terminal_id'] = currentTerminal!.id.toString();
+                                      formData['formData']['terminal_id'] =
+                                          currentTerminal!.id.toString();
                                       formData['formData']['name'] = user!.name;
-                                      formData['formData']['phone'] = user!.phone;
+                                      formData['formData']['phone'] =
+                                          user!.phone;
                                       formData['formData']['email'] = '';
                                       formData['formData']['change'] = '';
                                       formData['formData']['notes'] = '';
                                       formData['formData']['delivery_day'] = '';
-                                      formData['formData']['delivery_time'] = '';
-                                      formData['formData']['delivery_schedule'] = 'now';
+                                      formData['formData']['delivery_time'] =
+                                          '';
+                                      formData['formData']
+                                          ['delivery_schedule'] = 'now';
                                       formData['formData']['sms_sub'] = false;
                                       formData['formData']['email_sub'] = false;
 
-                                      if (deliveryTime.value == DeliveryTimeEnum.later) {
-                                        formData['formData']['delivery_schedule'] = 'later';
-                                        formData['formData']['delivery_time'] = deliveryTime.value;
+                                      if (deliveryTime.value ==
+                                          DeliveryTimeEnum.later) {
+                                        formData['formData']
+                                            ['delivery_schedule'] = 'later';
+                                        formData['formData']['delivery_time'] =
+                                            deliveryTime.value;
                                       }
 
                                       if (payCash != null) {
-                                        formData['formData']['change'] = payCash.value;
+                                        formData['formData']['change'] =
+                                            payCash.value;
                                       }
 
                                       if (deliverLaterTime != null) {
-                                        formData['formData']['notes'] = deliveryNotes!.deliveryNotes;
+                                        formData['formData']['notes'] =
+                                            deliveryNotes!.deliveryNotes;
                                       }
 
                                       if (payType != null) {
-                                        formData['formData']['pay_type'] = payType.value;
+                                        formData['formData']['pay_type'] =
+                                            payType.value;
                                       } else {
-                                        formData['formData']['pay_type'] = 'offline';
+                                        formData['formData']['pay_type'] =
+                                            'offline';
                                       }
 
                                       var response = await http.post(url,
-                                          headers: requestHeaders, body: jsonEncode(formData));
+                                          headers: requestHeaders,
+                                          body: jsonEncode(formData));
                                       print(response.body);
-                                      if (response.statusCode == 200 || response.statusCode == 201) {
+                                      if (response.statusCode == 200 ||
+                                          response.statusCode == 201) {
                                         var json = jsonDecode(response.body);
                                         print(json);
 
@@ -241,38 +322,75 @@ class OrderRegistration extends StatelessWidget {
                                         };
 
                                         if (user != null) {
-                                          requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+                                          requestHeaders['Authorization'] =
+                                              'Bearer ${user.userToken}';
                                         }
 
-                                        url = Uri.https('api.choparpizza.uz', '/api/orders', {
-                                          'id': json['order']['id']
-                                        });
+                                        url = Uri.https(
+                                            'api.choparpizza.uz',
+                                            '/api/orders',
+                                            {'id': json['order']['id']});
 
                                         response = await http.get(url,
                                             headers: requestHeaders);
-                                        if (response.statusCode == 200 || response.statusCode == 201) {
+                                        if (response.statusCode == 200 ||
+                                            response.statusCode == 201) {
                                           json = jsonDecode(response.body);
                                           print(json);
                                           Order order = Order.fromJson(json);
-                                          await Hive.box<Basket>('basket').delete('basket');
-                                          await Hive.box<DeliveryType>('deliveryType').delete('deliveryType');
-                                          await Hive.box<DeliveryLocationData>('deliveryLocationData').delete('deliveryLocationData');
-                                          await Hive.box<Terminals>('currentTerminal').delete('currentTerminal');
-                                          await Hive.box<DeliverLaterTime>('deliveryLaterTime').delete('deliveryLaterTime');
-                                          await Hive.box<DeliveryTime>('deliveryTime').delete('deliveryTime');
-                                          await Hive.box<PayType>('payType').delete('payType');
-                                          await Hive.box<PayCash>('payCash').delete('payCash');
-                                          await Hive.box<DeliveryNotes>('deliveryNotes').delete('deliveryNotes');
+                                          await Hive.box<Basket>('basket')
+                                              .delete('basket');
+                                          await Hive.box<DeliveryType>(
+                                                  'deliveryType')
+                                              .delete('deliveryType');
+                                          await Hive.box<DeliveryLocationData>(
+                                                  'deliveryLocationData')
+                                              .delete('deliveryLocationData');
+                                          await Hive.box<Terminals>(
+                                                  'currentTerminal')
+                                              .delete('currentTerminal');
+                                          await Hive.box<DeliverLaterTime>(
+                                                  'deliveryLaterTime')
+                                              .delete('deliveryLaterTime');
+                                          await Hive.box<DeliveryTime>(
+                                                  'deliveryTime')
+                                              .delete('deliveryTime');
+                                          await Hive.box<PayType>('payType')
+                                              .delete('payType');
+                                          await Hive.box<PayCash>('payCash')
+                                              .delete('payCash');
+                                          await Hive.box<DeliveryNotes>(
+                                                  'deliveryNotes')
+                                              .delete('deliveryNotes');
 
                                           // Navigator.of(context)..pop();
 
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  OrderDetail(order: order),
-                                            ),
-                                          );
+                                          showPlatformDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  PlatformAlertDialog(
+                                                    title: Text(
+                                                      tr("order_is_accepted"),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                    content: Text(
+                                                      tr("order_is_accepted_content"),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ));
+                                          Future.delayed(
+                                              const Duration(
+                                                  milliseconds: 2000), () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OrderDetail(order: order),
+                                              ),
+                                            );
+                                          });
                                         }
                                         // BasketData basketData = new BasketData.fromJson(json['data']);
                                         // Basket newBasket = new Basket(
@@ -280,7 +398,6 @@ class OrderRegistration extends StatelessWidget {
                                         //     lineCount: basketData.lines?.length ?? 0);
                                         // basketBox.put('basket', newBasket);
                                       }
-
                                     },
                                   ),
                                 ))
