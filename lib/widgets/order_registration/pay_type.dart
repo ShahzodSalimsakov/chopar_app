@@ -21,20 +21,16 @@ class _PayTypeState extends State<PayTypeWidget>
     Container(
       height: 30,
       padding: EdgeInsets.symmetric(horizontal: 20),
-      // width: 130,
       child: Tab(text: 'Наличными'),
     ),
     Container(
       height: 30,
       padding: EdgeInsets.symmetric(horizontal: 20),
-      // color: Colors.grey.shade200,
-      // width: 130,
       child: Tab(text: 'Онлайн'),
     ),
     Container(
         height: 30,
         padding: EdgeInsets.symmetric(horizontal: 20),
-        // width: 130,
         child: Tab(
           text: 'Картой',
         ))
@@ -44,6 +40,10 @@ class _PayTypeState extends State<PayTypeWidget>
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
+
+    PayType newPayType = new PayType();
+    newPayType.value = 'offline';
+    Hive.box<PayType>('payType').put('payType', newPayType);
 
     _tabController.addListener(() {
       if (_tabController.index == 0) {
@@ -118,6 +118,7 @@ class _PayTypeState extends State<PayTypeWidget>
                   child: Container(
                     height: 78,
                     width: 78,
+                    margin: EdgeInsets.only(right: 10),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         border: payType != null && payType.value == payment
@@ -154,7 +155,9 @@ class _PayTypeState extends State<PayTypeWidget>
               'assets/images/uzcard.png',
             ),
           )),
-      SizedBox(width: 10,),
+      SizedBox(
+        width: 10,
+      ),
       GestureDetector(
           onTap: () {
             PayType newPayType = new PayType();
@@ -199,7 +202,6 @@ class _PayTypeState extends State<PayTypeWidget>
                       length: 2,
                       child: TabBar(
                         isScrollable: true,
-
                         labelColor: Colors.white,
                         labelStyle: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16),
@@ -216,7 +218,7 @@ class _PayTypeState extends State<PayTypeWidget>
                     height: 20,
                   ),
                   Container(
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      height: MediaQuery.of(context).size.height * 0.12,
                       child: TabBarView(
                           controller: _tabController,
                           children: [inCash(), online(), byCard()]))

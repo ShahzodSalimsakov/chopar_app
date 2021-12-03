@@ -77,7 +77,8 @@ class OrderDetail extends HookWidget {
 
   Widget build(BuildContext context) {
     var t = AppLocalizations.of(context);
-    DateTime createdAt = DateTime.parse(order.createdAt ?? '');
+    DateTime createdAt = DateTime.parse(order.createdAt ?? '').toLocal();
+    // createdAt = createdAt.toLocal();
     DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
     final formatCurrency = new NumberFormat.currency(
         locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);

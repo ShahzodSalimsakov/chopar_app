@@ -64,33 +64,22 @@ class Home extends HookWidget {
           'Accept': 'application/json',
           'Authorization': 'Bearer ${currentUser?.userToken}'
         };
-        var url = Uri.https(
-            'api.choparpizza.uz', '/api/bonus_prods/check');
+        var url = Uri.https('api.choparpizza.uz', '/api/bonus_prods/check');
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
           print(json);
           if (!json['success']) {
-            DialogHelper().show(
-                context,
-                DialogWidget.custom(
-                    child: BonusModal()
-                )
-            );
+            DialogHelper()
+                .show(context, DialogWidget.custom(child: BonusModal()));
           }
         }
       } catch (e) {
-        DialogHelper().show(
-            context,
-            DialogWidget.custom(
-                child: BonusModal()
-            )
-        );
+        DialogHelper().show(context, DialogWidget.custom(child: BonusModal()));
       }
-
     }
 
-    useEffect((){
+    useEffect(() {
       lookupForBonus(context);
     }, []);
 

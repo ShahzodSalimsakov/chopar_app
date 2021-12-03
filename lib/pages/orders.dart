@@ -66,7 +66,7 @@ class Orders extends HookWidget {
               itemCount: orders.value.length,
               itemBuilder: (BuildContext context, int index) {
                 DateTime createdAt =
-                    DateTime.parse(orders.value[index].createdAt ?? '');
+                    DateTime.parse(orders.value[index].createdAt ?? '').toLocal();
                 DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
                 Order order = orders.value[index];
                 String house =
