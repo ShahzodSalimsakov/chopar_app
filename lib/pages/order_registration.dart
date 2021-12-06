@@ -95,11 +95,12 @@ class OrderRegistration extends StatelessWidget {
                                   ],
                                 ))),
                             Positioned(
+                                width: MediaQuery.of(context).size.width,
                                 bottom: 0,
                                 child: Container(
                                   color: Colors.white,
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 15),
+                                      vertical: 20, horizontal: 20),
                                   child: DefaultStyledButton(
                                     width:
                                         MediaQuery.of(context).size.width - 30,

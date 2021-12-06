@@ -440,7 +440,7 @@ class ProductDetail extends HookWidget {
                     Container(
                       height: double.maxFinite,
                       padding: EdgeInsets.only(
-                          top: 20, left: 15, right: 25, bottom: 20),
+                          top: 20, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
                           child: Column(
@@ -516,13 +516,13 @@ class ProductDetail extends HookWidget {
                     Positioned(
                       child: Container(
                         // width: double.maxFinite,
-                        padding: EdgeInsets.all(10.0),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         color: Colors.white,
                         child: DefaultStyledButton(
                             isLoading: _isBasketLoading.value == true
                                 ? _isBasketLoading.value
                                 : null,
-                            width: MediaQuery.of(context).size.width - 30,
+                            width: MediaQuery.of(context).size.width,
                             onPressed: () {
                               addToBasket();
                             },
@@ -530,6 +530,7 @@ class ProductDetail extends HookWidget {
                                 'В корзину ${formatCurrency.format(totalPrice)}'),
                       ),
                       bottom: 0,
+                      width: MediaQuery.of(context).size.width
                     ),
                   ],
                 )));
