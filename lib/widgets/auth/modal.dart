@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
@@ -37,13 +38,16 @@ class AuthModal extends HookWidget {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${otpToken.value}'
       };
+      String? token = await FirebaseMessaging.instance.getToken();
       var url = Uri.https('api.choparpizza.uz', '/api/auth_otp');
       var formData = {'phone': phoneNumber.value, 'code': otpCode.value};
+      if (token != null) {
+        formData['token'] = token;
+      }
       var response = await http.post(url,
           headers: requestHeaders, body: jsonEncode(formData));
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        print(json);
         Codec<String, String> stringToBase64 = utf8.fuse(base64);
         String decoded = stringToBase64.decode(json['result']);
         print(jsonDecode(decoded));

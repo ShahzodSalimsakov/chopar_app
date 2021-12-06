@@ -1,4 +1,4 @@
-package com.example.chopar_app
+package com.havoqand.chopar
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
