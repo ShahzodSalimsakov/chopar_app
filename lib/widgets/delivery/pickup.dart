@@ -46,11 +46,15 @@ class Pickup extends HookWidget {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
       }
       var formData = {'city_id': currentCity?.id.toString()};
+      try {
+        Position currentPosition = await Geolocator.getCurrentPosition();
+        if (serviceEnabled) {
+          formData = {'city_id': currentCity?.id.toString(), 'lat': currentPosition.latitude.toString(), 'lon': currentPosition.longitude.toString()};
+        }
+      } catch (e) {
 
-      Position currentPosition = await Geolocator.getCurrentPosition();
-      if (serviceEnabled) {
-        formData = {'city_id': currentCity?.id.toString(), 'lat': currentPosition.latitude.toString(), 'lon': currentPosition.longitude.toString()};
       }
+
       var url = Uri.https('api.choparpizza.uz', 'api/terminals/pickup',
           formData);
       var response = await http.get(url, headers: requestHeaders);

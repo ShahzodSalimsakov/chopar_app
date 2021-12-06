@@ -62,6 +62,7 @@ class OrderRegistration extends StatelessWidget {
                   ),
                   body: (startTime.hour < 3 || startTime.hour >= 10)
                       ? Stack(
+                          fit: StackFit.expand,
                           children: [
                             Container(
                                 color: Colors.grey.shade200,
@@ -98,7 +99,7 @@ class OrderRegistration extends StatelessWidget {
                                 child: Container(
                                   color: Colors.white,
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
+                                      vertical: 15, horizontal: 15),
                                   child: DefaultStyledButton(
                                     width:
                                         MediaQuery.of(context).size.width - 30,

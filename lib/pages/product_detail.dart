@@ -106,15 +106,21 @@ class ProductDetail extends HookWidget {
                             /*Expanded(
                                   child: */
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Column(children: [
+                                Column(
+                                    children: [
                                   modifierImage(m),
                                   SizedBox(height: 10),
+                                  SafeArea(child: Center(
+                                    widthFactor: 0.5,
+                                    child:
+
                                   Text(
                                     m.name,
                                     style: TextStyle(fontSize: 18),
                                   ),
+                                    )),
                                   SizedBox(height: 10),
                                   DecoratedBox(
                                       decoration: BoxDecoration(

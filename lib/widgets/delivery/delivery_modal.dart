@@ -84,7 +84,7 @@ class _DeliveryModalState extends State<DeliveryModal> {
                 // Test if location services are enabled.
                 serviceEnabled = await Geolocator.isLocationServiceEnabled();
                 if (!serviceEnabled) {
-                  hasPermission = false;
+                  hasPermission = true;
                 }
 
                 permission = await Geolocator.checkPermission();

@@ -225,10 +225,15 @@ class BasketWidget extends HookWidget {
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
-                      lines.bonusId != null ? Text(tr('bonus'), style: TextStyle(fontSize: 18, color: Colors.yellow.shade600),) : SizedBox()
+                      lines.bonusId != null
+                          ? Text(
+                              tr('bonus'),
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.yellow.shade600),
+                            )
+                          : SizedBox()
                     ],
                   ),
-
                 ],
               ),
               Column(
@@ -242,45 +247,47 @@ class BasketWidget extends HookWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  lines.bonusId == null ?
-                  Container(
-                    height: 30.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.yellow.shade600,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(Icons.remove,
-                              size: 20.0, color: Colors.yellow.shade600),
-                          onPressed: () {
-                            decreaseQuantity(lines);
-                          },
-                        ),
-                        Text(
-                          lines.quantity.toString(),
-                          style: TextStyle(
-                              fontSize: 20,
+                  lines.bonusId == null
+                      ? Container(
+                          height: 30.0,
+                          decoration: BoxDecoration(
+                            border: Border.all(
                               color: Colors.yellow.shade600,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: Icon(Icons.add,
-                                size: 20.0, color: Colors.yellow.shade600),
-                            onPressed: () {
-                              print('increasing');
-                              increaseQuantity(lines);
-                            })
-                      ],
-                    ),
-                  ) : SizedBox()
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(Icons.remove,
+                                    size: 20.0, color: Colors.yellow.shade600),
+                                onPressed: () {
+                                  decreaseQuantity(lines);
+                                },
+                              ),
+                              Text(
+                                lines.quantity.toString(),
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.yellow.shade600,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(Icons.add,
+                                      size: 20.0,
+                                      color: Colors.yellow.shade600),
+                                  onPressed: () {
+                                    print('increasing');
+                                    increaseQuantity(lines);
+                                  })
+                            ],
+                          ),
+                        )
+                      : SizedBox()
                 ],
               )
             ],
@@ -339,6 +346,7 @@ class BasketWidget extends HookWidget {
             padding: EdgeInsets.symmetric(vertical: 30),
             child: Column(
               children: [
+                Text("Проведите пальцем влево, чтобы удалить продукт"),
                 Expanded(
                   child: ListView.separated(
                       shrinkWrap: true,
@@ -349,27 +357,34 @@ class BasketWidget extends HookWidget {
                       },
                       itemBuilder: (context, index) {
                         final item = basketData.value!.lines![index];
-                        return item.bonusId != null ? basketItems(item) : Slidable(
-                          child: basketItems(item),
-                          key: Key(index.toString()),
-                          actionPane: SlidableDrawerActionPane(),
-                          actionExtentRatio: 0.25,
-                          closeOnScroll: true,
-                          secondaryActions: <Widget>[
-                            IconSlideAction(
-                              caption: 'Удалить',
-                              color: Colors.red,
-                              icon: Icons.delete,
-                              onTap: () => {destroyLine(item.id)},
-                            ),
-                          ],
-                        );
-                        return Dismissible(
-                            key: Key(index.toString()),
-                            child: basketItems(item),
-                            onDismissed: (direction) {
-                              destroyLine(item.id);
-                            });
+                        return item.bonusId != null
+                            ? basketItems(item)
+                            : Dismissible(
+                                direction: DismissDirection.endToStart,
+                                key: UniqueKey(),
+                                child: basketItems(item),
+                                background: Container(
+                                  color: Colors.red,
+                                ),
+                                onDismissed: (DismissDirection direction) {
+                                  destroyLine(item.id);
+                                },
+                                secondaryBackground: Container(
+                                  color: Colors.red,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.white),
+                                        Text('Удалить',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
                       }),
                 ),
                 Container(
@@ -382,7 +397,7 @@ class BasketWidget extends HookWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                               '${basket.lineCount} товар',
+                              '${basket.lineCount} товар',
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 18),
                             ),
@@ -526,7 +541,9 @@ class BasketWidget extends HookWidget {
                   );
                 });
           } else {
-            return UnAuthorisedUserPage(title: 'Корзина',);
+            return UnAuthorisedUserPage(
+              title: 'Корзина',
+            );
           }
         });
   }
