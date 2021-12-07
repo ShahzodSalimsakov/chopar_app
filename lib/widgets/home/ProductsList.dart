@@ -130,6 +130,7 @@ class ProductsList extends HookWidget {
                               OutlinedButton(
                                 child: Text(
                                   'Собрать пиццу',
+                                  textAlign: TextAlign.center,
                                   style:
                                       TextStyle(color: Colors.yellow.shade600),
                                 ),
