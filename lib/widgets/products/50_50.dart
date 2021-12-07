@@ -662,7 +662,7 @@ class CreateOwnPizza extends HookWidget {
                   itemCount: 3,
                   itemBuilder: (ctx, index) {
                     return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 3.0),
+                        margin: EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
                         child: ElevatedButton(
                             style: ButtonStyle(
                                 shape: MaterialStateProperty.all(
@@ -901,7 +901,7 @@ class CreateOwnPizza extends HookWidget {
             ),
             Container(
               decoration: BoxDecoration(color: Colors.white),
-              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
               child: DefaultStyledButton(
                 text: 'Соединить половинки',
                 onPressed: () {

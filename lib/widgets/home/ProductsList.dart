@@ -227,7 +227,7 @@ class ProductsList extends HookWidget {
           if (basketData.value!.lines!.length > 0) {
             // print(basketData.value!.lines![3].variant!.id);
             // if (basketData.value!.lines![3].variant!.id == 347) {
-              // print(product!.variants);
+            // print(product!.variants);
             // }
             basketData.value!.lines!.forEach((element) {
               if (product!.variants != null) {
