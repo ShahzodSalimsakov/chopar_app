@@ -494,7 +494,6 @@ class BasketWidget extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketLocalData = BasketData.fromJson(json['data']);
           if (basketLocalData.lines != null) {
             basket.lineCount = basketLocalData.lines!.length;

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/control_button.dart';
 import 'package:chopar_app/widgets/delivery/terminals_modal.dart';
@@ -15,7 +16,6 @@ import 'package:dart_date/dart_date.dart';
 class Pickup extends HookWidget {
   late YandexMapController controller;
   late YandexMap map;
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +43,24 @@ class Pickup extends HookWidget {
       }
 
       if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
       }
       var formData = {'city_id': currentCity?.id.toString()};
       try {
         Position currentPosition = await Geolocator.getCurrentPosition();
         if (serviceEnabled) {
-          formData = {'city_id': currentCity?.id.toString(), 'lat': currentPosition.latitude.toString(), 'lon': currentPosition.longitude.toString()};
+          formData = {
+            'city_id': currentCity?.id.toString(),
+            'lat': currentPosition.latitude.toString(),
+            'lon': currentPosition.longitude.toString()
+          };
         }
-      } catch (e) {
+      } catch (e) {}
 
-      }
-
-      var url = Uri.https('api.choparpizza.uz', 'api/terminals/pickup',
-          formData);
+      var url =
+          Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -84,7 +88,8 @@ class Pickup extends HookWidget {
               if (closeWork.hour < openWork.hour) {
                 closeWork = closeWork.setDay(currentTime.day + 1);
               }
-              if (currentTime.isAfter(openWork) && currentTime.isBefore(closeWork)) {
+              if (currentTime.isAfter(openWork) &&
+                  currentTime.isBefore(closeWork)) {
                 t.isWorking = true;
               } else {
                 t.isWorking = false;
@@ -108,7 +113,8 @@ class Pickup extends HookWidget {
               if (closeWork.hour < openWork.hour) {
                 closeWork = closeWork.setDay(currentTime.day + 1);
               }
-              if (currentTime.isAfter(openWork) && currentTime.isBefore(closeWork)) {
+              if (currentTime.isAfter(openWork) &&
+                  currentTime.isBefore(closeWork)) {
                 t.isWorking = true;
               } else {
                 t.isWorking = false;
@@ -167,7 +173,10 @@ class Pickup extends HookWidget {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => TerminalsModal(terminals: terminals.value)));
+                                            builder: (context) =>
+                                                TerminalsModal(
+                                                    terminals:
+                                                        terminals.value)));
                                   },
                                   style: ButtonStyle(
                                       side: MaterialStateProperty.all(
@@ -191,117 +200,148 @@ class Pickup extends HookWidget {
                             itemBuilder: (context, index) {
                               var terminal = terminals.value[index];
                               return InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     if (!terminal.isWorking!) {
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данный терминал сейчас не работает')));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Данный терминал сейчас не работает')));
                                       return;
                                     }
                                     Box<Terminals> transaction =
                                         Hive.box<Terminals>('currentTerminal');
                                     transaction.put(
                                         'currentTerminal', terminal);
+
+                                    Map<String, String> requestHeaders = {
+                                      'Content-type': 'application/json',
+                                      'Accept': 'application/json'
+                                    };
+
+                                    var stockUrl = Uri.https(
+                                        'api.choparpizza.uz',
+                                        'api/terminals/get_stock', {
+                                      'terminal_id': terminal.id.toString()
+                                    });
+                                    var stockResponse = await http.get(stockUrl,
+                                        headers: requestHeaders);
+                                    if (stockResponse.statusCode == 200) {
+                                      var json = jsonDecode(stockResponse.body);
+                                      print(json);
+                                      Stock newStockData = new Stock(
+                                          prodIds: new List<int>.from(json[
+                                              'data']) /* json['data'].map((id) => id as int).toList()*/);
+                                      Box<Stock> box = Hive.box<Stock>('stock');
+                                      box.put('stock', newStockData);
+                                    }
                                   },
-                                  child: Opacity(opacity: terminal.isWorking! ? 1 : 0.5, child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      margin:
-                                      EdgeInsets.symmetric(vertical: 10),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: currentTerminal?.id ==
-                                                terminal.id
-                                                ? Colors.yellow.shade600
-                                                : Colors.grey,
-                                          ),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15))),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: currentTerminal
-                                                            ?.id ==
-                                                            terminal.id
-                                                            ? Colors
-                                                            .yellow.shade600
-                                                            : Colors.grey,
-                                                        width: 1),
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                        40)),
-                                                child: Container(
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(40),
-                                                        color: currentTerminal
-                                                            ?.id ==
-                                                            terminal.id
-                                                            ? Colors
-                                                            .yellow.shade600
-                                                            : Colors.grey),
-                                                    margin: EdgeInsets.all(3),
-                                                    width: 10,
-                                                    height: 10),
-                                              ),
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    terminals.value[index]
-                                                        .name ??
-                                                        '',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                        FontWeight.w400),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Container(
-                                                    child: Row(
-                                                      children: [
-                                                        Expanded(
-                                                            child: Text(
-                                                              terminals.value[index]
-                                                                  .desc ??
-                                                                  '',
-                                                              style: TextStyle(
-                                                                  fontSize: 14,
-                                                                  color:
-                                                                  Colors.grey,
-                                                                  fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
-                                                              overflow:
-                                                              TextOverflow.clip,
-                                                              softWrap: false,
-                                                            )),
-                                                      ],
+                                  child: Opacity(
+                                    opacity: terminal.isWorking! ? 1 : 0.5,
+                                    child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: currentTerminal?.id ==
+                                                      terminal.id
+                                                  ? Colors.yellow.shade600
+                                                  : Colors.grey,
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: currentTerminal
+                                                                      ?.id ==
+                                                                  terminal.id
+                                                              ? Colors.yellow
+                                                                  .shade600
+                                                              : Colors.grey,
+                                                          width: 1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              40)),
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(40),
+                                                          color: currentTerminal
+                                                                      ?.id ==
+                                                                  terminal.id
+                                                              ? Colors.yellow
+                                                                  .shade600
+                                                              : Colors.grey),
+                                                      margin: EdgeInsets.all(3),
+                                                      width: 10,
+                                                      height: 10),
+                                                ),
+                                                SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      terminals.value[index]
+                                                              .name ??
+                                                          '',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w400),
                                                     ),
-                                                    width:
-                                                    MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                        0.7,
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      )),));
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Container(
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                              child: Text(
+                                                            terminals
+                                                                    .value[
+                                                                        index]
+                                                                    .desc ??
+                                                                '',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .clip,
+                                                            softWrap: false,
+                                                          )),
+                                                        ],
+                                                      ),
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.7,
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        )),
+                                  ));
                             }),
                       ))
                     ],
