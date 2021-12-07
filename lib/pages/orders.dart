@@ -5,6 +5,7 @@ import 'package:chopar_app/pages/order_detail.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -80,6 +81,13 @@ class Orders extends HookWidget {
                     : '';
                 String address =
                     '${order.billingAddress}${house}${flat}${entrance}${doorCode}';
+
+
+                final hashids = HashIds(
+                  salt: 'order',
+                  minHashLength: 15,
+                  alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                );
 
                 final formatCurrency = new NumberFormat.currency(
                     locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
@@ -182,7 +190,7 @@ class Orders extends HookWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        OrderDetail(order: order),
+                                        OrderDetail(orderId: hashids.encode(order.id)),
                                   ),
                                 );
                               },

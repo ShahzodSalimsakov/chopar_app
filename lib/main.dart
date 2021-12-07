@@ -8,6 +8,8 @@ import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
+import 'package:chopar_app/pages/order_detail.dart';
+import 'package:chopar_app/route_generator.dart';
 import 'package:chopar_app/services/PushNotificationService.dart';
 import 'package:chopar_app/store/city.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,6 +31,8 @@ import 'utils/http_locale_loader.dart';
 Future<void> backgroundHandler(RemoteMessage message) async {
 
 }
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,9 +84,16 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         final routeFromMessage = message.data['view'];
+        if (routeFromMessage == 'order') {
+          Navigator.pushNamed(navigatorKey.currentState!.context,
+            '/order',
+            arguments: message.data['id'],
+          );
+        }
       }
     });
 
@@ -95,8 +106,15 @@ class _MainAppState extends State<MainApp> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       final routeFromMessage = message.data['view'];
-
+      print(message.data.toString());
       print(routeFromMessage);
+
+      if (routeFromMessage == 'order') {
+        Navigator.pushNamed(navigatorKey.currentState!.context,
+          '/order',
+          arguments: message.data['id'],
+        );
+      }
     });
   }
   @override
@@ -110,12 +128,15 @@ class _MainAppState extends State<MainApp> {
           }
         },
         child: MaterialApp(
+          navigatorKey: navigatorKey,
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
-          home: Home(),
+          // home: Home(),
           debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          onGenerateRoute: RouteGenerator.generateRoute,
         ));
   }
 }

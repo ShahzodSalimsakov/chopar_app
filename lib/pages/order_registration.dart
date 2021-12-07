@@ -20,6 +20,7 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -106,6 +107,13 @@ class OrderRegistration extends StatelessWidget {
                                         MediaQuery.of(context).size.width - 30,
                                     text: 'Оформить заказ',
                                     onPressed: () async {
+
+                                      final hashids = HashIds(
+                                        salt: 'order',
+                                        minHashLength: 15,
+                                        alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                                      );
+
                                       Box<DeliveryType> box =
                                           Hive.box<DeliveryType>(
                                               'deliveryType');
@@ -389,7 +397,7 @@ class OrderRegistration extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OrderDetail(order: order),
+                                                    OrderDetail(orderId: hashids.encode(order.id)),
                                               ),
                                             );
                                           });

@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class UserName extends StatelessWidget {
   const UserName({Key? key}) : super(key: key);
@@ -46,11 +49,35 @@ class UserName extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    InkWell(child: SvgPicture.asset('assets/images/logout.svg'), onTap: () {
-                      box.delete('user');
-                      Box<Basket> basketBox = Hive.box<Basket>('basket');
-                      basketBox.delete('basket');
-                    },),
+                    InkWell(
+                      child: SvgPicture.asset('assets/images/logout.svg'),
+                      onTap: () async {
+                        Box<User> transaction = Hive.box<User>('user');
+                        User currentUser = transaction.get('user')!;
+                        Map<String, String> requestHeaders = {
+                          'Content-type': 'application/json',
+                          'Accept': 'application/json',
+                          'Authorization': 'Bearer ${currentUser.userToken}'
+                        };
+                        String? token =
+                            await FirebaseMessaging.instance.getToken();
+                        var url =
+                            Uri.https('api.choparpizza.uz', '/api/logout');
+                        var formData = {};
+                        if (token != null) {
+                          formData['token'] = token;
+                        }
+                        var response = await http.post(url,
+                            headers: requestHeaders,
+                            body: jsonEncode(formData));
+                        if (response.statusCode == 200) {
+                          var json = jsonDecode(response.body);
+                        }
+                        box.delete('user');
+                        Box<Basket> basketBox = Hive.box<Basket>('basket');
+                        basketBox.delete('basket');
+                      },
+                    ),
                   ],
                 ),
               )

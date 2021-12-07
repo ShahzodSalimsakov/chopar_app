@@ -50,7 +50,7 @@ class AuthModal extends HookWidget {
         var json = jsonDecode(response.body);
         Codec<String, String> stringToBase64 = utf8.fuse(base64);
         String decoded = stringToBase64.decode(json['result']);
-        print(jsonDecode(decoded));
+        // print(jsonDecode(decoded));
         if (jsonDecode(decoded) == false) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Введённый код неверный или срок кода истёк')));

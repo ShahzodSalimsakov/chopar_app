@@ -1,16 +1,20 @@
+import 'dart:convert';
 import 'package:chopar_app/models/order.dart';
+import 'package:chopar_app/models/user.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
 
 class OrderDetail extends HookWidget {
-  final Order order;
+  final String orderId;
 
-  OrderDetail({required this.order});
+  OrderDetail({required this.orderId});
 
   Widget renderProductImage(BuildContext context, Lines lineItem) {
     if (lineItem.child != null &&
@@ -76,138 +80,175 @@ class OrderDetail extends HookWidget {
   }
 
   Widget build(BuildContext context) {
-    var t = AppLocalizations.of(context);
-    DateTime createdAt = DateTime.parse(order.createdAt ?? '').toLocal();
-    // createdAt = createdAt.toLocal();
-    DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
-    final formatCurrency = new NumberFormat.currency(
-        locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+    final order = useState<Order?>(null);
 
-    String house = order.house != null ? ', дом: ${order.house}' : '';
-    String flat = order.flat != null ? ', кв.: ${order.flat}' : '';
-    String entrance =
-        order.entrance != null ? ', подъезд: ${order.entrance}' : '';
-    String doorCode =
-        order.doorCode != null ? ', код на двери: ${order.doorCode}' : '';
-    String address =
-        '${order.billingAddress}${house}${flat}${entrance}${doorCode}';
+    Future<void> loadOrder() async {
+      Box<User> transaction = Hive.box<User>('user');
+      User currentUser = transaction.get('user')!;
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${currentUser.userToken}'
+      };
+      var url =
+      Uri.https('api.choparpizza.uz', '/api/orders', {'id': orderId});
+      var response = await http.get(url,
+          headers: requestHeaders);
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        order.value = Order.fromJson(json);
+      }
+    }
+
+    useEffect((){
+      loadOrder();
+    }, []);
+
+    if (order.value == null) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text('Загрузка...'),
+            centerTitle: true,
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+          ),
+          body: Center(child: CircularProgressIndicator(),));
+    } else {
+      var t = AppLocalizations.of(context);
+      DateTime createdAt = DateTime.parse(order.value!.createdAt ?? '').toLocal();
+      // createdAt = createdAt.toLocal();
+      DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
+      final formatCurrency = new NumberFormat.currency(
+          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+
+      String house = order.value!.house != null ? ', дом: ${order.value!.house}' : '';
+      String flat = order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
+      String entrance =
+      order.value!.entrance != null ? ', подъезд: ${order.value!.entrance}' : '';
+      String doorCode =
+      order.value!.doorCode != null ? ', код на двери: ${order.value!.doorCode}' : '';
+      String address =
+          '${order.value!.billingAddress}${house}${flat}${entrance}${doorCode}';
 
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Заказ №${order.id}'),
-        centerTitle: true,
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Заказ №${order.value!.id}'),
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '№ ${order.id}',
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
-                ),
-                Text(tr('order_status_${order.status}'),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Colors.green))
-              ],
-            ),
-            Row(
-              children: [
-                Text(createdAtFormat.format(createdAt),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Colors.grey)),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Divider(
-              color: Colors.grey,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Flexible(
-                    child: Text(address,
-                        style: TextStyle(
+        body: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '№ ${order.value!.id}',
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+                  ),
+                  Text(tr('order_status_${order.value!.status}'),
+                      style: TextStyle(
                           fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ))),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Divider(
-              color: Colors.grey,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-                child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      Lines lineItem = order.basket!.lines![index];
-                      return ListTile(
-                        title: Text(lineItem.variant?.product?.attributeData
-                                ?.name?.chopar?.ru ??
-                            ''),
-                        leading: renderProductImage(context, lineItem),
-                        trailing:
-                            Text(formatCurrency.format(order.orderTotal / 100)),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Divider();
-                    },
-                    itemCount: order.basket?.lines?.length ?? 0)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Text(
-                //   t!.prodCount(order.basket?.lines?.length ?? 0),
-                //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                // ),
-                Text(formatCurrency.format(order.orderTotal / 100),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                    ))
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Divider(
-              color: Colors.grey,
-            )
-          ],
+                          fontSize: 14,
+                          color: Colors.green))
+                ],
+              ),
+              Row(
+                children: [
+                  Text(createdAtFormat.format(createdAt),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Colors.grey)),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                color: Colors.grey,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Flexible(
+                      child: Text(address,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                          ))),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                color: Colors.grey,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                  child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        Lines lineItem = order.value!.basket!.lines![index];
+                        return ListTile(
+                          title: Text(lineItem.variant?.product?.attributeData
+                              ?.name?.chopar?.ru ??
+                              ''),
+                          leading: renderProductImage(context, lineItem),
+                          trailing:
+                          Text(formatCurrency.format(order.value!.orderTotal / 100)),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
+                      itemCount: order.value!.basket?.lines?.length ?? 0)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Text(
+                  //   t!.prodCount(order.basket?.lines?.length ?? 0),
+                  //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                  // ),
+                  Text(formatCurrency.format(order.value!.orderTotal / 100),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                      ))
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                color: Colors.grey,
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+
   }
 }
