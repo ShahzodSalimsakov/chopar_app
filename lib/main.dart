@@ -25,6 +25,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
+import 'models/stock.dart';
 import 'utils/http_locale_loader.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
@@ -52,6 +53,7 @@ void main() async {
   Hive.registerAdapter(PayTypeAdapter());
   Hive.registerAdapter(DeliveryNotesAdapter());
   Hive.registerAdapter(PayCashAdapter());
+  Hive.registerAdapter(StockAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -63,6 +65,7 @@ void main() async {
   await Hive.openBox<PayType>('payType');
   await Hive.openBox<DeliveryNotes>('deliveryNotes');
   await Hive.openBox<PayCash>('payCash');
+  await Hive.openBox<Stock>('stock');
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],

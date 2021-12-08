@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
@@ -150,6 +151,7 @@ class DeliveryModalSheet extends HookWidget {
                   'Content-type': 'application/json',
                   'Accept': 'application/json'
                 };
+
                 var url = Uri.https(
                     'api.choparpizza.uz', 'api/terminals/find_nearest', {
                   'lat': currentPoint.latitude.toString(),
@@ -165,6 +167,23 @@ class DeliveryModalSheet extends HookWidget {
                   Box<Terminals> transaction =
                       Hive.box<Terminals>('currentTerminal');
                   transaction.put('currentTerminal', terminal[0]);
+
+                  var stockUrl = Uri.https(
+                      'api.choparpizza.uz',
+                      'api/terminals/get_stock',
+                      {'terminal_id': terminal[0].id.toString()});
+                  var stockResponse =
+                      await http.get(stockUrl, headers: requestHeaders);
+                  if (stockResponse.statusCode == 200) {
+                    var json = jsonDecode(stockResponse.body);
+                    print(json);
+                    Stock newStockData = new Stock(
+                        prodIds: new List<int>.from(json[
+                            'data']) /* json['data'].map((id) => id as int).toList()*/);
+                    Box<Stock> box = Hive.box<Stock>('stock');
+                    box.put('stock', newStockData);
+                  }
+
                   Navigator.of(context)
                     ..pop()
                     ..pop()
