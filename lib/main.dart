@@ -27,9 +27,8 @@ import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'utils/http_locale_loader.dart';
 
-
 Future<void> backgroundHandler(RemoteMessage message) async {
-
+  print('backgroundHandler');
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -86,10 +85,12 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
+      print('initial message: ${message}');
       if (message != null) {
         final routeFromMessage = message.data['view'];
         if (routeFromMessage == 'order') {
-          Navigator.pushNamed(navigatorKey.currentState!.context,
+          Navigator.pushNamed(
+            navigatorKey.currentState!.context,
             '/order',
             arguments: message.data['id'],
           );
@@ -98,6 +99,7 @@ class _MainAppState extends State<MainApp> {
     });
 
     FirebaseMessaging.onMessage.listen((message) {
+      print('onMessage: ${message}');
       if (message.notification != null) {
         print(message.notification!.title);
         print(message.notification!.body);
@@ -110,16 +112,17 @@ class _MainAppState extends State<MainApp> {
       print(routeFromMessage);
 
       if (routeFromMessage == 'order') {
-        Navigator.pushNamed(navigatorKey.currentState!.context,
+        Navigator.pushNamed(
+          navigatorKey.currentState!.context,
           '/order',
           arguments: message.data['id'],
         );
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
