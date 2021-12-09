@@ -343,8 +343,9 @@ class ProductsList extends HookWidget {
                                 '',
                             style: {
                               "body": Style(
-                                margin: EdgeInsets.only(left: 0),
-                              ),
+                                  margin: EdgeInsets.only(left: 0),
+                                  maxLines: 2,
+                                  textOverflow: TextOverflow.ellipsis),
                             },
                             // style: TextStyle(
                             //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),

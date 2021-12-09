@@ -29,6 +29,74 @@ class Pickup extends HookWidget {
       };
       bool serviceEnabled;
       LocationPermission permission;
+      var formData = {'city_id': currentCity?.id.toString()};
+      var url =
+      Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
+      var response = await http.get(url, headers: requestHeaders);
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        List<Terminals> terminal = List<Terminals>.from(
+            json['data'].map((m) => new Terminals.fromJson(m)).toList());
+        DateTime currentTime = DateTime.now();
+        print(currentTime.weekday);
+        List<Terminals> resultTerminals = [];
+        terminal.forEach((t) {
+          if (currentTime.weekday >= 1 && currentTime.weekday < 5) {
+            if (t.openWork == null) {
+              return null;
+            } else {
+              DateTime openWork = Date.parse(t.openWork!);
+              openWork = openWork.toLocal();
+              openWork = openWork.setDay(currentTime.day);
+              openWork = openWork.setMonth(currentTime.month);
+              openWork = openWork.setYear(currentTime.year);
+              DateTime closeWork = Date.parse(t.closeWork!);
+              closeWork = closeWork.toLocal();
+              closeWork = closeWork.setDay(currentTime.day);
+              closeWork = closeWork.setMonth(currentTime.month);
+              closeWork = closeWork.setYear(currentTime.year);
+
+              if (closeWork.hour < openWork.hour) {
+                closeWork = closeWork.setDay(currentTime.day + 1);
+              }
+              if (currentTime.isAfter(openWork) &&
+                  currentTime.isBefore(closeWork)) {
+                t.isWorking = true;
+              } else {
+                t.isWorking = false;
+              }
+            }
+          } else {
+            if (t.openWeekend == null) {
+              return null;
+            } else {
+              DateTime openWork = Date.parse(t.openWeekend!);
+              openWork = openWork.toLocal();
+              openWork = openWork.setDay(currentTime.day);
+              openWork = openWork.setMonth(currentTime.month);
+              openWork = openWork.setYear(currentTime.year);
+              DateTime closeWork = Date.parse(t.closeWeekend!);
+              closeWork = closeWork.toLocal();
+              closeWork = closeWork.setDay(currentTime.day);
+              closeWork = closeWork.setMonth(currentTime.month);
+              closeWork = closeWork.setYear(currentTime.year);
+
+              if (closeWork.hour < openWork.hour) {
+                closeWork = closeWork.setDay(currentTime.day + 1);
+              }
+              if (currentTime.isAfter(openWork) &&
+                  currentTime.isBefore(closeWork)) {
+                t.isWorking = true;
+              } else {
+                t.isWorking = false;
+              }
+            }
+          }
+          resultTerminals.add(t);
+        });
+
+        terminals.value = resultTerminals;
+      }
 
       // Test if location services are enabled.
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -47,7 +115,6 @@ class Pickup extends HookWidget {
             content: Text(
                 'Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
       }
-      var formData = {'city_id': currentCity?.id.toString()};
       try {
         Position currentPosition = await Geolocator.getCurrentPosition();
         if (serviceEnabled) {
@@ -59,9 +126,9 @@ class Pickup extends HookWidget {
         }
       } catch (e) {}
 
-      var url =
+      url =
           Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
-      var response = await http.get(url, headers: requestHeaders);
+      response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         List<Terminals> terminal = List<Terminals>.from(
