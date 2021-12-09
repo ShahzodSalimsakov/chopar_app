@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/app.dart';
 import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
@@ -10,7 +11,6 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_detail.dart';
 import 'package:chopar_app/route_generator.dart';
-import 'package:chopar_app/services/PushNotificationService.dart';
 import 'package:chopar_app/store/city.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -29,14 +29,47 @@ import 'models/stock.dart';
 import 'utils/http_locale_loader.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
   print('backgroundHandler');
+  // Awesome notifications
+  AwesomeNotifications().createNotificationFromJsonData(message.data);
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await PushNotificationService().setupInteractedMessage();
+  await Firebase.initializeApp();
+
+AwesomeNotifications().initialize(
+    // set the icon to null if you want to use the default app icon
+    null,
+    [
+        NotificationChannel(
+            channelGroupKey: 'basic_channel_group',
+            channelKey: 'basic_channel',
+            channelName: 'Basic notifications',
+            channelDescription: 'Notification channel for basic tests',
+            defaultColor: Color(0xFF9D50DD),
+            ledColor: Colors.white
+        ),
+    ],
+    channelGroups: [
+          NotificationChannelGroup(
+            channelGroupkey: 'basic_channel_group',
+            channelGroupName: 'Basic group'
+          )
+        ],
+        debug: true
+);
+AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+  if (!isAllowed) {
+    // This is just a basic example. For real apps, you must show some
+    // friendly dialog box before call the request method.
+    // This is very important to not harm the user experience
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+});
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();

@@ -78,7 +78,7 @@ dependencies:
   flutter_platform_widgets: ^1.11.1
   firebase_messaging: ^11.2.0
   firebase_core: ^1.10.2
-  flutter_local_notifications: ^9.1.4
+  awesome_notifications: ^0.6.19
 
 dependency_overrides:
 
@@ -106,7 +106,6 @@ flutter_icons:
 
 # The following section is specific to Flutter.
 flutter:
-
   generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
