@@ -36,7 +36,6 @@ class BonusShuffle extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
-          print(json);
           if (!json['success']) {
             errorMessage.value = json['message'];
           } else {
