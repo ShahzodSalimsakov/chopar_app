@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
+import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/models/stock.dart';
@@ -300,6 +301,10 @@ class ProductsList extends HookWidget {
                         Terminals? currentTerminal =
                             Hive.box<Terminals>('currentTerminal')
                                 .get('currentTerminal');
+                        DeliveryLocationData? deliveryLocationData =
+                            Hive.box<DeliveryLocationData>(
+                                    'deliveryLocationData')
+                                .get('deliveryLocationData');
 
                         //Check pickup terminal
                         if (deliveryType != null &&
@@ -307,6 +312,20 @@ class ProductsList extends HookWidget {
                           if (currentTerminal == null) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('Не выбран филиал самовывоза')));
+                            return;
+                          }
+                        }
+
+                        // Check delivery address
+                        if (deliveryType != null &&
+                            deliveryType.value == DeliveryTypeEnum.deliver) {
+                          if (deliveryLocationData == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Не указан адрес доставки')));
+                            return;
+                          } else if (deliveryLocationData.address == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Не указан адрес доставки')));
                             return;
                           }
                         }
@@ -412,6 +431,10 @@ class ProductsList extends HookWidget {
                                     Terminals? currentTerminal =
                                         Hive.box<Terminals>('currentTerminal')
                                             .get('currentTerminal');
+                                    DeliveryLocationData? deliveryLocationData =
+                                        Hive.box<DeliveryLocationData>(
+                                                'deliveryLocationData')
+                                            .get('deliveryLocationData');
 
                                     //Check pickup terminal
                                     if (deliveryType != null &&
@@ -422,6 +445,26 @@ class ProductsList extends HookWidget {
                                             .showSnackBar(SnackBar(
                                                 content: Text(
                                                     'Не выбран филиал самовывоза')));
+                                        return;
+                                      }
+                                    }
+
+                                    // Check delivery address
+                                    if (deliveryType != null &&
+                                        deliveryType.value ==
+                                            DeliveryTypeEnum.deliver) {
+                                      if (deliveryLocationData == null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Не указан адрес доставки')));
+                                        return;
+                                      } else if (deliveryLocationData.address ==
+                                          null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Не указан адрес доставки')));
                                         return;
                                       }
                                     }
