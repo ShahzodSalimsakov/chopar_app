@@ -29,6 +29,7 @@ class ProductsList extends HookWidget {
     final products =
         useState<List<ProductSection>>(List<ProductSection>.empty());
     final scrolledIndex = useState<int>(0);
+    final collapsedId = useState<int?>(null);
     Box<Basket> basketBox = Hive.box<Basket>('basket');
     Basket? basket = basketBox.get('basket');
 
@@ -356,18 +357,27 @@ class ProductsList extends HookWidget {
                             style: TextStyle(
                                 fontSize: 20.0, fontWeight: FontWeight.w700),
                           ),
-                          Html(
-                            data: product
-                                    .attributeData?.description?.chopar?.ru ??
-                                '',
-                            style: {
-                              "body": Style(
-                                  margin: EdgeInsets.only(left: 0),
-                                  maxLines: 2,
-                                  textOverflow: TextOverflow.ellipsis),
+                          GestureDetector(
+                            onTap: (){
+                              if (collapsedId.value == product.id) {
+                                collapsedId.value = null;
+                              } else {
+                                collapsedId.value = product.id;
+                              }
                             },
-                            // style: TextStyle(
-                            //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                            child: Html(
+                              data: product
+                                      .attributeData?.description?.chopar?.ru ??
+                                  '',
+                              style: {
+                                "body": Style(
+                                    margin: EdgeInsets.only(left: 0),
+                                    maxLines: collapsedId.value != null && collapsedId.value == product.id ? 20 : 2,
+                                    textOverflow: TextOverflow.ellipsis),
+                              },
+                              // style: TextStyle(
+                              //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                            ),
                           ),
                           productLine != null
                               ? Container(

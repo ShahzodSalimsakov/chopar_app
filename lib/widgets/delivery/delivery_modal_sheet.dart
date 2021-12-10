@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
@@ -183,6 +184,15 @@ class DeliveryModalSheet extends HookWidget {
                     Box<Stock> box = Hive.box<Stock>('stock');
                     box.put('stock', newStockData);
                   }
+
+
+
+                  Box<DeliveryType> box =
+                  Hive.box<DeliveryType>(
+                      'deliveryType');
+                  DeliveryType newDeliveryType = new DeliveryType();
+                  newDeliveryType.value = DeliveryTypeEnum.deliver;
+                  box.put('deliveryType', newDeliveryType);
 
                   Navigator.of(context)
                     ..pop()
