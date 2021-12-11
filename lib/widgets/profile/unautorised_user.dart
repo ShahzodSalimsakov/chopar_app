@@ -3,8 +3,8 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 
 class UnAuthorisedUserPage extends StatelessWidget {
-
   final String? title;
+
   const UnAuthorisedUserPage({this.title});
 
   @override
@@ -24,21 +24,43 @@ class UnAuthorisedUserPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(image: AssetImage('assets/images/logo.png'), width: 150,),
-              SizedBox(height: 100,),
-              Text('Привет', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400),),
-              SizedBox(height: 10,),
-              Text('чтобы войти в акаунт укажите\nномер телефона', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.grey),),
-              SizedBox(height: 30,),
-              DefaultStyledButton(width: MediaQuery.of(context).size.width * 0.75, onPressed: () {
-                Navigator.push<void>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AuthModal(),
-                    fullscreenDialog: true,
-                  ),
-                );
-              }, text: 'Указать номер')
+              Image(
+                image: AssetImage('assets/images/logo.png'),
+                width: 150,
+              ),
+              SizedBox(
+                height: 100,
+              ),
+              Text(
+                'Привет',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'чтобы войти в акаунт укажите\nномер телефона',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              DefaultStyledButton(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  onPressed: () {
+                    Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AuthModal(),
+                        fullscreenDialog: true,
+                      ),
+                    );
+                  },
+                  text: 'Указать номер')
             ],
           ),
         ),
