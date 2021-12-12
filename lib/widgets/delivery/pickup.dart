@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/control_button.dart';
@@ -38,7 +39,6 @@ class Pickup extends HookWidget {
         List<Terminals> terminal = List<Terminals>.from(
             json['data'].map((m) => new Terminals.fromJson(m)).toList());
         DateTime currentTime = DateTime.now();
-        print(currentTime.weekday);
         List<Terminals> resultTerminals = [];
         terminal.forEach((t) {
           if (currentTime.weekday >= 1 && currentTime.weekday < 5) {
@@ -98,33 +98,56 @@ class Pickup extends HookWidget {
         terminals.value = resultTerminals;
       }
 
-      // Test if location services are enabled.
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        serviceEnabled = false;
-      }
+      bool isLocationSet = true;
 
-      if (permission == LocationPermission.deniedForever) {
-        serviceEnabled = false;
-      }
+      final Box<DeliveryLocationData> deliveryLocationBox =
+      Hive.box<DeliveryLocationData>('deliveryLocationData');
+      DeliveryLocationData? deliveryData = deliveryLocationBox.get('deliveryLocationData');
 
-      if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                'Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
+      if (deliveryData == null) {
+        isLocationSet = false;
+      } else if (deliveryData.lat == null) {
+        isLocationSet = false;
       }
-      try {
-        Position currentPosition = await Geolocator.getCurrentPosition();
-        if (serviceEnabled) {
-          formData = {
-            'city_id': currentCity?.id.toString(),
-            'lat': currentPosition.latitude.toString(),
-            'lon': currentPosition.longitude.toString()
-          };
+      var currentPosition;
+
+      if (!isLocationSet) {
+
+
+        // Test if location services are enabled.
+        serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+        permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          serviceEnabled = false;
         }
-      } catch (e) {}
+
+        if (permission == LocationPermission.deniedForever) {
+          serviceEnabled = false;
+        }
+
+        if (!serviceEnabled) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                  'Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
+        }
+        try {
+          if (serviceEnabled) {
+            currentPosition = await Geolocator.getCurrentPosition();
+          }
+        } catch (e) {}
+      } else {
+        currentPosition = new Position(longitude: deliveryData!.lon!, latitude: deliveryData!.lat!, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+      }
+
+      if (currentPosition != null) {
+        formData = {
+          'city_id': currentCity?.id.toString(),
+          'lat': currentPosition.latitude.toString(),
+          'lon': currentPosition.longitude.toString()
+        };
+      }
 
       url =
           Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
@@ -134,7 +157,6 @@ class Pickup extends HookWidget {
         List<Terminals> terminal = List<Terminals>.from(
             json['data'].map((m) => new Terminals.fromJson(m)).toList());
         DateTime currentTime = DateTime.now();
-        print(currentTime.weekday);
         List<Terminals> resultTerminals = [];
         terminal.forEach((t) {
           if (currentTime.weekday >= 1 && currentTime.weekday < 5) {
@@ -294,7 +316,6 @@ class Pickup extends HookWidget {
                                         headers: requestHeaders);
                                     if (stockResponse.statusCode == 200) {
                                       var json = jsonDecode(stockResponse.body);
-                                      print(json);
                                       Stock newStockData = new Stock(
                                           prodIds: new List<int>.from(json[
                                               'data']) /* json['data'].map((id) => id as int).toList()*/);

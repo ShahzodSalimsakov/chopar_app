@@ -112,7 +112,6 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                         deliveryText =
                             '${deliveryText}${house}${flat}${entrance}';
                       }
-                      print(deliveryText);
                       return TextButton(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

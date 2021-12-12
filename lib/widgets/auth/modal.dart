@@ -277,7 +277,6 @@ class AuthModal extends HookWidget {
                               TextStyle(color: Colors.black, fontSize: 24.0),
                           // inputDecoration: InputDecoration(border: ),
                           onSaved: (PhoneNumber number) {
-                            print('On Saved: $number');
                           },
                         ),
                       ),
@@ -356,7 +355,6 @@ class AuthModal extends HookWidget {
                                   body: jsonEncode(formData));
                               if (response.statusCode == 200) {
                                 json = jsonDecode(response.body);
-                                print(json);
                                 if (json['error'] != null) {
                                   if (json['error'] ==
                                       'name_field_is_required') {
@@ -373,7 +371,6 @@ class AuthModal extends HookWidget {
                                       stringToBase64.decode(json['success']);
                                   otpToken.value =
                                       jsonDecode(decoded)['user_token'];
-                                  print(otpToken.value);
                                   _isVerifyPage.value = true;
                                 }
                               }

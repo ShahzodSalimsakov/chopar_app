@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/app.dart';
 import 'package:chopar_app/models/city.dart';
@@ -18,19 +19,20 @@ import 'package:flutter/material.dart';
 import 'package:chopar_app/pages/home.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:location/location.dart';
 import 'authentication_repository.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/stock.dart';
+import 'models/yandex_geo_data.dart';
 import 'utils/http_locale_loader.dart';
+import 'package:http/http.dart' as http;
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('backgroundHandler');
   // Awesome notifications
   AwesomeNotifications().createNotificationFromJsonData(message.data);
 }
@@ -120,8 +122,39 @@ class _MainAppState extends State<MainApp> {
     // TODO: implement initState
     super.initState();
 
+    () async {
+      Location location = new Location();
+
+      bool _serviceEnabled;
+      PermissionStatus _permissionGranted;
+      LocationData _locationData;
+
+      _serviceEnabled = await location.serviceEnabled();
+      if (!_serviceEnabled) {
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled) {
+          return;
+        }
+      }
+
+      _permissionGranted = await location.hasPermission();
+      if (_permissionGranted == PermissionStatus.denied) {
+        _permissionGranted = await location.requestPermission();
+        if (_permissionGranted != PermissionStatus.granted) {
+          return;
+        }
+      }
+
+      location.enableBackgroundMode(enable: true);
+      location.changeSettings(distanceFilter: 50, interval: 20000);
+      _locationData = await location.getLocation();
+      setLocation(_locationData);
+      location.onLocationChanged.listen((LocationData currentLocation) {
+        setLocation(currentLocation);
+      });
+    }();
+
     FirebaseMessaging.instance.getInitialMessage().then((message) {
-      print('initial message: ${message}');
       if (message != null) {
         final routeFromMessage = message.data['view'];
         if (routeFromMessage == 'order') {
@@ -135,7 +168,6 @@ class _MainAppState extends State<MainApp> {
     });
 
     FirebaseMessaging.onMessage.listen((message) {
-      print('onMessage: ${message}');
       if (message.notification != null) {
         print(message.notification!.title);
         print(message.notification!.body);
@@ -144,8 +176,6 @@ class _MainAppState extends State<MainApp> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       final routeFromMessage = message.data['view'];
-      print(message.data.toString());
-      print(routeFromMessage);
 
       if (routeFromMessage == 'order') {
         Navigator.pushNamed(
@@ -158,7 +188,87 @@ class _MainAppState extends State<MainApp> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+  }
+
+  Future<void> setLocation(LocationData location) async {
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    };
+    var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
+      'lat': location.latitude.toString(),
+      'lon': location.longitude.toString()
+    });
+    var response = await http.get(url, headers: requestHeaders);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      var geoData = YandexGeoData.fromJson(json['data']);
+      var house = '';
+      geoData.addressItems?.forEach((element) {
+        if (element.kind == 'house') {
+          house = element.name;
+        }
+      });
+      DeliveryLocationData deliveryData = DeliveryLocationData(
+          house: house ?? '',
+          flat: '',
+          entrance: '',
+          doorCode: '',
+          lat: location.latitude,
+          lon: location.longitude,
+          address: geoData.formatted ?? '');
+      final Box<DeliveryLocationData> deliveryLocationBox =
+      Hive.box<DeliveryLocationData>('deliveryLocationData');
+      deliveryLocationBox.put('deliveryLocationData', deliveryData);
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      };
+
+      url = Uri.https(
+          'api.choparpizza.uz', 'api/terminals/find_nearest', {
+        'lat': location.latitude.toString(),
+        'lon': location.longitude.toString()
+      });
+      response = await http.get(url, headers: requestHeaders);
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        List<Terminals> terminal = List<Terminals>.from(json['data']
+        ['items']
+            .map((m) => new Terminals.fromJson(m))
+            .toList());
+        Box<Terminals> transaction =
+        Hive.box<Terminals>('currentTerminal');
+        if (terminal.length > 0) {
+          transaction.put('currentTerminal', terminal[0]);
+
+          var stockUrl = Uri.https(
+              'api.choparpizza.uz',
+              'api/terminals/get_stock',
+              {'terminal_id': terminal[0].id.toString()});
+          var stockResponse =
+          await http.get(stockUrl, headers: requestHeaders);
+          if (stockResponse.statusCode == 200) {
+            var json = jsonDecode(stockResponse.body);
+            Stock newStockData = new Stock(
+                prodIds: new List<int>.from(json[
+                'data']) /* json['data'].map((id) => id as int).toList()*/);
+            Box<Stock> box = Hive.box<Stock>('stock');
+            box.put('stock', newStockData);
+          }
+        }
+
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);

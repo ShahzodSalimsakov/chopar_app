@@ -1,5 +1,11 @@
 import 'dart:convert';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/my_address.dart';
+import 'package:chopar_app/models/stock.dart';
+import 'package:chopar_app/models/terminals.dart';
+import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/utils/debouncer.dart';
 import 'package:chopar_app/widgets/delivery/delivery_modal.dart';
@@ -20,6 +26,27 @@ class DeliveryWidget extends HookWidget {
     final suggestedData =
         useState<List<YandexGeoData>>(List<YandexGeoData>.empty());
     final queryText = useState<String>('');
+    final myAddresses = useState<List<MyAddress>>(List<MyAddress>.empty());
+
+    Future<void> getMyAddresses() async {
+      Box box = Hive.box<User>('user');
+      User currentUser = box.get('user');
+      if (currentUser != null) {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${currentUser.userToken}'
+        };
+        var url = Uri.https('api.choparpizza.uz', '/api/address/my_addresses');
+        var response = await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          List<MyAddress> addressList = List<MyAddress>.from(
+              json['data'].map((m) => new MyAddress.fromJson(m)).toList());
+          myAddresses.value = addressList;
+        }
+      }
+    }
 
     Future<void> getSuggestions(String query) async {
       Map<String, String> requestHeaders = {
@@ -40,9 +67,94 @@ class DeliveryWidget extends HookWidget {
 
     Widget renderItems(BuildContext context) {
       if (queryText.value.length == 0) {
-        return Center(
-          child: Text('Введите текст запроса'),
-        );
+        if (myAddresses.value.length == 0) {
+          return Center(
+            child: Text('Введите текст запроса'),
+          );
+        } else {
+          return ListView.separated(
+              itemBuilder: (context, index) {
+                return ListTile(
+                  onTap: () async {
+                    MyAddress address = myAddresses.value[index];
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => DeliveryModal(
+                    //           geoData: suggestedData.value[index],
+                    //         )));
+                    if (address.lat != null) {
+                      DeliveryLocationData deliveryData = DeliveryLocationData(
+                          house: address.house ?? '',
+                          flat: address.flat ?? '',
+                          entrance: address.entrance ?? '',
+                          doorCode: address.doorCode ?? '',
+                          lat: double.parse(address.lat!),
+                          lon: double.parse(address.lon!),
+                          address: address.address ?? '');
+                      final Box<DeliveryLocationData> deliveryLocationBox =
+                      Hive.box<DeliveryLocationData>('deliveryLocationData');
+                      deliveryLocationBox.put(
+                          'deliveryLocationData', deliveryData);
+                      Box<DeliveryType> box =
+                      Hive.box<DeliveryType>(
+                          'deliveryType');
+                      DeliveryType newDeliveryType = new DeliveryType();
+                      newDeliveryType.value = DeliveryTypeEnum.deliver;
+                      box.put('deliveryType', newDeliveryType);
+
+                      Map<String, String> requestHeaders = {
+                        'Content-type': 'application/json',
+                        'Accept': 'application/json'
+                      };
+
+                      var url = Uri.https(
+                          'api.choparpizza.uz', 'api/terminals/find_nearest', {
+                        'lat': address.lat!.toString(),
+                        'lon': address.lon!.toString()
+                      });
+                      var response = await http.get(
+                          url, headers: requestHeaders);
+                      if (response.statusCode == 200) {
+                        var json = jsonDecode(response.body);
+                        List<Terminals> terminal = List<Terminals>.from(
+                            json['data']
+                            ['items']
+                                .map((m) => new Terminals.fromJson(m))
+                                .toList());
+                        Box<Terminals> transaction =
+                        Hive.box<Terminals>('currentTerminal');
+                        if (terminal.length > 0) {
+                          transaction.put('currentTerminal', terminal[0]);
+
+                          var stockUrl = Uri.https(
+                              'api.choparpizza.uz',
+                              'api/terminals/get_stock',
+                              {'terminal_id': terminal[0].id.toString()});
+                          var stockResponse =
+                          await http.get(stockUrl, headers: requestHeaders);
+                          if (stockResponse.statusCode == 200) {
+                            var json = jsonDecode(stockResponse.body);
+                            Stock newStockData = new Stock(
+                                prodIds: new List<int>.from(json[
+                                'data']) /* json['data'].map((id) => id as int).toList()*/);
+                            Box<Stock> box = Hive.box<Stock>('stock');
+                            box.put('stock', newStockData);
+                          }
+                        }
+
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  title: Text(myAddresses.value[index].address ?? ''),
+                );
+              },
+              separatorBuilder: (context, index) {
+                return Divider();
+              },
+              itemCount: myAddresses.value.length);
+        }
       } else if (suggestedData.value.length == 0) {
         return Center(
           child: Text('Ничего не найдено'),
@@ -71,6 +183,7 @@ class DeliveryWidget extends HookWidget {
     }
 
     useEffect((){
+      getMyAddresses();
       String prefix = '${currentCity!.name}, ';
       queryController.text = prefix;
       queryController.selection = TextSelection.fromPosition(TextPosition(offset: prefix.length));

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:chopar_app/models/city.dart';
+import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/widgets/delivery/delivery_modal_sheet.dart';
@@ -47,35 +48,52 @@ class _DeliveryModalState extends State<DeliveryModal> {
         isLookingLocation = true;
       });
 
-      bool serviceEnabled;
-      LocationPermission permission;
+      bool isLocationSet = true;
 
-      // Test if location services are enabled.
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Недостаточно прав для получения локации')));
-        return;
+      final Box<DeliveryLocationData> deliveryLocationBox =
+      Hive.box<DeliveryLocationData>('deliveryLocationData');
+      DeliveryLocationData? deliveryData = deliveryLocationBox.get('deliveryLocationData');
+
+      if (deliveryData == null) {
+        isLocationSet = false;
+      } else if (deliveryData.lat == null) {
+        isLocationSet = false;
       }
+      var currentPosition;
+      if (!isLocationSet) {
 
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Недостаточно прав для получения локации')));
+        bool serviceEnabled;
+        LocationPermission permission;
+
+        // Test if location services are enabled.
+        serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Недостаточно прав для получения локации')));
           return;
         }
+
+        permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Недостаточно прав для получения локации')));
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Недостаточно прав для получения локации')));
+          return;
+        }
+
+        currentPosition = await Geolocator.getCurrentPosition();
+
+      } else {
+        currentPosition = new Position(longitude: deliveryData!.lon!, latitude: deliveryData!.lat!, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
       }
-
-      if (permission == LocationPermission.deniedForever) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Недостаточно прав для получения локации')));
-        return;
-      }
-
-      Position currentPosition = await Geolocator.getCurrentPosition();
-
       if (_placemark != null) {
         await controller.removePlacemark(_placemark!);
       }
@@ -101,25 +119,6 @@ class _DeliveryModalState extends State<DeliveryModal> {
       showBottomSheet(Point(
           latitude: currentPosition.latitude,
           longitude: currentPosition.longitude));
-      // Map<String, String> requestHeaders = {
-      //   'Content-type': 'application/json',
-      //   'Accept': 'application/json'
-      // };
-      // var url = Uri.https(
-      //     'api.choparpizza.uz', 'api/terminals/find_nearest', {
-      //   'lat': currentPosition.latitude.toString(),
-      //   'lon': currentPosition.longitude.toString()
-      // });
-      // var response = await http.get(url, headers: requestHeaders);
-      // if (response.statusCode == 200) {
-      //   var json = jsonDecode(response.body);
-      //   List<Terminals> terminal = List<Terminals>.from(json['data']
-      //           ['items']
-      //       .map((m) => new Terminals.fromJson(m))
-      //       .toList());
-      //   print(terminal);
-      //   showBottomSheet(terminal[0]);
-      // }
       setState(() {
         isLookingLocation = false;
       });

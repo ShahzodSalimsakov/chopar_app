@@ -69,7 +69,6 @@ class CreateOwnPizza extends HookWidget {
     final customNames = useMemoized(() {
       Map<String, String> names = {};
       items!.forEach((Items item) {
-        print(item);
         item.variants?.forEach((Variants vars) {
           names[vars.customName ?? ''] = vars.customName ?? '';
         });

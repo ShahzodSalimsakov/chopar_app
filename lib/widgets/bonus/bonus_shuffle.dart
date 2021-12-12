@@ -71,13 +71,11 @@ class BonusShuffle extends HookWidget {
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200 || response.statusCode == 201) {
         var json = jsonDecode(response.body);
-        print(json);
         BasketData basketData =
             new BasketData.fromJson(json['data']['basketResponse']);
         Basket newBasket = new Basket(
             encodedId: basketData.encodedId ?? '',
             lineCount: basketData.lines?.length ?? 0);
-        print(newBasket.lineCount);
         basketBox.put('basket', newBasket);
         bonusProduct.value = new Items.fromJson(json['data']['prodData']);
       }
@@ -165,7 +163,6 @@ class BonusShuffle extends HookWidget {
                   isShuffle.value = true;
                   products.value = List<Items>.empty();
                   products.value = newProducts;
-                  print(products.value[0].attributeData!.name!.chopar!.ru);
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10),

@@ -128,7 +128,6 @@ class BasketWidget extends HookWidget {
           lineItem.child!.length > 0 &&
           lineItem.child![0].variant?.product?.id !=
               lineItem.variant?.product?.boxId) {
-        print(lineItem);
         return Container(
           height: 50.0,
           width: 50,
@@ -281,7 +280,6 @@ class BasketWidget extends HookWidget {
                                       size: 20.0,
                                       color: Colors.yellow.shade600),
                                   onPressed: () {
-                                    print('increasing');
                                     increaseQuantity(lines);
                                   })
                             ],
@@ -298,7 +296,6 @@ class BasketWidget extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       Basket? basket = basketBox.get('basket');
-      print(basketData.value);
       if (basket == null) {
         return Center(
           child: Column(

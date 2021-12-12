@@ -137,7 +137,6 @@ class DeliveryModalSheet extends HookWidget {
               width: MediaQuery.of(context).size.width,
               onPressed: () async {
                 _formKey.currentState!.save();
-                print(_formKey.currentState!.value);
                 var formValue = _formKey.currentState!.value;
                 DeliveryLocationData deliveryData = DeliveryLocationData(
                     house: formValue['house'] ?? '',
@@ -177,7 +176,6 @@ class DeliveryModalSheet extends HookWidget {
                       await http.get(stockUrl, headers: requestHeaders);
                   if (stockResponse.statusCode == 200) {
                     var json = jsonDecode(stockResponse.body);
-                    print(json);
                     Stock newStockData = new Stock(
                         prodIds: new List<int>.from(json[
                             'data']) /* json['data'].map((id) => id as int).toList()*/);

@@ -31,7 +31,6 @@ class OrderRegistration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var startTime = DateTime.now();
-    print(startTime.hour);
     return ValueListenableBuilder<Box<Terminals>>(
         valueListenable: Hive.box<Terminals>('currentTerminal').listenable(),
         builder: (context, box, _) {
@@ -320,11 +319,9 @@ class OrderRegistration extends StatelessWidget {
                                       var response = await http.post(url,
                                           headers: requestHeaders,
                                           body: jsonEncode(formData));
-                                      print(response.body);
                                       if (response.statusCode == 200 ||
                                           response.statusCode == 201) {
                                         var json = jsonDecode(response.body);
-                                        print(json);
 
                                         Map<String, String> requestHeaders = {
                                           'Content-type': 'application/json',
@@ -346,7 +343,6 @@ class OrderRegistration extends StatelessWidget {
                                         if (response.statusCode == 200 ||
                                             response.statusCode == 201) {
                                           json = jsonDecode(response.body);
-                                          print(json);
                                           Order order = Order.fromJson(json);
                                           await Hive.box<Basket>('basket')
                                               .delete('basket');

@@ -40,10 +40,8 @@ class DeliveryTimeWidget extends HookWidget {
         startTime = startTime.add(Duration(minutes: 40));
         startTime = startTime.setMinute((startTime.minute / 10).ceil() * 10);
       }
-      print(deliveryTimeOptions);
       timeValues.value = deliveryTimeOptions;
     }, []);
-  print(timeValues.value);
     return ValueListenableBuilder<Box<DeliveryTime>>(
         valueListenable: Hive.box<DeliveryTime>('deliveryTime').listenable(),
         builder: (context, box, _) {

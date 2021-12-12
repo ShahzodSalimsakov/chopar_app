@@ -385,12 +385,10 @@ class ProductDetail extends HookWidget {
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
               encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
-          print(newBasket.lineCount);
           basketBox.put('basket', newBasket);
         }
       } else {
@@ -417,7 +415,6 @@ class ProductDetail extends HookWidget {
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
               encodedId: basketData.encodedId ?? '',

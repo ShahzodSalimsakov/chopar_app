@@ -230,7 +230,6 @@ class _PersonalDataState extends State<PersonalData> {
                                   values['email'] = '';
                                 }
                                 var response = await http.post(url, headers: requestHeaders, body: jsonEncode(values));
-                                print(response.body);
                                 if (response.statusCode == 200) {
 
                                   var result = jsonDecode(response.body);

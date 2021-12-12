@@ -522,9 +522,6 @@ class ProductsList extends HookWidget {
                   } else if (basketData.value != null) {
                     // print(basketData.value!.lines);
                     if (basketData.value!.lines != null) {
-                      print('basket count ${basket.lineCount}');
-                      print(
-                          'basketData count ${basketData.value!.lines!.length}');
                       if (basket.lineCount != basketData.value!.lines!.length) {
                         getBasket();
                       }
