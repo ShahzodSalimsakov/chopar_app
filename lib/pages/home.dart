@@ -38,7 +38,7 @@ class Home extends HookWidget {
             ChooseTypeDelivery(),
             // ChooseAddress(),
             // StoriesList(),
-            SizedBox(height: 20.0),
+            SizedBox(height: 10.0),
             ProductsList()
           ],
         ),
