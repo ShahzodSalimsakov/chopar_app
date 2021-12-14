@@ -17,6 +17,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:chopar_app/pages/home.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:location/location.dart';
@@ -43,35 +44,32 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-AwesomeNotifications().initialize(
-    // set the icon to null if you want to use the default app icon
-    null,
-    [
+  AwesomeNotifications().initialize(
+      // set the icon to null if you want to use the default app icon
+      null,
+      [
         NotificationChannel(
             channelGroupKey: 'basic_channel_group',
             channelKey: 'basic_channel',
             channelName: 'Basic notifications',
             channelDescription: 'Notification channel for basic tests',
             defaultColor: Color(0xFF9D50DD),
-            ledColor: Colors.white
-        ),
-    ],
-    channelGroups: [
-          NotificationChannelGroup(
+            ledColor: Colors.white),
+      ],
+      channelGroups: [
+        NotificationChannelGroup(
             channelGroupkey: 'basic_channel_group',
-            channelGroupName: 'Basic group'
-          )
-        ],
-        debug: true
-);
-AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-  if (!isAllowed) {
-    // This is just a basic example. For real apps, you must show some
-    // friendly dialog box before call the request method.
-    // This is very important to not harm the user experience
-    AwesomeNotifications().requestPermissionToSendNotifications();
-  }
-});
+            channelGroupName: 'Basic group')
+      ],
+      debug: true);
+  AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      // This is just a basic example. For real apps, you must show some
+      // friendly dialog box before call the request method.
+      // This is very important to not harm the user experience
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  });
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
@@ -191,7 +189,6 @@ class _MainAppState extends State<MainApp> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-
   }
 
   Future<void> setLocation(LocationData location) async {
@@ -222,27 +219,24 @@ class _MainAppState extends State<MainApp> {
           lon: location.longitude,
           address: geoData.formatted ?? '');
       final Box<DeliveryLocationData> deliveryLocationBox =
-      Hive.box<DeliveryLocationData>('deliveryLocationData');
+          Hive.box<DeliveryLocationData>('deliveryLocationData');
       deliveryLocationBox.put('deliveryLocationData', deliveryData);
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       };
 
-      url = Uri.https(
-          'api.choparpizza.uz', 'api/terminals/find_nearest', {
+      url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
         'lat': location.latitude.toString(),
         'lon': location.longitude.toString()
       });
       response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        List<Terminals> terminal = List<Terminals>.from(json['data']
-        ['items']
+        List<Terminals> terminal = List<Terminals>.from(json['data']['items']
             .map((m) => new Terminals.fromJson(m))
             .toList());
-        Box<Terminals> transaction =
-        Hive.box<Terminals>('currentTerminal');
+        Box<Terminals> transaction = Hive.box<Terminals>('currentTerminal');
         if (terminal.length > 0) {
           transaction.put('currentTerminal', terminal[0]);
 
@@ -250,42 +244,44 @@ class _MainAppState extends State<MainApp> {
               'api.choparpizza.uz',
               'api/terminals/get_stock',
               {'terminal_id': terminal[0].id.toString()});
-          var stockResponse =
-          await http.get(stockUrl, headers: requestHeaders);
+          var stockResponse = await http.get(stockUrl, headers: requestHeaders);
           if (stockResponse.statusCode == 200) {
             var json = jsonDecode(stockResponse.body);
             Stock newStockData = new Stock(
                 prodIds: new List<int>.from(json[
-                'data']) /* json['data'].map((id) => id as int).toList()*/);
+                    'data']) /* json['data'].map((id) => id as int).toList()*/);
             Box<Stock> box = Hive.box<Stock>('stock');
             box.put('stock', newStockData);
           }
         }
-
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return GestureDetector(
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.unfocus();
-          }
-        },
-        child: MaterialApp(
-          navigatorKey: navigatorKey,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
-          // home: Home(),
-          debugShowCheckedModeBanner: false,
-          initialRoute: '/',
-          onGenerateRoute: RouteGenerator.generateRoute,
-        ));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.grey, //or set color with: Color(0xFF0000FF)
+    ));
+    return Container(
+      child: GestureDetector(
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+          },
+          child: MaterialApp(
+            navigatorKey: navigatorKey,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
+            // home: Home(),
+            debugShowCheckedModeBanner: false,
+            initialRoute: '/',
+            onGenerateRoute: RouteGenerator.generateRoute,
+          )),
+    );
   }
 }
