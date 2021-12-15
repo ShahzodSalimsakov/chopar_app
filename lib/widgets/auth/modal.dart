@@ -8,8 +8,19 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:otp_autofill/otp_autofill.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+
+class SampleStrategy extends OTPStrategy {
+  @override
+  Future<String> listenForCode() {
+    return Future.delayed(
+      const Duration(seconds: 4),
+      () => 'Chopar Code: 5432',
+    );
+  }
+}
 
 class AuthModal extends HookWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -30,6 +41,9 @@ class AuthModal extends HookWidget {
     final otpCode = useState<String>('');
     final otpToken = useState<String>('');
     final _isFinishedTimer = useState<bool>(false);
+
+    late OTPTextEditController controller;
+    late OTPInteractor _otpInteractor;
 
     Future<void> trySignIn() async {
       _isSendingPhone.value = true;
@@ -88,6 +102,32 @@ class AuthModal extends HookWidget {
       }
     }
 
+    useEffect(() {
+      _otpInteractor = OTPInteractor();
+      _otpInteractor
+          .getAppSignature()
+          //ignore: avoid_print
+          .then((value) => print('signature - $value'));
+
+      controller = OTPTextEditController(
+        codeLength: 4,
+        //ignore: avoid_print
+        onCodeReceive: (code) => print('Your Application receive code - $code'),
+        otpInteractor: _otpInteractor,
+      )..startListenUserConsent(
+          (code) {
+            final exp = RegExp(r'(\d{4})');
+            return exp.stringMatch(code ?? '') ?? '';
+          },
+          strategies: [
+            SampleStrategy(),
+          ],
+        );
+      return () async {
+        await controller.stopListen();
+      };
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -134,6 +174,8 @@ class AuthModal extends HookWidget {
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 15),
                         child: PinCodeTextField(
+                          controller: controller,
+                          enablePinAutofill: true,
                           length: 4,
                           onChanged: (String value) {},
                           appContext: context,
@@ -276,8 +318,7 @@ class AuthModal extends HookWidget {
                           textStyle:
                               TextStyle(color: Colors.black, fontSize: 24.0),
                           // inputDecoration: InputDecoration(border: ),
-                          onSaved: (PhoneNumber number) {
-                          },
+                          onSaved: (PhoneNumber number) {},
                         ),
                       ),
                     ),
