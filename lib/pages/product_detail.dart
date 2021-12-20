@@ -180,7 +180,7 @@ class ProductDetail extends HookWidget {
           Variants? activeValue = detail.variants
               .firstWhere((item) => item.customName == selectedVariant.value);
           if (activeValue != null && activeValue.modifiers != null) {
-            modifier = [...activeValue.modifiers!];
+            modifier = [...activeValue.modifiers!.where((m) => m.price > 0)];
             if (activeValue.modifierProduct != null) {
               // Modifiers? sausageModifier = modifier.firstWhere(
               //     (mod) => mod.id == activeValue.modifierProduct?.id, orElse: () => null);
@@ -230,7 +230,7 @@ class ProductDetail extends HookWidget {
           }
         } catch (e) {}
       }
-      Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
+      // Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
       if (activeModifiers.value.contains(modId)) {
         Modifiers currentModifier =
             modifiers.firstWhere((mod) => mod.id == modId);
@@ -240,9 +240,9 @@ class ProductDetail extends HookWidget {
             .where((id) => modId != id)
             .where((id) => id != null)
             .toList();
-        if (resultModifiers.length == 0) {
-          resultModifiers.add(zeroModifier.id);
-        }
+        // if (resultModifiers.length == 0) {
+        //   resultModifiers.add(zeroModifier.id);
+        // }
         activeModifiers.value = resultModifiers;
       } else {
         Modifiers currentModifier =
@@ -251,7 +251,7 @@ class ProductDetail extends HookWidget {
           activeModifiers.value = [modId].toList();
         } else {
           List<int> selectedModifiers = [
-            ...activeModifiers.value.where((id) => id != zeroModifier.id),
+            ...activeModifiers.value,
             modId,
           ].toList();
 
@@ -442,6 +442,7 @@ class ProductDetail extends HookWidget {
                       child: SingleChildScrollView(
                           child: Column(
                         children: [
+                          Icon(Icons.keyboard_arrow_down, size: 50,),
                           // Expanded(
                           //     child: ListView(
                           //   children: [

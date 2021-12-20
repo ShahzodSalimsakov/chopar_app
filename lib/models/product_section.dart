@@ -148,7 +148,7 @@ class Items {
   late int active;
   Null modifierProdId;
   late String price;
-  late String image;
+  late String? image;
   List<Variants>? variants;
   List<Modifiers>? modifiers;
 
@@ -270,7 +270,7 @@ class Variants {
   late int active;
   int? modifierProdId;
   late String price;
-  late String image;
+  late String? image;
   List<Modifiers>? modifiers;
   List<Map<String, dynamic>>? variants;
   ModifierProduct? modifierProduct;

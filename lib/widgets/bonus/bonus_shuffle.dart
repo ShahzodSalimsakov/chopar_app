@@ -262,7 +262,7 @@ class BonusShuffle extends HookWidget {
                   children: [
                     Text(bonusProduct.value!.attributeData!.name!.chopar!.ru ?? '', style: TextStyle(color: Colors.blue.shade600, fontSize: 24, fontWeight: FontWeight.bold),),
                     SizedBox(height: 20,),
-                    Image.network(bonusProduct.value!.image),
+                    Image.network(bonusProduct.value!.image!),
                     SizedBox(height: 20,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

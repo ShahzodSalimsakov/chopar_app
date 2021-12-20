@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
@@ -144,6 +145,25 @@ class ProductsList extends HookWidget {
       }
     }
 
+    Widget productImage(String? image) {
+      if (image != null) {
+        return Image.network(
+          image!,
+          width: 170.0,
+          height: 170.0,
+          // width: MediaQuery.of(context).size.width / 2.5,
+        );
+      } else {
+          return ClipOval(
+            child: SvgPicture.network(
+              'https://choparpizza.uz/no_photo.svg',
+              width: 175.0,
+              height: 175.0,
+            ),
+          );
+      }
+    }
+
     Widget renderCreatePizza(BuildContext context, List<Items>? items) {
       return Card(
         elevation: 5,
@@ -248,7 +268,7 @@ class ProductsList extends HookWidget {
 
       Box<Stock> stockBox = Hive.box<Stock>('stock');
       Stock? stock = stockBox.get('stock');
-      String image = product?.image as String;
+      String? image = product?.image as String?;
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       String productPrice = '';
@@ -286,15 +306,7 @@ class ProductsList extends HookWidget {
                 child: Row(children: [
                   Expanded(
                     child: InkWell(
-                      child: Hero(
-                        child: Image.network(
-                          image,
-                          width: 170.0,
-                          height: 170.0,
-                          // width: MediaQuery.of(context).size.width / 2.5,
-                        ),
-                        tag: image,
-                      ),
+                      child: productImage(image),
                       onTap: () {
                         Box<DeliveryType> box =
                             Hive.box<DeliveryType>('deliveryType');

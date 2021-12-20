@@ -16,7 +16,7 @@ class Order {
   String? notes;
   late String currency;
   String? billingPhone;
-  Null billingEmail;
+  String? billingEmail;
   Null shippingCompanyName;
   Null billingCompanyName;
   String? billingFirstname;
@@ -30,7 +30,7 @@ class Order {
   Null billingCountry;
   Null billingZip;
   String? shippingPhone;
-  Null shippingEmail;
+  String? shippingEmail;
   String? shippingFirstname;
   String? shippingLastname;
   String? shippingAddress;

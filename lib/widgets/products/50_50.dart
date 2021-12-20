@@ -99,7 +99,7 @@ class CreateOwnPizza extends HookWidget {
 
       leftSelectedProduct.value?.variants?.forEach((Variants vars) {
         if (vars.customName == activeCustomName.value) {
-          leftModifiers = vars.modifiers;
+          leftModifiers = [...vars.modifiers!.where((m) => m.price > 0)];
         }
       });
 
@@ -201,8 +201,8 @@ class CreateOwnPizza extends HookWidget {
       if (activeVariant?.modifierProduct != null) {
         modifierProduct = activeVariant?.modifierProduct;
       }
-      Modifiers? zeroModifier =
-          modifiers?.firstWhere((Modifiers mod) => mod.price == 0);
+      // Modifiers? zeroModifier =
+      //     modifiers?.firstWhere((Modifiers mod) => mod.price == 0);
       if (activeModifiers.value.contains(id)) {
         Modifiers? currentModifier =
             modifiers?.firstWhere((Modifiers mod) => mod.id == id);
@@ -211,9 +211,9 @@ class CreateOwnPizza extends HookWidget {
         List<int> resultModifiers = [
           ...activeModifiers.value.where((int modId) => modId != id)
         ].where((id) => id != null).toList();
-        if (resultModifiers.isEmpty && zeroModifier != null) {
-          resultModifiers.add(zeroModifier.id);
-        }
+        // if (resultModifiers.isEmpty && zeroModifier != null) {
+        //   resultModifiers.add(zeroModifier.id);
+        // }
         activeModifiers.value = resultModifiers;
       } else {
         Modifiers? currentModifier =
@@ -222,8 +222,7 @@ class CreateOwnPizza extends HookWidget {
           activeModifiers.value = [id].toList();
         } else {
           List<int> selectedModifiers = [
-            ...activeModifiers.value
-                .where((modId) => modId != zeroModifier?.id),
+            ...activeModifiers.value,
             id,
           ].toList();
 
@@ -257,7 +256,14 @@ class CreateOwnPizza extends HookWidget {
       ModifierProduct? modifierProduct;
       List<Map<String, int>>? selectedModifiers;
       List<int> selectedIntModifiers = [...activeModifiers.value];
-      List<Modifiers> allModifiers = [...modifiers!];
+      List<Modifiers>? leftModifiers = List<Modifiers>.empty();
+
+      leftSelectedProduct.value?.variants?.forEach((Variants vars) {
+        if (vars.customName == activeCustomName.value) {
+          leftModifiers = [...vars.modifiers!];
+        }
+      });
+      List<Modifiers> allModifiers = [...leftModifiers!];
       Modifiers freeModifiers =
           allModifiers.firstWhere((mod) => mod.price == 0);
       if (selectedIntModifiers.length == 0) {
@@ -288,7 +294,7 @@ class CreateOwnPizza extends HookWidget {
         if ([...activeModifiers.value].contains(modifierProduct.id)) {
           leftModifierProduct = modifierProduct;
           List<int> currentProductModifiersPrices = [
-            ...modifiers
+            ...leftModifiers!
                 .where((mod) =>
                     mod.id != modifierProduct!.id &&
                     [...activeModifiers.value].contains(mod.id))
@@ -336,7 +342,7 @@ class CreateOwnPizza extends HookWidget {
               'child': {
                 'id': rightModifierProduct != null
                     ? rightModifierProduct.id
-                    : rightSelectedProduct.value!.id,
+                    : rightProduct!.id,
                 'quantity': 1,
                 'modifiers': [
                   {'id': freeModifiers.id}
@@ -377,7 +383,7 @@ class CreateOwnPizza extends HookWidget {
               'child': {
                 'id': rightModifierProduct != null
                     ? rightModifierProduct.id
-                    : rightSelectedProduct.value!.id,
+                    : rightProduct!.id,
                 'quantity': 1,
                 'modifiers': [
                   {'id': freeModifiers.id}
@@ -642,7 +648,7 @@ class CreateOwnPizza extends HookWidget {
                     onPressed: () {
                       addToBasket();
                     },
-                    text: 'В корзину',
+                    text: 'В корзину $totalSummary сум',
                   ),
                 ))
           ],
