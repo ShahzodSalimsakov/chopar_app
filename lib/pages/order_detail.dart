@@ -151,7 +151,7 @@ class OrderDetail extends HookWidget {
               ),
             ],
           ),
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: Column(
             children: [
@@ -184,9 +184,6 @@ class OrderDetail extends HookWidget {
               Divider(
                 color: Colors.grey,
               ),
-              SizedBox(
-                height: 10,
-              ),
               Row(
                 children: [
                   Flexible(
@@ -198,7 +195,7 @@ class OrderDetail extends HookWidget {
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 8,
               ),
               Divider(
                 color: Colors.grey,
@@ -223,16 +220,23 @@ class OrderDetail extends HookWidget {
                         return Divider();
                       },
                       itemCount: order.value!.basket?.lines?.length ?? 0)),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Text("Общая сумма:", style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              )),
                   // Text(
                   //   t!.prodCount(order.basket?.lines?.length ?? 0),
                   //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
                   // ),
                   Text(formatCurrency.format(order.value!.orderTotal / 100),
                       style: TextStyle(
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ))
                 ],
