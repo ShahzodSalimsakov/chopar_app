@@ -619,8 +619,8 @@ class Assets {
   late String location;
   late String kind;
   late String subKind;
-  Null width;
-  Null height;
+  late String? width;
+  late String? height;
   late String title;
   late String originalFilename;
   Null caption;

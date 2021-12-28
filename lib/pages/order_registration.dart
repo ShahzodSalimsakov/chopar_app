@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chopar_app/models/additional_phone_number.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
@@ -12,6 +13,7 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/home.dart';
 import 'package:chopar_app/pages/order_detail.dart';
+import 'package:chopar_app/widgets/order_registration/additional_phone_number.dart';
 import 'package:chopar_app/widgets/order_registration/comment.dart';
 import 'package:chopar_app/widgets/order_registration/delivery_time.dart';
 import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
@@ -88,6 +90,10 @@ class OrderRegistration extends StatelessWidget {
                                     SizedBox(
                                       height: 5,
                                     ),
+                                    AdditionalPhoneNumberWidget(),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
                                     OrderCommentWidget(),
                                     SizedBox(
                                       height: 50,
@@ -143,6 +149,10 @@ class OrderRegistration extends StatelessWidget {
                                           Hive.box<DeliveryNotes>(
                                                   'deliveryNotes')
                                               .get('deliveryNotes');
+                                      AdditionalPhoneNumber? additionalPhoneNumber =
+                                      Hive.box<AdditionalPhoneNumber>(
+                                          'additionalPhoneNumber')
+                                          .get('additionalPhoneNumber');
                                       // Check deliveryType is chosen
                                       if (deliveryType == null) {
                                         ScaffoldMessenger.of(context)
@@ -248,7 +258,8 @@ class OrderRegistration extends StatelessWidget {
                                           'house': '',
                                           'entrance': '',
                                           'door_code': '',
-                                          'deliveryType': ''
+                                          'deliveryType': '',
+                                          'sourceType': "app"
                                         }
                                       };
                                       if (deliveryType!.value ==
@@ -289,7 +300,7 @@ class OrderRegistration extends StatelessWidget {
                                           ['delivery_schedule'] = 'now';
                                       formData['formData']['sms_sub'] = false;
                                       formData['formData']['email_sub'] = false;
-
+                                      formData['formData']['additionalPhone'] = additionalPhoneNumber?.additionalPhoneNumber ?? '';
                                       if (deliveryTime.value ==
                                           DeliveryTimeEnum.later) {
                                         formData['formData']

@@ -13,6 +13,7 @@ import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_detail.dart';
 import 'package:chopar_app/route_generator.dart';
 import 'package:chopar_app/store/city.dart';
+import 'package:chopar_app/widgets/delivery/delivery_modal.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ import 'authentication_repository.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'models/additional_phone_number.dart';
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/stock.dart';
@@ -45,7 +47,7 @@ void main() async {
   await Firebase.initializeApp();
 
   AwesomeNotifications().initialize(
-      // set the icon to null if you want to use the default app icon
+    // set the icon to null if you want to use the default app icon
       null,
       [
         NotificationChannel(
@@ -87,6 +89,7 @@ void main() async {
   Hive.registerAdapter(DeliveryNotesAdapter());
   Hive.registerAdapter(PayCashAdapter());
   Hive.registerAdapter(StockAdapter());
+  Hive.registerAdapter(AdditionalPhoneNumberAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -99,6 +102,7 @@ void main() async {
   await Hive.openBox<DeliveryNotes>('deliveryNotes');
   await Hive.openBox<PayCash>('payCash');
   await Hive.openBox<Stock>('stock');
+  await Hive.openBox<AdditionalPhoneNumber>('additionalPhoneNumber');
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],
@@ -119,38 +123,6 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    () async {
-      Location location = new Location();
-
-      bool _serviceEnabled;
-      PermissionStatus _permissionGranted;
-      LocationData _locationData;
-
-      _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          return;
-        }
-      }
-
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          return;
-        }
-      }
-
-      location.enableBackgroundMode(enable: true);
-      location.changeSettings(distanceFilter: 50, interval: 20000);
-      _locationData = await location.getLocation();
-      setLocation(_locationData);
-      location.onLocationChanged.listen((LocationData currentLocation) {
-        setLocation(currentLocation);
-      });
-    }();
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
@@ -191,80 +163,15 @@ class _MainAppState extends State<MainApp> {
     super.dispose();
   }
 
-  Future<void> setLocation(LocationData location) async {
-    Map<String, String> requestHeaders = {
-      'Content-type': 'application/json',
-      'Accept': 'application/json'
-    };
-    var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-      'lat': location.latitude.toString(),
-      'lon': location.longitude.toString()
-    });
-    var response = await http.get(url, headers: requestHeaders);
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      var geoData = YandexGeoData.fromJson(json['data']);
-      var house = '';
-      geoData.addressItems?.forEach((element) {
-        if (element.kind == 'house') {
-          house = element.name;
-        }
-      });
-      DeliveryLocationData deliveryData = DeliveryLocationData(
-          house: house ?? '',
-          flat: '',
-          entrance: '',
-          doorCode: '',
-          lat: location.latitude,
-          lon: location.longitude,
-          address: geoData.formatted ?? '');
-      final Box<DeliveryLocationData> deliveryLocationBox =
-          Hive.box<DeliveryLocationData>('deliveryLocationData');
-      deliveryLocationBox.put('deliveryLocationData', deliveryData);
-      Map<String, String> requestHeaders = {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      };
 
-      url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
-        'lat': location.latitude.toString(),
-        'lon': location.longitude.toString()
-      });
-      response = await http.get(url, headers: requestHeaders);
-      if (response.statusCode == 200) {
-        var json = jsonDecode(response.body);
-        List<Terminals> terminal = List<Terminals>.from(json['data']['items']
-            .map((m) => new Terminals.fromJson(m))
-            .toList());
-        Box<Terminals> transaction = Hive.box<Terminals>('currentTerminal');
-        if (terminal.length > 0) {
-          transaction.put('currentTerminal', terminal[0]);
-
-          var stockUrl = Uri.https(
-              'api.choparpizza.uz',
-              'api/terminals/get_stock',
-              {'terminal_id': terminal[0].id.toString()});
-          var stockResponse = await http.get(stockUrl, headers: requestHeaders);
-          if (stockResponse.statusCode == 200) {
-            var json = jsonDecode(stockResponse.body);
-            Stock newStockData = new Stock(
-                prodIds: new List<int>.from(json[
-                    'data']) /* json['data'].map((id) => id as int).toList()*/);
-            Box<Stock> box = Hive.box<Stock>('stock');
-            box.put('stock', newStockData);
-          }
-        }
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.white, // Color for Android
         statusBarBrightness:
-            Brightness.light // Dark == white status bar -- for IOS.
-        ));
+        Brightness.light // Dark == white status bar -- for IOS.
+    ));
     return Container(
       child: GestureDetector(
           onTap: () {
