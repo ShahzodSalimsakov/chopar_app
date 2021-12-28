@@ -1,4 +1,6 @@
 PODS:
+  - alt_sms_autofill (0.0.1):
+    - Flutter
   - awesome_notifications (0.0.3):
     - Flutter
   - Firebase/CoreOnly (8.9.0):
@@ -98,6 +100,7 @@ PODS:
   - YandexMapsMobile (4.0.0-full)
 
 DEPENDENCIES:
+  - alt_sms_autofill (from `.symlinks/plugins/alt_sms_autofill/ios`)
   - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -131,6 +134,8 @@ SPEC REPOS:
     - YandexMapsMobile
 
 EXTERNAL SOURCES:
+  alt_sms_autofill:
+    :path: ".symlinks/plugins/alt_sms_autofill/ios"
   awesome_notifications:
     :path: ".symlinks/plugins/awesome_notifications/ios"
   firebase_core:
@@ -165,6 +170,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/yandex_mapkit/ios"
 
 SPEC CHECKSUMS:
+  alt_sms_autofill: 6c623529a8de6a2a9297358bdb7dab3d8ad693e4
   awesome_notifications: 04530aafec8dac4635244ed4b4072f4aea6cc938
   Firebase: 13d8d96499e2635428d5bf0ec675df21f95d9a95
   firebase_core: dfcae4c150a5e24436a0b7677c470478a234d5bf
