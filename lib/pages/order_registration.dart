@@ -21,18 +21,20 @@ import 'package:chopar_app/widgets/order_registration/pay_type.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class OrderRegistration extends StatelessWidget {
+class OrderRegistration extends HookWidget {
   const OrderRegistration({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var startTime = DateTime.now();
+    final _isOrderLoading = useState<bool>(false);
     return ValueListenableBuilder<Box<Terminals>>(
         valueListenable: Hive.box<Terminals>('currentTerminal').listenable(),
         builder: (context, box, _) {
@@ -108,15 +110,23 @@ class OrderRegistration extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(
                                       vertical: 20, horizontal: 20),
                                   child: DefaultStyledButton(
+                                    color: [
+                                      Colors.yellow.shade700,
+                                      Colors.yellow.shade700
+                                    ],
+                                    isLoading: _isOrderLoading.value == true
+                                        ? _isOrderLoading.value
+                                        : null,
                                     width:
                                         MediaQuery.of(context).size.width - 30,
                                     text: 'Оформить заказ',
                                     onPressed: () async {
-
+                                      _isOrderLoading.value = true;
                                       final hashids = HashIds(
                                         salt: 'order',
                                         minHashLength: 15,
-                                        alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                                        alphabet:
+                                            'abcdefghijklmnopqrstuvwxyz1234567890',
                                       );
 
                                       Box<DeliveryType> box =
@@ -149,10 +159,11 @@ class OrderRegistration extends StatelessWidget {
                                           Hive.box<DeliveryNotes>(
                                                   'deliveryNotes')
                                               .get('deliveryNotes');
-                                      AdditionalPhoneNumber? additionalPhoneNumber =
-                                      Hive.box<AdditionalPhoneNumber>(
-                                          'additionalPhoneNumber')
-                                          .get('additionalPhoneNumber');
+                                      AdditionalPhoneNumber?
+                                          additionalPhoneNumber =
+                                          Hive.box<AdditionalPhoneNumber>(
+                                                  'additionalPhoneNumber')
+                                              .get('additionalPhoneNumber');
                                       // Check deliveryType is chosen
                                       if (deliveryType == null) {
                                         ScaffoldMessenger.of(context)
@@ -300,7 +311,10 @@ class OrderRegistration extends StatelessWidget {
                                           ['delivery_schedule'] = 'now';
                                       formData['formData']['sms_sub'] = false;
                                       formData['formData']['email_sub'] = false;
-                                      formData['formData']['additionalPhone'] = additionalPhoneNumber?.additionalPhoneNumber ?? '';
+                                      formData['formData']['additionalPhone'] =
+                                          additionalPhoneNumber
+                                                  ?.additionalPhoneNumber ??
+                                              '';
                                       if (deliveryTime.value ==
                                           DeliveryTimeEnum.later) {
                                         formData['formData']
@@ -400,11 +414,14 @@ class OrderRegistration extends StatelessWidget {
                                           Future.delayed(
                                               const Duration(
                                                   milliseconds: 2000), () {
+                                            _isOrderLoading.value = false;
                                             Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OrderDetail(orderId: hashids.encode(order.id)),
+                                                    OrderDetail(
+                                                        orderId: hashids
+                                                            .encode(order.id)),
                                               ),
                                             );
                                           });
