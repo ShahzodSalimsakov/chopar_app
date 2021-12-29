@@ -81,6 +81,10 @@ dependencies:
   awesome_notifications: ^0.6.19
   location: ^4.3.0
   alt_sms_autofill: ^1.0.0
+  fluttertoast: ^8.0.8
+  flash: ^2.0.3+1
+  top_snackbar_flutter: ^1.0.2
+  another_flushbar: ^1.10.28
 
 dependency_overrides:
 

@@ -50,6 +50,10 @@ class DeliveryTimeWidget extends HookWidget {
             Colors.grey.shade200,
             Colors.grey.shade200
           ];
+          List<Color> activeColor = [
+            Colors.yellow.shade700,
+            Colors.yellow.shade700
+          ];
           return Container(
               color: Colors.white,
               width: double.infinity,
@@ -74,7 +78,7 @@ class DeliveryTimeWidget extends HookWidget {
                               color: (deliveryTime == null ||
                                       deliveryTime.value != DeliveryTimeEnum.now
                                   ? disabledColors
-                                  : null),
+                                  : activeColor),
                               textSize: 16,
                               textColor: (deliveryTime == null ||
                                       deliveryTime.value != DeliveryTimeEnum.now
@@ -100,7 +104,7 @@ class DeliveryTimeWidget extends HookWidget {
                                       deliveryTime.value !=
                                           DeliveryTimeEnum.later
                                   ? disabledColors
-                                  : null),
+                                  : activeColor),
                               textSize: 16,
                               textColor: (deliveryTime == null ||
                                       deliveryTime.value !=
@@ -136,23 +140,33 @@ class DeliveryTimeWidget extends HookWidget {
                                     selectedIndex: selectedTimeIndex.value!,
                                     child: MySelectionItem(
                                       isForList: false,
-                                      title: timeValues.value[selectedTimeIndex.value!],
+                                      title: timeValues
+                                          .value[selectedTimeIndex.value!],
                                     ),
                                     onSelectedItemChanged: (index) {
                                       selectedTimeIndex.value = index!;
 
-                                      Box<DeliverLaterTime> box = Hive.box<DeliverLaterTime>('deliveryLaterTime');
-                                      DeliverLaterTime? deliveryTime = box.get('deliveryLaterTime');
-                                      DeliverLaterTime deliverLaterTime = new DeliverLaterTime();
-                                      deliverLaterTime.value = timeValues.value[index];
-                                      box.put('deliveryLaterTime', deliverLaterTime);
+                                      Box<DeliverLaterTime> box =
+                                          Hive.box<DeliverLaterTime>(
+                                              'deliveryLaterTime');
+                                      DeliverLaterTime? deliveryTime =
+                                          box.get('deliveryLaterTime');
+                                      DeliverLaterTime deliverLaterTime =
+                                          new DeliverLaterTime();
+                                      deliverLaterTime.value =
+                                          timeValues.value[index];
+                                      box.put('deliveryLaterTime',
+                                          deliverLaterTime);
                                     },
                                     mode: DirectSelectMode.tap,
-                                    items: timeValues.value.map((e) => MySelectionItem(title: e,)).toList()),
+                                    items: timeValues.value
+                                        .map((e) => MySelectionItem(
+                                              title: e,
+                                            ))
+                                        .toList()),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(40),
-                                  color: Colors.grey.shade200
-                                ),
+                                    borderRadius: BorderRadius.circular(40),
+                                    color: Colors.grey.shade200),
                               )
                             ]),
                           )
@@ -166,7 +180,8 @@ class MySelectionItem extends StatelessWidget {
   final String? title;
   final bool isForList;
 
-  const MySelectionItem({Key? key, this.title, this.isForList = true}) : super(key: key);
+  const MySelectionItem({Key? key, this.title, this.isForList = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -174,22 +189,22 @@ class MySelectionItem extends StatelessWidget {
       height: 40.0,
       child: isForList
           ? Padding(
-        child: _buildItem(context),
-        padding: EdgeInsets.all(10.0),
-      )
-          : Container(
-        // color: Colors.grey.shade200,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
-        child: Stack(
-          children: <Widget>[
-            _buildItem(context),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Icon(Icons.arrow_drop_down),
+              child: _buildItem(context),
+              padding: EdgeInsets.all(10.0),
             )
-          ],
-        ),
-      ),
+          : Container(
+              // color: Colors.grey.shade200,
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Stack(
+                children: <Widget>[
+                  _buildItem(context),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(Icons.arrow_drop_down),
+                  )
+                ],
+              ),
+            ),
     );
   }
 
@@ -203,8 +218,8 @@ class MySelectionItem extends StatelessWidget {
       alignment: Alignment.center,
       child: FittedBox(
           child: Text(
-            title!,
-          )),
+        title!,
+      )),
     );
   }
 }
