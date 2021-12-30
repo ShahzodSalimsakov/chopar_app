@@ -195,7 +195,7 @@ class DeliveryWidget extends HookWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         centerTitle: true,
-        title: Text('Укажите адрес доставки', style: TextStyle(fontSize: 20)),
+        title: Text('Не указан адрес', style: TextStyle(fontSize: 20)),
       ),
       body: SafeArea(
           child: Container(
