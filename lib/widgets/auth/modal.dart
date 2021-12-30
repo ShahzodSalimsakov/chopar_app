@@ -5,13 +5,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
-import 'package:alt_sms_autofill/alt_sms_autofill.dart';
 
 
 class AuthModal extends HookWidget {
@@ -94,7 +92,7 @@ class AuthModal extends HookWidget {
 
     useEffect(() {
       return () async {
-        AltSmsAutofill().unregisterListener();
+        // AltSmsAutofill().unregisterListener();
       };
     });
 
