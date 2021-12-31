@@ -11,7 +11,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
-import 'package:alt_sms_autofill/alt_sms_autofill.dart';
+// import 'package:alt_sms_autofill/alt_sms_autofill.dart';
 
 
 class AuthModal extends HookWidget {
