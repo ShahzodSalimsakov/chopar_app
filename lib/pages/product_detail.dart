@@ -432,20 +432,18 @@ class ProductDetail extends HookWidget {
             initialChildSize: 0.9,
             minChildSize: 0.5,
             maxChildSize: 1,
+            expand: true,
             builder: (_, controller) => Stack(
                   children: [
                     Container(
                       height: double.maxFinite,
                       padding: EdgeInsets.only(
-                          top: 20, left: 15, right: 15, bottom: 20),
+                          top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
                           child: Column(
                         children: [
                           Icon(Icons.keyboard_arrow_down, size: 50,),
-                          // Expanded(
-                          //     child: ListView(
-                          //   children: [
                           Center(
                               child: Hero(
                                   child: Image.network(
