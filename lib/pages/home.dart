@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
@@ -47,7 +48,9 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+late final TabController _tabController;
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
   var startTime = DateTime.now();
 
@@ -136,34 +139,36 @@ class _HomeState extends State<Home> {
       await Future.delayed(Duration(milliseconds: 50));
 
       Flushbar(
-        message: "Откроемся в 10:00",
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        reverseAnimationCurve: Curves.decelerate,
-        forwardAnimationCurve: Curves.elasticOut,
-        backgroundColor: Colors.black87,
-        isDismissible: false,
-        duration: Duration(days: 4),
-        icon: Container(
-          padding: EdgeInsets.only(left: 10),
-          child: Icon(
-            Icons.lock_clock,
-            color: Colors.white,
-            size: 40,
-
+          message: "Откроемся в 10:00",
+          flushbarPosition: FlushbarPosition.TOP,
+          flushbarStyle: FlushbarStyle.FLOATING,
+          reverseAnimationCurve: Curves.decelerate,
+          forwardAnimationCurve: Curves.elasticOut,
+          backgroundColor: Colors.black87,
+          isDismissible: false,
+          duration: Duration(days: 4),
+          icon: Container(
+            padding: EdgeInsets.only(left: 10),
+            child: Icon(
+              Icons.lock_clock,
+              color: Colors.white,
+              size: 40,
+            ),
           ),
-        ),
-        messageText: Container(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            "Откроемся в 10:00",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20.0, color: Colors.white, fontFamily: "ShadowsIntoLightTwo"),
+          messageText: Container(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              "Откроемся в 10:00",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontFamily: "ShadowsIntoLightTwo"),
+            ),
           ),
-        ),
           margin: EdgeInsets.all(10),
-          borderRadius: BorderRadius.circular(10)
-      )..show(context);
+          borderRadius: BorderRadius.circular(10))
+        ..show(context);
     }
   }
 
@@ -171,6 +176,7 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _tabController = TabController(length: 1, vsync: this);
     workTimeDialog();
     () async {
       Location location = new Location();
@@ -275,13 +281,7 @@ class _HomeState extends State<Home> {
       Container(
         margin: EdgeInsets.only(top: 5, left: 15.0, right: 15.0, bottom: 15.0),
         child: Column(
-          children: <Widget>[
-            OrderStatus(),
-            ChooseCity(),
-            ChooseTypeDelivery(),
-            SizedBox(height: 10.0),
-            ProductsList()
-          ],
+          children: <Widget>[ProductsList()],
         ),
       ),
       Sales(),
@@ -297,7 +297,54 @@ class _HomeState extends State<Home> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(child: tabs[selectedIndex]),
+        body: ValueListenableBuilder<Box<HomeIsScrolled>>(
+            valueListenable:
+                Hive.box<HomeIsScrolled>('homeIsScrolled').listenable(),
+            builder: (context, box, _) {
+              HomeIsScrolled? homeIsScrolled =
+                  Hive.box<HomeIsScrolled>('homeIsScrolled')
+                      .get('homeIsScrolled');
+              double height = 150;
+              if (homeIsScrolled != null) {
+                if (homeIsScrolled.value == true) {
+                  height = 0;
+                } else {
+                  height = 150;
+                }
+              }
+              return NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      toolbarHeight: height,
+                      title: Column(
+                        children: [
+                          OrderStatus(),
+                          ChooseCity(),
+                          ChooseTypeDelivery(),
+                          SizedBox(height: 10.0),
+                        ],
+                      ),
+                      // pinned: true,
+                      floating: true,
+                      // forceElevated: innerBoxIsScrolled,
+                      // bottom: TabBar(
+                      //   tabs: <Tab>[
+                      //     Tab(text: 'STATISTICS'),
+                      //   ],
+                      //   controller: _tabController,
+                      // ),
+                    ),
+                  ];
+                },
+                body: TabBarView(
+                  controller: _tabController,
+                  children: [SafeArea(child: tabs[selectedIndex])],
+                ),
+              );
+            }),
         bottomNavigationBar: Container(
             height: 80.0,
             decoration: BoxDecoration(
