@@ -4,6 +4,7 @@ import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
@@ -544,7 +545,23 @@ class ProductsList extends HookWidget {
                 }
 
                 return Expanded(
-                    child: ScrollableListTabView(
+                    child:  NotificationListener<ScrollNotification>(
+                    onNotification: (scrollNotification) {
+
+                  var pixels = scrollNotification.metrics.pixels;
+                  HomeIsScrolled hm = new HomeIsScrolled();
+                  if (pixels > 20) {
+                    hm.value = true;
+                  } else {
+                    hm.value = false;
+                  }
+
+                  Hive.box<HomeIsScrolled>('homeIsScrolled').put('homeIsScrolled', hm);
+                  return true;
+
+
+                },
+                child: ScrollableListTabView(
                         tabHeight: 50,
                         bodyAnimationDuration:
                             const Duration(milliseconds: 150),
@@ -586,7 +603,7 @@ class ProductsList extends HookWidget {
                                 itemBuilder: (_, index) => renderProduct(
                                     context, section.items?[index]),
                               ));
-                        }).toList()));
+                        }).toList())));
               });
         });
   }
