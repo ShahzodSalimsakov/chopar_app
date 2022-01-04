@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
@@ -52,7 +53,8 @@ late final TabController _tabController;
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
-  var startTime = DateTime.now();
+  var workTimeModalOpened = false;
+  late Flushbar _closeWorkModal;
 
   showAlertOnChangeLocation(LocationData currentLocation,
       DeliveryLocationData deliveryData, String house, String location) async {
@@ -135,40 +137,53 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   workTimeDialog() async {
-    if (startTime.hour > 3 && startTime.hour < 10) {
+    var startTime = DateTime.now();
+    startTime.minute;
+    if (startTime.hour >= 2 && startTime.minute >= 45 && startTime.hour < 10) {
       await Future.delayed(Duration(milliseconds: 50));
-
-      Flushbar(
-          message: "Откроемся в 10:00",
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          reverseAnimationCurve: Curves.decelerate,
-          forwardAnimationCurve: Curves.elasticOut,
-          backgroundColor: Colors.black87,
-          isDismissible: false,
-          duration: Duration(days: 4),
-          icon: Container(
-            padding: EdgeInsets.only(left: 10),
-            child: Icon(
-              Icons.lock_clock,
-              color: Colors.white,
-              size: 40,
+      if (!workTimeModalOpened) {
+        _closeWorkModal = Flushbar(
+            message: "Откроемся в 10:00",
+            flushbarPosition: FlushbarPosition.TOP,
+            flushbarStyle: FlushbarStyle.FLOATING,
+            reverseAnimationCurve: Curves.decelerate,
+            forwardAnimationCurve: Curves.elasticOut,
+            backgroundColor: Colors.black87,
+            isDismissible: false,
+            duration: Duration(days: 4),
+            icon: Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.lock_clock,
+                color: Colors.white,
+                size: 40,
+              ),
             ),
-          ),
-          messageText: Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Text(
-              "Откроемся в 10:00",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.white,
-                  fontFamily: "ShadowsIntoLightTwo"),
+            messageText: Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                "Откроемся в 10:00",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                    fontFamily: "ShadowsIntoLightTwo"),
+              ),
             ),
-          ),
-          margin: EdgeInsets.all(10),
-          borderRadius: BorderRadius.circular(10))
-        ..show(context);
+            margin: EdgeInsets.all(10),
+            borderRadius: BorderRadius.circular(10));
+        setState(() {
+          workTimeModalOpened = true;
+        });
+        _closeWorkModal.show(context);
+      }
+    } else {
+      if (workTimeModalOpened && _closeWorkModal != null) {
+        _closeWorkModal.dismiss();
+      }
+      setState(() {
+        workTimeModalOpened = false;
+      });
     }
   }
 
@@ -177,7 +192,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 1, vsync: this);
-    workTimeDialog();
+
+    Timer.periodic(new Duration(seconds: 1), (timer) {
+      workTimeDialog();
+    });
+
     () async {
       Location location = new Location();
 
@@ -309,7 +328,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 if (homeIsScrolled.value == true) {
                   height = 0;
                 } else {
-                  height = 150;
+                  height = 250;
                 }
               }
               return NestedScrollView(
@@ -324,7 +343,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           OrderStatus(),
                           ChooseCity(),
                           ChooseTypeDelivery(),
-                          SizedBox(height: 10.0),
                         ],
                       ),
                       // pinned: true,

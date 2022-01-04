@@ -362,7 +362,7 @@ class Lines {
   late String createdAt;
   late String updatedAt;
   dynamic modifiers;
-  Null parentId;
+  String? parentId;
   Variant? variant;
   List<Child>? child;
 
