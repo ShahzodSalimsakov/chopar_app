@@ -87,7 +87,7 @@ class _PayTypeState extends State<PayTypeWidget>
         payCash.value = value;
         Hive.box<PayCash>('payCash').put('payCash', payCash);
       },
-      scrollPadding: EdgeInsets.all(100),
+      scrollPadding: EdgeInsets.all(200),
     );
   }
 
@@ -127,6 +127,8 @@ class _PayTypeState extends State<PayTypeWidget>
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Image.asset(
                       'assets/images/$payment.png',
+                      height: 78,
+                      width: 78,
                     ),
                   ),
                 ))
@@ -153,6 +155,8 @@ class _PayTypeState extends State<PayTypeWidget>
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Image.asset(
               'assets/images/uzcard.png',
+              height: 78,
+              width: 78,
             ),
           )),
       SizedBox(

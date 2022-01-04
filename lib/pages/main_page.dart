@@ -20,6 +20,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   var _tabController;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -31,20 +32,16 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         margin: EdgeInsets.all(15.0),
         child: Column(
-          children: <Widget>[
-            AnimatedContainer(
-              duration: Duration(microseconds: 300),height: 150, child: Column(
-              children: [
-                OrderStatus(),
-                ChooseCity(),
-                ChooseTypeDelivery(),
-                SizedBox(height: 10.0),
-              ],
-            ),),
-            ProductsList()
+          children: [
+            OrderStatus(),
+            ChooseCity(),
+            ChooseTypeDelivery(),
+            SizedBox(height: 10.0),
+            ProductsList(),
           ],
         ),
       ),

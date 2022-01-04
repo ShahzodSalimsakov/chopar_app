@@ -15,6 +15,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
+var _scrollController = ScrollController();
 class ProductDetail extends HookWidget {
   const ProductDetail({Key? key, required this.detail, modifiers})
       : super(key: key);
@@ -163,6 +164,24 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    useEffect((){
+      Future.delayed(Duration(seconds: 1), ()
+      {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn,
+        ).then((value) {
+          _scrollController.animateTo(
+            _scrollController.position.minScrollExtent,
+            duration: Duration(seconds: 2),
+            curve: Curves.fastOutSlowIn,
+          );
+        });
+      });
+    });
+
     final formatCurrency = new NumberFormat.currency(
         locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
@@ -479,6 +498,7 @@ class ProductDetail extends HookWidget {
                           top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
+                        controller: _scrollController,
                           child: Column(
                         children: [
                           Icon(

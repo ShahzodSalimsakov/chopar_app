@@ -41,13 +41,13 @@ class OrderStatus extends HookWidget {
 
     return orders.value.length > 0
         ? Container(
-            margin: EdgeInsets.only(top: 15),
+            margin: EdgeInsets.only(top: 0),
             child: Card(
               elevation: 2,
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 20),
+                    margin: EdgeInsets.only(top: 2),
                     child: Row(
                       children: [
                         Text(

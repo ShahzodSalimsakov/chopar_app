@@ -37,7 +37,7 @@ class OrderCommentWidget extends HookWidget {
               Hive.box<DeliveryNotes>('deliveryNotes')
                   .put('deliveryNotes', deliveryNotes);
             },
-            scrollPadding: EdgeInsets.all(200),
+            scrollPadding: EdgeInsets.only(bottom: 200),
           )
         ]));
   }
