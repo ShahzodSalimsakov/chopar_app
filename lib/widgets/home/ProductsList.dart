@@ -547,7 +547,6 @@ class ProductsList extends HookWidget {
                 return Expanded(
                     child:  NotificationListener<ScrollNotification>(
                     onNotification: (scrollNotification) {
-
                   var pixels = scrollNotification.metrics.pixels;
                   HomeIsScrolled hm = new HomeIsScrolled();
                   if (pixels > 20) {
@@ -584,6 +583,7 @@ class ProductsList extends HookWidget {
                                 itemCount: 1,
                                 itemBuilder: (_, index) =>
                                     renderCreatePizza(context, section.items),
+
                               ),
                             );
                           }

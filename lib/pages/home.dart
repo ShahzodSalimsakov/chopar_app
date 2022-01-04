@@ -6,6 +6,7 @@ import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
+import 'package:chopar_app/pages/main_page.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/auth/modal.dart';
 import 'package:chopar_app/widgets/basket/basket.dart';
@@ -48,7 +49,6 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-late final TabController _tabController;
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
@@ -176,8 +176,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 1, vsync: this);
-    workTimeDialog();
+    // workTimeDialog();
     () async {
       Location location = new Location();
 
@@ -278,12 +277,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final tabs = [
-      Container(
-        margin: EdgeInsets.only(top: 5, left: 15.0, right: 15.0, bottom: 15.0),
-        child: Column(
-          children: <Widget>[ProductsList()],
-        ),
-      ),
+      MainPage(),
       Sales(),
       ProfileIndex(),
       // Container(
@@ -297,54 +291,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         backgroundColor: Colors.white,
-        body: ValueListenableBuilder<Box<HomeIsScrolled>>(
-            valueListenable:
-                Hive.box<HomeIsScrolled>('homeIsScrolled').listenable(),
-            builder: (context, box, _) {
-              HomeIsScrolled? homeIsScrolled =
-                  Hive.box<HomeIsScrolled>('homeIsScrolled')
-                      .get('homeIsScrolled');
-              double height = 150;
-              if (homeIsScrolled != null) {
-                if (homeIsScrolled.value == true) {
-                  height = 0;
-                } else {
-                  height = 150;
-                }
-              }
-              return NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  return <Widget>[
-                    SliverAppBar(
-                      backgroundColor: Colors.white,
-                      toolbarHeight: height,
-                      title: Column(
-                        children: [
-                          OrderStatus(),
-                          ChooseCity(),
-                          ChooseTypeDelivery(),
-                          SizedBox(height: 10.0),
-                        ],
-                      ),
-                      // pinned: true,
-                      floating: true,
-                      // forceElevated: innerBoxIsScrolled,
-                      // bottom: TabBar(
-                      //   tabs: <Tab>[
-                      //     Tab(text: 'STATISTICS'),
-                      //   ],
-                      //   controller: _tabController,
-                      // ),
-                    ),
-                  ];
-                },
-                body: TabBarView(
-                  controller: _tabController,
-                  children: [SafeArea(child: tabs[selectedIndex])],
-                ),
-              );
-            }),
+        body: SafeArea(child: tabs[selectedIndex]),
         bottomNavigationBar: Container(
             height: 80.0,
             decoration: BoxDecoration(
