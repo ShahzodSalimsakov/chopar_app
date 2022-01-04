@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-late final TabController _tabController;
-late final ScrollController _scrollController;
+// late final ScrollController _scrollController;
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -20,85 +19,55 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  var _tabController;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 1, vsync: this);
-    _scrollController = ScrollController();
+    // _scrollController = ScrollController();
   }
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        margin: EdgeInsets.all(15.0),
+        child: Column(
+          children: <Widget>[
+            AnimatedContainer(
+              duration: Duration(microseconds: 300),height: 150, child: Column(
+              children: [
+                OrderStatus(),
+                ChooseCity(),
+                ChooseTypeDelivery(),
+                SizedBox(height: 10.0),
+              ],
+            ),),
+            ProductsList()
+          ],
+        ),
+      ),
+    );
     return Scaffold(
       backgroundColor: Colors.white,
       body: ValueListenableBuilder<Box<HomeIsScrolled>>(
           valueListenable:
               Hive.box<HomeIsScrolled>('homeIsScrolled').listenable(),
           builder: (context, box, _) {
-            HomeIsScrolled? homeIsScrolled =
-            Hive.box<HomeIsScrolled>('homeIsScrolled')
-                .get('homeIsScrolled');
-            double height = 150;
-            if (homeIsScrolled != null) {
-              if (homeIsScrolled.value == true) {
-                height = 0;
-              } else {
-                height = 150;
-              }
-            }
+            // HomeIsScrolled? homeIsScrolled =
+            // Hive.box<HomeIsScrolled>('homeIsScrolled')
+            //     .get('homeIsScrolled');
+            // double height = 150;
+            // if (homeIsScrolled != null) {
+            //   if (homeIsScrolled.value == true) {
+            //     height = 0;
+            //   } else {
+            //     height = 150;
+            //   }
+            // }
 
-            return Container(
-              margin: EdgeInsets.all(15.0),
-              child: Column(
-                children: <Widget>[
-                  AnimatedContainer(
-                    duration: Duration(microseconds: 300),height: height, child: Column(
-                    children: [
-                      OrderStatus(),
-                      ChooseCity(),
-                      ChooseTypeDelivery(),
-                      SizedBox(height: 10.0),
-                    ],
-                  ),),
-                  ProductsList()
-                ],
-              ),
-            );
-            return NestedScrollView(
-              // controller: _scrollController,
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverAppBar(
-                    backgroundColor: Colors.white,
-                    toolbarHeight: 150,
-                    // title: ,
-                    // pinned: true,
-                    floating: true,
-                    forceElevated: innerBoxIsScrolled,
-                    // bottom: TabBar(
-                    //   tabs: <Tab>[
-                    //     Tab(text: 'STATISTICS'),
-                    //   ],
-                    //   controller: _tabController,
-                    // ),
-                  ),
-                ];
-              },
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 5, left: 15.0, right: 15.0, bottom: 15.0),
-                    child: Column(
-                      children: <Widget>[ProductsList()],
-                    ),
-                  )
-                ],
-              ),
-            );
+            // return ;
           }),
     );
   }
