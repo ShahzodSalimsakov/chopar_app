@@ -166,6 +166,7 @@ class OrderRegistration extends HookWidget {
                                               .get('additionalPhoneNumber');
                                       // Check deliveryType is chosen
                                       if (deliveryType == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -178,6 +179,7 @@ class OrderRegistration extends HookWidget {
                                           deliveryType.value ==
                                               DeliveryTypeEnum.pickup) {
                                         if (currentTerminal == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -191,6 +193,7 @@ class OrderRegistration extends HookWidget {
                                           deliveryType.value ==
                                               DeliveryTypeEnum.deliver) {
                                         if (deliveryLocationData == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -199,6 +202,7 @@ class OrderRegistration extends HookWidget {
                                         } else if (deliveryLocationData
                                                 .address ==
                                             null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -210,6 +214,7 @@ class OrderRegistration extends HookWidget {
                                       // Check delivery time selected
 
                                       if (deliveryTime == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -218,6 +223,7 @@ class OrderRegistration extends HookWidget {
                                       } else if (deliveryTime.value ==
                                           DeliveryTimeEnum.later) {
                                         if (deliverLaterTime == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -227,6 +233,7 @@ class OrderRegistration extends HookWidget {
                                                 null ||
                                             deliverLaterTime.value.length ==
                                                 0) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -236,6 +243,7 @@ class OrderRegistration extends HookWidget {
                                       }
 
                                       if (payType == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -411,10 +419,10 @@ class OrderRegistration extends HookWidget {
                                                           TextAlign.center,
                                                     ),
                                                   ));
+                                          _isOrderLoading.value = false;
                                           Future.delayed(
                                               const Duration(
                                                   milliseconds: 2000), () {
-                                            _isOrderLoading.value = false;
                                             Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
@@ -431,6 +439,14 @@ class OrderRegistration extends HookWidget {
                                         //     encodedId: basketData.encodedId ?? '',
                                         //     lineCount: basketData.lines?.length ?? 0);
                                         // basketBox.put('basket', newBasket);
+                                      } else {
+                                        var errResponse = jsonDecode(response.body);
+                                        _isOrderLoading.value = false;
+                                        // print(response.body);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(errResponse['error']['message'])));
+                                        return;
                                       }
                                     },
                                   ),

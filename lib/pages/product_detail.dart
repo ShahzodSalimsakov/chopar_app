@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
+var _scrollController = ScrollController();
 class ProductDetail extends HookWidget {
   const ProductDetail({Key? key, required this.detail, modifiers})
       : super(key: key);
@@ -108,19 +111,17 @@ class ProductDetail extends HookWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Column(
-                                    children: [
+                                Column(children: [
                                   modifierImage(m),
                                   SizedBox(height: 10),
-                                  SafeArea(child: Center(
+                                  SafeArea(
+                                      child: Center(
                                     widthFactor: 0.5,
-                                    child:
-
-                                  Text(
-                                    m.name,
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                    )),
+                                    child: Text(
+                                      m.name,
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  )),
                                   SizedBox(height: 10),
                                   DecoratedBox(
                                       decoration: BoxDecoration(
@@ -163,6 +164,24 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    useEffect((){
+      Future.delayed(Duration(seconds: 1), ()
+      {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn,
+        ).then((value) {
+          _scrollController.animateTo(
+            _scrollController.position.minScrollExtent,
+            duration: Duration(seconds: 2),
+            curve: Curves.fastOutSlowIn,
+          );
+        });
+      });
+    });
+
     final formatCurrency = new NumberFormat.currency(
         locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
@@ -424,6 +443,44 @@ class ProductDetail extends HookWidget {
       }
       _isBasketLoading.value = true;
       Navigator.of(context).pop();
+
+      showPlatformDialog(
+          context: context,
+          builder: (context) {
+            Future.delayed(Duration(seconds: 1), () {
+              Navigator.of(context).pop(true);
+            });
+            return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.cartPlus,
+                      size: 80,
+                      color: Colors.yellow.shade700,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Добавлено",
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      detail.attributeData?.name?.chopar?.ru,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ));
+          });
+      return;
     }
 
     return makeDismisible(
@@ -441,9 +498,13 @@ class ProductDetail extends HookWidget {
                           top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
+                        controller: _scrollController,
                           child: Column(
                         children: [
-                          Icon(Icons.keyboard_arrow_down, size: 50,),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 50,
+                          ),
                           Center(
                               child: Hero(
                                   child: Image.network(
@@ -510,24 +571,24 @@ class ProductDetail extends HookWidget {
                       )),
                     ),
                     Positioned(
-                      child: Container(
-                        // width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                        color: Colors.white,
-                        child: DefaultStyledButton(
-                            isLoading: _isBasketLoading.value == true
-                                ? _isBasketLoading.value
-                                : null,
-                            width: MediaQuery.of(context).size.width,
-                            onPressed: () {
-                              addToBasket();
-                            },
-                            text:
-                                'В корзину ${formatCurrency.format(totalPrice)}'),
-                      ),
-                      bottom: 0,
-                      width: MediaQuery.of(context).size.width
-                    ),
+                        child: Container(
+                          // width: double.maxFinite,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          color: Colors.white,
+                          child: DefaultStyledButton(
+                              isLoading: _isBasketLoading.value == true
+                                  ? _isBasketLoading.value
+                                  : null,
+                              width: MediaQuery.of(context).size.width,
+                              onPressed: () {
+                                addToBasket();
+                              },
+                              text:
+                                  'В корзину ${formatCurrency.format(totalPrice)}'),
+                        ),
+                        bottom: 0,
+                        width: MediaQuery.of(context).size.width),
                   ],
                 )));
   }

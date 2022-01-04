@@ -190,9 +190,11 @@ class BasketWidget extends HookWidget {
       var productTotalPrice = 0;
       if (lines.child != null && lines.child!.length > 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
-        productTotalPrice = (int.parse(double.parse(lines.total ?? '0.0000')
-            .toStringAsFixed(0)) + int.parse(double.parse(lines.child![0].total ?? '0.0000')
-            .toStringAsFixed(0))) * lines.quantity;
+        productTotalPrice = (int.parse(
+                    double.parse(lines.total ?? '0.0000').toStringAsFixed(0)) +
+                int.parse(double.parse(lines.child![0].total ?? '0.0000')
+                    .toStringAsFixed(0))) *
+            lines.quantity;
         String childsName = lines.child!
             .where((Child child) =>
                 lines.variant!.product!.boxId != child.variant!.product!.id)
@@ -203,11 +205,10 @@ class BasketWidget extends HookWidget {
         if (childsName.length > 0) {
           productName = '$productName + $childsName';
         }
-
       } else {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
-        productTotalPrice = int.parse(double.parse(lines.total ?? '0.0000')
-            .toStringAsFixed(0));
+        productTotalPrice =
+            int.parse(double.parse(lines.total ?? '0.0000').toStringAsFixed(0));
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 40),
@@ -290,9 +291,22 @@ class BasketWidget extends HookWidget {
                             ],
                           ),
                         )
-                      : SizedBox()
+                      : SizedBox(),
                 ],
-              )
+              ),
+              lines.quantity == 1
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close_outlined,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        destroyLine(lines.id);
+                      },
+                    )
+                  : SizedBox(
+                      width: 0,
+                    )
             ],
           ));
     }

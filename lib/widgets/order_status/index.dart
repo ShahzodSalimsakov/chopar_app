@@ -39,42 +39,51 @@ class OrderStatus extends HookWidget {
       getMyOrders();
     }, []);
 
-    return orders.value.length > 0 ? Container(
-      padding: EdgeInsets.all(0),
-      height: 80,
-        child: Card(
-          elevation: 2,
-          child: Column(
-            children: [
-              Row(children: [
-                Text("Активный заказ", style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
-              ], mainAxisAlignment: MainAxisAlignment.center,),
-              ListView.builder(
-                shrinkWrap: true,
-                  itemCount: orders.value.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final hashids = HashIds(
-                      salt: 'order',
-                      minHashLength: 15,
-                      alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
-                    );
-                    Order order = orders.value[index];
-                    return TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OrderDetail(orderId: hashids.encode(order.id)),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return orders.value.length > 0
+        ? Container(
+            margin: EdgeInsets.only(top: 0),
+            child: Card(
+              elevation: 2,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 2),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Активный заказ",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                  ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: orders.value.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final hashids = HashIds(
+                          salt: 'order',
+                          minHashLength: 15,
+                          alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                        );
+                        Order order = orders.value[index];
+                        return TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OrderDetail(
+                                      orderId: hashids.encode(order.id)),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
                                     'Статус заказа: № ${order.id}',
@@ -90,12 +99,11 @@ class OrderStatus extends HookWidget {
                                           color: Colors.green))
                                 ],
                               ),
-                            ],
-                          ),
-                        ));
-                  }),
-            ],
-          ),
-        )) : SizedBox();
+                            ));
+                      }),
+                ],
+              ),
+            ))
+        : SizedBox();
   }
 }

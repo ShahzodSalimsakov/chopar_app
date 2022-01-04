@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
+import 'package:chopar_app/pages/main_page.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/auth/modal.dart';
 import 'package:chopar_app/widgets/basket/basket.dart';
@@ -47,9 +50,11 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
-  var startTime = DateTime.now();
+  var workTimeModalOpened = false;
+  late Flushbar _closeWorkModal;
 
   showAlertOnChangeLocation(LocationData currentLocation,
       DeliveryLocationData deliveryData, String house, String location) async {
@@ -132,38 +137,53 @@ class _HomeState extends State<Home> {
   }
 
   workTimeDialog() async {
-    if (startTime.hour > 3 && startTime.hour < 10) {
+    var startTime = DateTime.now();
+    startTime.minute;
+    if (startTime.hour >= 2 && startTime.minute >= 45 && startTime.hour < 10) {
       await Future.delayed(Duration(milliseconds: 50));
-
-      Flushbar(
-        message: "Откроемся в 10:00",
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        reverseAnimationCurve: Curves.decelerate,
-        forwardAnimationCurve: Curves.elasticOut,
-        backgroundColor: Colors.black87,
-        isDismissible: false,
-        duration: Duration(days: 4),
-        icon: Container(
-          padding: EdgeInsets.only(left: 10),
-          child: Icon(
-            Icons.lock_clock,
-            color: Colors.white,
-            size: 40,
-
-          ),
-        ),
-        messageText: Container(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            "Откроемся в 10:00",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20.0, color: Colors.white, fontFamily: "ShadowsIntoLightTwo"),
-          ),
-        ),
-          margin: EdgeInsets.all(10),
-          borderRadius: BorderRadius.circular(10)
-      )..show(context);
+      if (!workTimeModalOpened) {
+        _closeWorkModal = Flushbar(
+            message: "Откроемся в 10:00",
+            flushbarPosition: FlushbarPosition.TOP,
+            flushbarStyle: FlushbarStyle.FLOATING,
+            reverseAnimationCurve: Curves.decelerate,
+            forwardAnimationCurve: Curves.elasticOut,
+            backgroundColor: Colors.black87,
+            isDismissible: false,
+            duration: Duration(days: 4),
+            icon: Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.lock_clock,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+            messageText: Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                "Откроемся в 10:00",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                    fontFamily: "ShadowsIntoLightTwo"),
+              ),
+            ),
+            margin: EdgeInsets.all(10),
+            borderRadius: BorderRadius.circular(10));
+        setState(() {
+          workTimeModalOpened = true;
+        });
+        _closeWorkModal.show(context);
+      }
+    } else {
+      if (workTimeModalOpened && _closeWorkModal != null) {
+        _closeWorkModal.dismiss();
+      }
+      setState(() {
+        workTimeModalOpened = false;
+      });
     }
   }
 
@@ -171,7 +191,10 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    workTimeDialog();
+
+    Timer.periodic(new Duration(seconds: 1), (timer) {
+      workTimeDialog();
+    });
     () async {
       Location location = new Location();
 
@@ -272,18 +295,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final tabs = [
-      Container(
-        margin: EdgeInsets.only(top: 5, left: 15.0, right: 15.0, bottom: 15.0),
-        child: Column(
-          children: <Widget>[
-            OrderStatus(),
-            ChooseCity(),
-            ChooseTypeDelivery(),
-            SizedBox(height: 10.0),
-            ProductsList()
-          ],
-        ),
-      ),
+      MainPage(),
       Sales(),
       ProfileIndex(),
       // Container(

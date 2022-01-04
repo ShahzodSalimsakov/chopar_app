@@ -6,6 +6,7 @@ import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_notes.dart';
 import 'package:chopar_app/models/delivery_type.dart';
+import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
@@ -29,6 +30,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'models/additional_phone_number.dart';
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
+import 'models/home_scroll_position.dart';
 import 'models/stock.dart';
 import 'models/yandex_geo_data.dart';
 import 'utils/http_locale_loader.dart';
@@ -90,6 +92,8 @@ void main() async {
   Hive.registerAdapter(PayCashAdapter());
   Hive.registerAdapter(StockAdapter());
   Hive.registerAdapter(AdditionalPhoneNumberAdapter());
+  Hive.registerAdapter(HomeIsScrolledAdapter());
+  Hive.registerAdapter(HomeScrollPositionAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -103,6 +107,8 @@ void main() async {
   await Hive.openBox<PayCash>('payCash');
   await Hive.openBox<Stock>('stock');
   await Hive.openBox<AdditionalPhoneNumber>('additionalPhoneNumber');
+  await Hive.openBox<HomeIsScrolled>('homeIsScrolled');
+  await Hive.openBox<HomeScrollPosition>('homeScrollPosition');
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],
