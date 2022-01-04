@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-late final TabController _tabController;
-late final ScrollController _scrollController;
+// late final ScrollController _scrollController;
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -20,12 +19,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  var _tabController;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 1, vsync: this);
-    _scrollController = ScrollController();
+    // _scrollController = ScrollController();
   }
 
   @override
