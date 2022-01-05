@@ -166,7 +166,7 @@ class OrderDetail extends HookWidget {
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
-                          color: Colors.green))
+                          color: order.value!.status == 'cancelled' ? Colors.red : Colors.green))
                 ],
               ),
               Row(
