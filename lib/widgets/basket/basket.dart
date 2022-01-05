@@ -58,6 +58,7 @@ class BasketWidget extends HookWidget {
           }
 
           basketBox.put('basket', basket);
+          // await Future.delayed(Duration(milliseconds: 50));
           basketData.value = newBasket;
         }
       }
@@ -377,7 +378,7 @@ class BasketWidget extends HookWidget {
                             ? basketItems(item)
                             : Dismissible(
                                 direction: DismissDirection.endToStart,
-                                key: UniqueKey(),
+                                key: Key(item.id.toString()),
                                 child: basketItems(item),
                                 background: Container(
                                   color: Colors.red,

@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 var _scrollController = ScrollController();
+
 class ProductDetail extends HookWidget {
   const ProductDetail({Key? key, required this.detail, modifiers})
       : super(key: key);
@@ -164,10 +165,8 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    useEffect((){
-      Future.delayed(Duration(seconds: 1), ()
-      {
+    useEffect(() {
+      Future.delayed(Duration(seconds: 1), () {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: Duration(seconds: 2),
@@ -175,10 +174,11 @@ class ProductDetail extends HookWidget {
         ).then((value) {
           _scrollController.animateTo(
             _scrollController.position.minScrollExtent,
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 1),
             curve: Curves.fastOutSlowIn,
           );
         });
+        _scrollController.dispose();
       });
     });
 
@@ -498,77 +498,78 @@ class ProductDetail extends HookWidget {
                           top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
-                        controller: _scrollController,
+                          controller: _scrollController,
                           child: Column(
-                        children: [
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 50,
-                          ),
-                          Center(
-                              child: Hero(
-                                  child: Image.network(
-                                    detail.image,
-                                    width: 300.0,
-                                    height: 300.0,
-                                    // width: MediaQuery.of(context).size.width / 2.5,
-                                  ),
-                                  tag: detail.image)),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Text(
-                            detail.attributeData?.name?.chopar?.ru ?? '',
-                            style: TextStyle(fontSize: 26),
-                          ),
-                          Html(
-                            data:
-                                detail.attributeData?.description?.chopar?.ru ??
+                            children: [
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 50,
+                              ),
+                              Center(
+                                  child: Hero(
+                                      child: Image.network(
+                                        detail.image,
+                                        width: 300.0,
+                                        height: 300.0,
+                                        // width: MediaQuery.of(context).size.width / 2.5,
+                                      ),
+                                      tag: detail.image)),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Text(
+                                detail.attributeData?.name?.chopar?.ru ?? '',
+                                style: TextStyle(fontSize: 26),
+                              ),
+                              Html(
+                                data: detail.attributeData?.description?.chopar
+                                        ?.ru ??
                                     '',
-                            // style: TextStyle(
-                            //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                          ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: List<Widget>.generate(
-                                  detail.variants.length, (index) {
-                                return Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 3.0),
-                                    child: ElevatedButton(
-                                        style: ButtonStyle(
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(
-                                                        25.0))),
-                                            backgroundColor: MaterialStateProperty.all(
-                                                selectedVariant.value == detail.variants[index].customName
+                                // style: TextStyle(
+                                //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: List<Widget>.generate(
+                                      detail.variants.length, (index) {
+                                    return Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 3.0),
+                                        child: ElevatedButton(
+                                            style: ButtonStyle(
+                                                shape: MaterialStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                25.0))),
+                                                backgroundColor: MaterialStateProperty.all(selectedVariant.value == detail.variants[index].customName
                                                     ? Colors.yellow.shade600
                                                     : Colors.grey.shade100)),
-                                        child: Text(detail.variants[index].customName,
-                                            style: TextStyle(
-                                                fontSize: 13.0,
-                                                color: selectedVariant.value == detail.variants[index].customName
-                                                    ? Colors.white
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          selectedVariant.value =
-                                              detail.variants[index].customName;
-                                        }));
-                              }),
-                            ),
-                          ),
-                          ...modifiersList(
-                              modifiers, addModifier, activeModifiers, context),
-                          SizedBox(
-                            height: 50,
-                          )
-                          //   ],
-                          // )),
-                        ],
-                      )),
+                                            child: Text(detail.variants[index].customName,
+                                                style: TextStyle(
+                                                    fontSize: 13.0,
+                                                    color: selectedVariant.value == detail.variants[index].customName
+                                                        ? Colors.white
+                                                        : Colors.grey)),
+                                            onPressed: () {
+                                              selectedVariant.value = detail
+                                                  .variants[index].customName;
+                                            }));
+                                  }),
+                                ),
+                              ),
+                              ...modifiersList(modifiers, addModifier,
+                                  activeModifiers, context),
+                              SizedBox(
+                                height: 50,
+                              )
+                              //   ],
+                              // )),
+                            ],
+                          )),
                     ),
                     Positioned(
                         child: Container(
