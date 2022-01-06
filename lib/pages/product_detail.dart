@@ -8,10 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+
+var _scrollController = ScrollController();
 
 class ProductDetail extends HookWidget {
   const ProductDetail({Key? key, required this.detail, modifiers})
@@ -108,19 +112,17 @@ class ProductDetail extends HookWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Column(
-                                    children: [
+                                Column(children: [
                                   modifierImage(m),
                                   SizedBox(height: 10),
-                                  SafeArea(child: Center(
+                                  SafeArea(
+                                      child: Center(
                                     widthFactor: 0.5,
-                                    child:
-
-                                  Text(
-                                    m.name,
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                    )),
+                                    child: Text(
+                                      m.name,
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  )),
                                   SizedBox(height: 10),
                                   DecoratedBox(
                                       decoration: BoxDecoration(
@@ -163,6 +165,25 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    useEffect(() {
+      Future.delayed(Duration(seconds: 1), () {
+        _scrollController
+            .animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn,
+        )
+            .then((value) {
+          _scrollController.animateTo(
+            _scrollController.position.minScrollExtent,
+            duration: Duration(seconds: 1),
+            curve: Curves.fastOutSlowIn,
+          );
+        });
+        // _scrollController.dispose();
+      });
+    });
+
     final formatCurrency = new NumberFormat.currency(
         locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
@@ -180,7 +201,7 @@ class ProductDetail extends HookWidget {
           Variants? activeValue = detail.variants
               .firstWhere((item) => item.customName == selectedVariant.value);
           if (activeValue != null && activeValue.modifiers != null) {
-            modifier = [...activeValue.modifiers!];
+            modifier = [...activeValue.modifiers!.where((m) => m.price > 0)];
             if (activeValue.modifierProduct != null) {
               // Modifiers? sausageModifier = modifier.firstWhere(
               //     (mod) => mod.id == activeValue.modifierProduct?.id, orElse: () => null);
@@ -230,7 +251,7 @@ class ProductDetail extends HookWidget {
           }
         } catch (e) {}
       }
-      Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
+      // Modifiers zeroModifier = modifiers.firstWhere((mod) => mod.price == 0);
       if (activeModifiers.value.contains(modId)) {
         Modifiers currentModifier =
             modifiers.firstWhere((mod) => mod.id == modId);
@@ -240,9 +261,9 @@ class ProductDetail extends HookWidget {
             .where((id) => modId != id)
             .where((id) => id != null)
             .toList();
-        if (resultModifiers.length == 0) {
-          resultModifiers.add(zeroModifier.id);
-        }
+        // if (resultModifiers.length == 0) {
+        //   resultModifiers.add(zeroModifier.id);
+        // }
         activeModifiers.value = resultModifiers;
       } else {
         Modifiers currentModifier =
@@ -251,7 +272,7 @@ class ProductDetail extends HookWidget {
           activeModifiers.value = [modId].toList();
         } else {
           List<int> selectedModifiers = [
-            ...activeModifiers.value.where((id) => id != zeroModifier.id),
+            ...activeModifiers.value,
             modId,
           ].toList();
 
@@ -385,12 +406,10 @@ class ProductDetail extends HookWidget {
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
               encodedId: basketData.encodedId ?? '',
               lineCount: basketData.lines?.length ?? 0);
-          print(newBasket.lineCount);
           basketBox.put('basket', newBasket);
         }
       } else {
@@ -417,7 +436,6 @@ class ProductDetail extends HookWidget {
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketData = new BasketData.fromJson(json['data']);
           Basket newBasket = new Basket(
               encodedId: basketData.encodedId ?? '',
@@ -427,6 +445,44 @@ class ProductDetail extends HookWidget {
       }
       _isBasketLoading.value = true;
       Navigator.of(context).pop();
+
+      showPlatformDialog(
+          context: context,
+          builder: (context) {
+            Future.delayed(Duration(seconds: 1), () {
+              Navigator.of(context).pop(true);
+            });
+            return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.cartPlus,
+                      size: 80,
+                      color: Colors.yellow.shade700,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Добавлено",
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      detail.attributeData?.name?.chopar?.ru,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ));
+          });
+      return;
     }
 
     return makeDismisible(
@@ -435,103 +491,110 @@ class ProductDetail extends HookWidget {
             initialChildSize: 0.9,
             minChildSize: 0.5,
             maxChildSize: 1,
+            expand: true,
             builder: (_, controller) => Stack(
                   children: [
                     Container(
                       height: double.maxFinite,
                       padding: EdgeInsets.only(
-                          top: 20, left: 15, right: 15, bottom: 20),
+                          top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
+                          // controller: _scrollController,
+                          // physics: const NeverScrollableScrollPhysics(),
                           child: Column(
-                        children: [
-                          // Expanded(
-                          //     child: ListView(
-                          //   children: [
-                          Center(
-                              child: Hero(
-                                  child: Image.network(
-                                    detail.image,
-                                    width: 300.0,
-                                    height: 300.0,
-                                    // width: MediaQuery.of(context).size.width / 2.5,
-                                  ),
-                                  tag: detail.image)),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Text(
-                            detail.attributeData?.name?.chopar?.ru ?? '',
-                            style: TextStyle(fontSize: 26),
-                          ),
-                          Html(
-                            data:
-                                detail.attributeData?.description?.chopar?.ru ??
+                            children: [
+                              IconButton(
+                                icon: Icon(FontAwesomeIcons.chevronDown, color: Colors.grey,),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              Center(
+                                  child: Hero(
+                                      child: Image.network(
+                                        detail.image,
+                                        width: 250.0,
+                                        height: 250.0,
+                                        // width: MediaQuery.of(context).size.width / 2.5,
+                                      ),
+                                      tag: detail.image)),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Text(
+                                detail.attributeData?.name?.chopar?.ru ?? '',
+                                style: TextStyle(fontSize: 26),
+                              ),
+                              Html(
+                                data: detail.attributeData?.description?.chopar
+                                        ?.ru ??
                                     '',
-                            // style: TextStyle(
-                            //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                          ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: List<Widget>.generate(
-                                  detail.variants.length, (index) {
-                                return Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 3.0),
-                                    child: ElevatedButton(
-                                        style: ButtonStyle(
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(
-                                                        25.0))),
-                                            backgroundColor: MaterialStateProperty.all(
-                                                selectedVariant.value == detail.variants[index].customName
+                                // style: TextStyle(
+                                //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: List<Widget>.generate(
+                                      detail.variants.length, (index) {
+                                    return Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 3.0),
+                                        child: ElevatedButton(
+                                            style: ButtonStyle(
+                                                shape: MaterialStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                25.0))),
+                                                backgroundColor: MaterialStateProperty.all(selectedVariant.value == detail.variants[index].customName
                                                     ? Colors.yellow.shade600
                                                     : Colors.grey.shade100)),
-                                        child: Text(detail.variants[index].customName,
-                                            style: TextStyle(
-                                                fontSize: 13.0,
-                                                color: selectedVariant.value == detail.variants[index].customName
-                                                    ? Colors.white
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          selectedVariant.value =
-                                              detail.variants[index].customName;
-                                        }));
-                              }),
-                            ),
-                          ),
-                          ...modifiersList(
-                              modifiers, addModifier, activeModifiers, context),
-                          SizedBox(
-                            height: 50,
-                          )
-                          //   ],
-                          // )),
-                        ],
-                      )),
+                                            child: Text(detail.variants[index].customName,
+                                                style: TextStyle(
+                                                    fontSize: 13.0,
+                                                    color: selectedVariant.value == detail.variants[index].customName
+                                                        ? Colors.white
+                                                        : Colors.grey)),
+                                            onPressed: () {
+                                              selectedVariant.value = detail
+                                                  .variants[index].customName;
+                                            }));
+                                  }),
+                                ),
+                              ),
+                              ...modifiersList(modifiers, addModifier,
+                                  activeModifiers, context),
+                              SizedBox(
+                                height: 50,
+                              )
+                              //   ],
+                              // )),
+                            ],
+                          )),
                     ),
                     Positioned(
-                      child: Container(
-                        // width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                        color: Colors.white,
-                        child: DefaultStyledButton(
-                            isLoading: _isBasketLoading.value == true
-                                ? _isBasketLoading.value
-                                : null,
-                            width: MediaQuery.of(context).size.width,
-                            onPressed: () {
-                              addToBasket();
-                            },
-                            text:
-                                'В корзину ${formatCurrency.format(totalPrice)}'),
-                      ),
-                      bottom: 0,
-                      width: MediaQuery.of(context).size.width
-                    ),
+                        child: Container(
+                          // width: double.maxFinite,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          color: Colors.white,
+                          child: DefaultStyledButton(
+                              isLoading: _isBasketLoading.value == true
+                                  ? _isBasketLoading.value
+                                  : null,
+                              width: MediaQuery.of(context).size.width,
+                              onPressed: () {
+                                addToBasket();
+                              },
+                              text:
+                                  'В корзину ${formatCurrency.format(totalPrice)}'),
+                        ),
+                        bottom: 0,
+                        width: MediaQuery.of(context).size.width),
                   ],
                 )));
   }

@@ -143,12 +143,12 @@ class Items {
   Null draftedAt;
   Null draftParentId;
   late String customName;
-  Null productId;
-  Null customNameUz;
+  late int? productId;
+  late String? customNameUz;
   late int active;
   Null modifierProdId;
   late String price;
-  late String image;
+  late String? image;
   List<Variants>? variants;
   List<Modifiers>? modifiers;
 
@@ -270,7 +270,7 @@ class Variants {
   late int active;
   int? modifierProdId;
   late String price;
-  late String image;
+  late String? image;
   List<Modifiers>? modifiers;
   List<Map<String, dynamic>>? variants;
   ModifierProduct? modifierProduct;

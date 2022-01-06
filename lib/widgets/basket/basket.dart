@@ -58,6 +58,7 @@ class BasketWidget extends HookWidget {
           }
 
           basketBox.put('basket', basket);
+          // await Future.delayed(Duration(milliseconds: 50));
           basketData.value = newBasket;
         }
       }
@@ -128,7 +129,6 @@ class BasketWidget extends HookWidget {
           lineItem.child!.length > 0 &&
           lineItem.child![0].variant?.product?.id !=
               lineItem.variant?.product?.boxId) {
-        print(lineItem);
         return Container(
           height: 50.0,
           width: 50,
@@ -188,8 +188,14 @@ class BasketWidget extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       String? productName = '';
+      var productTotalPrice = 0;
       if (lines.child != null && lines.child!.length > 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
+        productTotalPrice = (int.parse(
+                    double.parse(lines.total ?? '0.0000').toStringAsFixed(0)) +
+                int.parse(double.parse(lines.child![0].total ?? '0.0000')
+                    .toStringAsFixed(0))) *
+            lines.quantity;
         String childsName = lines.child!
             .where((Child child) =>
                 lines.variant!.product!.boxId != child.variant!.product!.id)
@@ -202,6 +208,8 @@ class BasketWidget extends HookWidget {
         }
       } else {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
+        productTotalPrice =
+            int.parse(double.parse(lines.total ?? '0.0000').toStringAsFixed(0));
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 40),
@@ -239,9 +247,7 @@ class BasketWidget extends HookWidget {
               Column(
                 children: [
                   Text(
-                    formatCurrency.format(int.parse(
-                        double.parse(lines.total ?? '0.0000')
-                            .toStringAsFixed(0))),
+                    formatCurrency.format(productTotalPrice),
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(
@@ -281,15 +287,27 @@ class BasketWidget extends HookWidget {
                                       size: 20.0,
                                       color: Colors.yellow.shade600),
                                   onPressed: () {
-                                    print('increasing');
                                     increaseQuantity(lines);
                                   })
                             ],
                           ),
                         )
-                      : SizedBox()
+                      : SizedBox(),
                 ],
-              )
+              ),
+              lines.quantity == 1
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close_outlined,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        destroyLine(lines.id);
+                      },
+                    )
+                  : SizedBox(
+                      width: 0,
+                    )
             ],
           ));
     }
@@ -298,7 +316,6 @@ class BasketWidget extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       Basket? basket = basketBox.get('basket');
-      print(basketData.value);
       if (basket == null) {
         return Center(
           child: Column(
@@ -361,7 +378,7 @@ class BasketWidget extends HookWidget {
                             ? basketItems(item)
                             : Dismissible(
                                 direction: DismissDirection.endToStart,
-                                key: UniqueKey(),
+                                key: Key(item.id.toString()),
                                 child: basketItems(item),
                                 background: Container(
                                   color: Colors.red,
@@ -494,7 +511,6 @@ class BasketWidget extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          print(json);
           BasketData basketLocalData = BasketData.fromJson(json['data']);
           if (basketLocalData.lines != null) {
             basket.lineCount = basketLocalData.lines!.length;

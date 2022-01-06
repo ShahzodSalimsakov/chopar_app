@@ -12,7 +12,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ChooseCity extends HookWidget {
-
   Widget cityModal(BuildContext context, List<City> cities) {
     City? currentCity = Hive.box<City>('currentCity').get('currentCity');
     return Material(
@@ -48,13 +47,15 @@ class ChooseCity extends HookWidget {
                         cities[index].name,
                         style: TextStyle(color: Colors.black),
                       ),
-                      trailing: currentCity != null && currentCity.id == cities[index].id
+                      trailing: currentCity != null &&
+                              currentCity.id == cities[index].id
                           ? const Icon(
                               Icons.check,
                               color: Colors.yellow,
                             )
                           : null,
-                      selected: currentCity != null && currentCity.id == cities[index].id,
+                      selected: currentCity != null &&
+                          currentCity.id == cities[index].id,
                       onTap: () {
                         Box<City> transaction = Hive.box<City>('currentCity');
                         transaction.put('currentCity', cities[index]);
@@ -99,8 +100,9 @@ class ChooseCity extends HookWidget {
         builder: (context, box, _) {
           City? currentCity = box.get('currentCity');
           return ListTile(
+              contentPadding: EdgeInsets.only(left: 2),
               title: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     currentCity != null ? currentCity.name : 'Ваш город',

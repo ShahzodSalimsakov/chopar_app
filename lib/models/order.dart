@@ -16,7 +16,7 @@ class Order {
   String? notes;
   late String currency;
   String? billingPhone;
-  Null billingEmail;
+  String? billingEmail;
   Null shippingCompanyName;
   Null billingCompanyName;
   String? billingFirstname;
@@ -30,7 +30,7 @@ class Order {
   Null billingCountry;
   Null billingZip;
   String? shippingPhone;
-  Null shippingEmail;
+  String? shippingEmail;
   String? shippingFirstname;
   String? shippingLastname;
   String? shippingAddress;
@@ -362,7 +362,7 @@ class Lines {
   late String createdAt;
   late String updatedAt;
   dynamic modifiers;
-  Null parentId;
+  String? parentId;
   Variant? variant;
   List<Child>? child;
 
@@ -619,8 +619,8 @@ class Assets {
   late String location;
   late String kind;
   late String subKind;
-  Null width;
-  Null height;
+  late String? width;
+  late String? height;
   late String title;
   late String originalFilename;
   Null caption;

@@ -28,10 +28,8 @@ class Orders extends HookWidget {
       };
       var url = Uri.https('api.choparpizza.uz', '/api/my-orders');
       var response = await http.get(url, headers: requestHeaders);
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        print(json);
         List<Order> orderList = List<Order>.from(
             json['data'].map((m) => new Order.fromJson(m)).toList());
         orders.value = orderList;
@@ -121,7 +119,7 @@ class Orders extends HookWidget {
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 14,
-                                  color: Colors.green))
+                                  color: order.status == 'cancelled' ? Colors.red : Colors.green))
                         ],
                       ),
                       Row(

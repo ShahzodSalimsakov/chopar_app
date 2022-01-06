@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chopar_app/models/additional_phone_number.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
@@ -12,6 +13,7 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/home.dart';
 import 'package:chopar_app/pages/order_detail.dart';
+import 'package:chopar_app/widgets/order_registration/additional_phone_number.dart';
 import 'package:chopar_app/widgets/order_registration/comment.dart';
 import 'package:chopar_app/widgets/order_registration/delivery_time.dart';
 import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
@@ -19,19 +21,20 @@ import 'package:chopar_app/widgets/order_registration/pay_type.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class OrderRegistration extends StatelessWidget {
+class OrderRegistration extends HookWidget {
   const OrderRegistration({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var startTime = DateTime.now();
-    print(startTime.hour);
+    final _isOrderLoading = useState<bool>(false);
     return ValueListenableBuilder<Box<Terminals>>(
         valueListenable: Hive.box<Terminals>('currentTerminal').listenable(),
         builder: (context, box, _) {
@@ -89,6 +92,10 @@ class OrderRegistration extends StatelessWidget {
                                     SizedBox(
                                       height: 5,
                                     ),
+                                    AdditionalPhoneNumberWidget(),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
                                     OrderCommentWidget(),
                                     SizedBox(
                                       height: 50,
@@ -103,15 +110,23 @@ class OrderRegistration extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(
                                       vertical: 20, horizontal: 20),
                                   child: DefaultStyledButton(
+                                    color: [
+                                      Colors.yellow.shade700,
+                                      Colors.yellow.shade700
+                                    ],
+                                    isLoading: _isOrderLoading.value == true
+                                        ? _isOrderLoading.value
+                                        : null,
                                     width:
                                         MediaQuery.of(context).size.width - 30,
                                     text: 'Оформить заказ',
                                     onPressed: () async {
-
+                                      _isOrderLoading.value = true;
                                       final hashids = HashIds(
                                         salt: 'order',
                                         minHashLength: 15,
-                                        alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                                        alphabet:
+                                            'abcdefghijklmnopqrstuvwxyz1234567890',
                                       );
 
                                       Box<DeliveryType> box =
@@ -144,8 +159,14 @@ class OrderRegistration extends StatelessWidget {
                                           Hive.box<DeliveryNotes>(
                                                   'deliveryNotes')
                                               .get('deliveryNotes');
+                                      AdditionalPhoneNumber?
+                                          additionalPhoneNumber =
+                                          Hive.box<AdditionalPhoneNumber>(
+                                                  'additionalPhoneNumber')
+                                              .get('additionalPhoneNumber');
                                       // Check deliveryType is chosen
                                       if (deliveryType == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -158,6 +179,7 @@ class OrderRegistration extends StatelessWidget {
                                           deliveryType.value ==
                                               DeliveryTypeEnum.pickup) {
                                         if (currentTerminal == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -171,6 +193,7 @@ class OrderRegistration extends StatelessWidget {
                                           deliveryType.value ==
                                               DeliveryTypeEnum.deliver) {
                                         if (deliveryLocationData == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -179,6 +202,7 @@ class OrderRegistration extends StatelessWidget {
                                         } else if (deliveryLocationData
                                                 .address ==
                                             null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -190,6 +214,7 @@ class OrderRegistration extends StatelessWidget {
                                       // Check delivery time selected
 
                                       if (deliveryTime == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -198,6 +223,7 @@ class OrderRegistration extends StatelessWidget {
                                       } else if (deliveryTime.value ==
                                           DeliveryTimeEnum.later) {
                                         if (deliverLaterTime == null) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -207,6 +233,7 @@ class OrderRegistration extends StatelessWidget {
                                                 null ||
                                             deliverLaterTime.value.length ==
                                                 0) {
+                                          _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(
@@ -216,6 +243,7 @@ class OrderRegistration extends StatelessWidget {
                                       }
 
                                       if (payType == null) {
+                                        _isOrderLoading.value = false;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -249,7 +277,8 @@ class OrderRegistration extends StatelessWidget {
                                           'house': '',
                                           'entrance': '',
                                           'door_code': '',
-                                          'deliveryType': ''
+                                          'deliveryType': '',
+                                          'sourceType': "app"
                                         }
                                       };
                                       if (deliveryType!.value ==
@@ -290,7 +319,10 @@ class OrderRegistration extends StatelessWidget {
                                           ['delivery_schedule'] = 'now';
                                       formData['formData']['sms_sub'] = false;
                                       formData['formData']['email_sub'] = false;
-
+                                      formData['formData']['additionalPhone'] =
+                                          additionalPhoneNumber
+                                                  ?.additionalPhoneNumber ??
+                                              '';
                                       if (deliveryTime.value ==
                                           DeliveryTimeEnum.later) {
                                         formData['formData']
@@ -320,11 +352,9 @@ class OrderRegistration extends StatelessWidget {
                                       var response = await http.post(url,
                                           headers: requestHeaders,
                                           body: jsonEncode(formData));
-                                      print(response.body);
                                       if (response.statusCode == 200 ||
                                           response.statusCode == 201) {
                                         var json = jsonDecode(response.body);
-                                        print(json);
 
                                         Map<String, String> requestHeaders = {
                                           'Content-type': 'application/json',
@@ -346,7 +376,6 @@ class OrderRegistration extends StatelessWidget {
                                         if (response.statusCode == 200 ||
                                             response.statusCode == 201) {
                                           json = jsonDecode(response.body);
-                                          print(json);
                                           Order order = Order.fromJson(json);
                                           await Hive.box<Basket>('basket')
                                               .delete('basket');
@@ -390,6 +419,7 @@ class OrderRegistration extends StatelessWidget {
                                                           TextAlign.center,
                                                     ),
                                                   ));
+                                          _isOrderLoading.value = false;
                                           Future.delayed(
                                               const Duration(
                                                   milliseconds: 2000), () {
@@ -397,7 +427,9 @@ class OrderRegistration extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OrderDetail(orderId: hashids.encode(order.id)),
+                                                    OrderDetail(
+                                                        orderId: hashids
+                                                            .encode(order.id)),
                                               ),
                                             );
                                           });
@@ -407,6 +439,14 @@ class OrderRegistration extends StatelessWidget {
                                         //     encodedId: basketData.encodedId ?? '',
                                         //     lineCount: basketData.lines?.length ?? 0);
                                         // basketBox.put('basket', newBasket);
+                                      } else {
+                                        var errResponse = jsonDecode(response.body);
+                                        _isOrderLoading.value = false;
+                                        // print(response.body);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(errResponse['error']['message'])));
+                                        return;
                                       }
                                     },
                                   ),

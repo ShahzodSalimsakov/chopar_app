@@ -38,9 +38,7 @@ class OrderDetail extends HookWidget {
                             'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
-                          width:
-                          MediaQuery.of(context).size.width -
-                              30,
+                          width: MediaQuery.of(context).size.width - 30,
                         ))
                   ],
                 )),
@@ -50,9 +48,7 @@ class OrderDetail extends HookWidget {
                     Positioned(
                         right: 0,
                         child: Container(
-                          width:
-                          MediaQuery.of(context).size.width -
-                              30,
+                          width: MediaQuery.of(context).size.width - 30,
                           child: Image.network(
                             'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
                             height: 50,
@@ -71,11 +67,11 @@ class OrderDetail extends HookWidget {
         // width: MediaQuery.of(context).size.width / 2.5,
       );
     } else {
-        return SvgPicture.network(
-          'https://choparpizza.uz/no_photo.svg',
-          width: 100.0,
-          height: 73.0,
-        );
+      return SvgPicture.network(
+        'https://choparpizza.uz/no_photo.svg',
+        width: 100.0,
+        height: 73.0,
+      );
     }
   }
 
@@ -90,17 +86,15 @@ class OrderDetail extends HookWidget {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${currentUser.userToken}'
       };
-      var url =
-      Uri.https('api.choparpizza.uz', '/api/orders', {'id': orderId});
-      var response = await http.get(url,
-          headers: requestHeaders);
+      var url = Uri.https('api.choparpizza.uz', '/api/orders', {'id': orderId});
+      var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         order.value = Order.fromJson(json);
       }
     }
 
-    useEffect((){
+    useEffect(() {
       loadOrder();
     }, []);
 
@@ -112,24 +106,30 @@ class OrderDetail extends HookWidget {
             foregroundColor: Colors.black,
             backgroundColor: Colors.white,
           ),
-          body: Center(child: CircularProgressIndicator(),));
+          body: Center(
+            child: CircularProgressIndicator(),
+          ));
     } else {
       var t = AppLocalizations.of(context);
-      DateTime createdAt = DateTime.parse(order.value!.createdAt ?? '').toLocal();
+      DateTime createdAt =
+      DateTime.parse(order.value!.createdAt ?? '').toLocal();
       // createdAt = createdAt.toLocal();
       DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
-      String house = order.value!.house != null ? ', дом: ${order.value!.house}' : '';
-      String flat = order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
-      String entrance =
-      order.value!.entrance != null ? ', подъезд: ${order.value!.entrance}' : '';
-      String doorCode =
-      order.value!.doorCode != null ? ', код на двери: ${order.value!.doorCode}' : '';
+      String house =
+      order.value!.house != null ? ', дом: ${order.value!.house}' : '';
+      String flat =
+      order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
+      String entrance = order.value!.entrance != null
+          ? ', подъезд: ${order.value!.entrance}'
+          : '';
+      String doorCode = order.value!.doorCode != null
+          ? ', код на двери: ${order.value!.doorCode}'
+          : '';
       String address =
           '${order.value!.billingAddress}${house}${flat}${entrance}${doorCode}';
-
 
       return Scaffold(
         appBar: AppBar(
@@ -151,7 +151,7 @@ class OrderDetail extends HookWidget {
               ),
             ],
           ),
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: Column(
             children: [
@@ -166,7 +166,7 @@ class OrderDetail extends HookWidget {
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
-                          color: Colors.green))
+                          color: order.value!.status == 'cancelled' ? Colors.red : Colors.green))
                 ],
               ),
               Row(
@@ -184,9 +184,6 @@ class OrderDetail extends HookWidget {
               Divider(
                 color: Colors.grey,
               ),
-              SizedBox(
-                height: 10,
-              ),
               Row(
                 children: [
                   Flexible(
@@ -198,7 +195,7 @@ class OrderDetail extends HookWidget {
                 ],
               ),
               SizedBox(
-                height: 10,
+                height: 8,
               ),
               Divider(
                 color: Colors.grey,
@@ -215,24 +212,31 @@ class OrderDetail extends HookWidget {
                               ?.name?.chopar?.ru ??
                               ''),
                           leading: renderProductImage(context, lineItem),
-                          trailing:
-                          Text(formatCurrency.format(order.value!.orderTotal / 100)),
+                          trailing: Text(
+                              '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} ${formatCurrency.format(double.parse(order.value!.basket!.lines![index].total))}'),
                         );
                       },
                       separatorBuilder: (context, index) {
                         return Divider();
                       },
                       itemCount: order.value!.basket?.lines?.length ?? 0)),
+              SizedBox(
+                height: 10,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Text("Общая сумма:", style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              )),
                   // Text(
                   //   t!.prodCount(order.basket?.lines?.length ?? 0),
                   //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
                   // ),
                   Text(formatCurrency.format(order.value!.orderTotal / 100),
                       style: TextStyle(
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ))
                 ],
@@ -248,7 +252,5 @@ class OrderDetail extends HookWidget {
         ),
       );
     }
-
-
   }
 }

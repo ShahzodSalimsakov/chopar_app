@@ -74,8 +74,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     } else {
                       deliveryType.value = DeliveryTypeEnum.pickup;
                     }
-                    Box<DeliveryType> box = Hive.box<DeliveryType>(
-                        'deliveryType');
+                    Box<DeliveryType> box =
+                        Hive.box<DeliveryType>('deliveryType');
                     box.put('deliveryType', deliveryType);
                   },
                   // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
@@ -92,26 +92,32 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
               children: [
                 ValueListenableBuilder<Box<DeliveryLocationData>>(
                     valueListenable:
-                    Hive.box<DeliveryLocationData>('deliveryLocationData').listenable(),
+                        Hive.box<DeliveryLocationData>('deliveryLocationData')
+                            .listenable(),
                     builder: (context, box, _) {
-                      DeliveryLocationData? deliveryLocationData = box.get('deliveryLocationData');
+                      DeliveryLocationData? deliveryLocationData =
+                          box.get('deliveryLocationData');
                       String deliveryText = 'Укажите адрес доставки';
                       if (deliveryLocationData != null) {
                         deliveryText = deliveryLocationData?.address ?? '';
-                        String house = deliveryLocationData.house != null ? ', дом: ${deliveryLocationData.house}' : '';
-                        String flat = deliveryLocationData.flat != null ? ', кв.: ${deliveryLocationData.flat}' : '';
-                        String entrance =
-                        deliveryLocationData.entrance != null ? ', подъезд: ${deliveryLocationData.entrance}' : '';
+                        String house = deliveryLocationData.house != null
+                            ? ', дом: ${deliveryLocationData.house}'
+                            : '';
+                        String flat = deliveryLocationData.flat != null
+                            ? ', кв.: ${deliveryLocationData.flat}'
+                            : '';
+                        String entrance = deliveryLocationData.entrance != null
+                            ? ', подъезд: ${deliveryLocationData.entrance}'
+                            : '';
                         deliveryText =
                             '${deliveryText}${house}${flat}${entrance}';
                       }
-                      print(deliveryText);
                       return TextButton(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Flexible(child:
-                              Text(
+                              Flexible(
+                                  child: Text(
                                 deliveryText,
                               )),
                               // Spacer(),
@@ -130,7 +136,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     }),
                 ValueListenableBuilder<Box<Terminals>>(
                     valueListenable:
-                    Hive.box<Terminals>('currentTerminal').listenable(),
+                        Hive.box<Terminals>('currentTerminal').listenable(),
                     builder: (context, box, _) {
                       Terminals? currentTerminal = box.get('currentTerminal');
                       return TextButton(
@@ -138,8 +144,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        Scaffold(
+                                    builder: (context) => Scaffold(
                                           appBar: AppBar(
                                             leading: IconButton(
                                               icon: Icon(

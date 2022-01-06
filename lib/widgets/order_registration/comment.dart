@@ -8,7 +8,7 @@ class OrderCommentWidget extends HookWidget {
     return Container(
         color: Colors.white,
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: EdgeInsets.only(top: 20, bottom: 60, right: 20, left: 20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
             'Комментарий к заказу',
@@ -28,14 +28,16 @@ class OrderCommentWidget extends HookWidget {
               fillColor: Colors.grey.shade200,
               filled: true,
               hintText: 'Комментарий',
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             onChanged: (value) {
               DeliveryNotes deliveryNotes = new DeliveryNotes();
               deliveryNotes.deliveryNotes = value;
-              Hive.box<DeliveryNotes>('deliveryNotes').put('deliveryNotes', deliveryNotes);
+              Hive.box<DeliveryNotes>('deliveryNotes')
+                  .put('deliveryNotes', deliveryNotes);
             },
-            scrollPadding: EdgeInsets.all(200),
+            scrollPadding: EdgeInsets.only(bottom: 200),
           )
         ]));
   }
