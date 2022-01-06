@@ -568,9 +568,9 @@ class ProductDetail extends HookWidget {
                               ),
                               ...modifiersList(modifiers, addModifier,
                                   activeModifiers, context),
-                              SizedBox(
-                                height: 50,
-                              )
+                              // SizedBox(
+                              //   height: 50,
+                              // )
                               //   ],
                               // )),
                             ],
