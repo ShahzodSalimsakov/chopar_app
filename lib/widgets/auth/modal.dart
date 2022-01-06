@@ -88,6 +88,8 @@ class AuthModal extends HookWidget {
       }
     }
 
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
