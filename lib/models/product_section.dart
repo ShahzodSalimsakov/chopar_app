@@ -143,8 +143,8 @@ class Items {
   Null draftedAt;
   Null draftParentId;
   late String customName;
-  Null productId;
-  Null customNameUz;
+  late int? productId;
+  late String? customNameUz;
   late int active;
   Null modifierProdId;
   late String price;

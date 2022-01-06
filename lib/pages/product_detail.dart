@@ -120,7 +120,7 @@ class ProductDetail extends HookWidget {
                                     widthFactor: 0.5,
                                     child: Text(
                                       m.name,
-                                      style: TextStyle(fontSize: 18),
+                                      style: TextStyle(fontSize: 14),
                                     ),
                                   )),
                                   SizedBox(height: 10),
@@ -167,18 +167,20 @@ class ProductDetail extends HookWidget {
   Widget build(BuildContext context) {
     useEffect(() {
       Future.delayed(Duration(seconds: 1), () {
-        _scrollController.animateTo(
+        _scrollController
+            .animateTo(
           _scrollController.position.maxScrollExtent,
           duration: Duration(seconds: 2),
           curve: Curves.fastOutSlowIn,
-        ).then((value) {
+        )
+            .then((value) {
           _scrollController.animateTo(
             _scrollController.position.minScrollExtent,
             duration: Duration(seconds: 1),
             curve: Curves.fastOutSlowIn,
           );
         });
-        _scrollController.dispose();
+        // _scrollController.dispose();
       });
     });
 
@@ -498,19 +500,22 @@ class ProductDetail extends HookWidget {
                           top: 0, left: 15, right: 15, bottom: 20),
                       color: Colors.white,
                       child: SingleChildScrollView(
-                          controller: _scrollController,
+                          // controller: _scrollController,
+                          // physics: const NeverScrollableScrollPhysics(),
                           child: Column(
                             children: [
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                size: 50,
+                              IconButton(
+                                icon: Icon(FontAwesomeIcons.chevronDown, color: Colors.grey,),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
                               ),
                               Center(
                                   child: Hero(
                                       child: Image.network(
                                         detail.image,
-                                        width: 300.0,
-                                        height: 300.0,
+                                        width: 250.0,
+                                        height: 250.0,
                                         // width: MediaQuery.of(context).size.width / 2.5,
                                       ),
                                       tag: detail.image)),
@@ -563,9 +568,9 @@ class ProductDetail extends HookWidget {
                               ),
                               ...modifiersList(modifiers, addModifier,
                                   activeModifiers, context),
-                              SizedBox(
-                                height: 50,
-                              )
+                              // SizedBox(
+                              //   height: 50,
+                              // )
                               //   ],
                               // )),
                             ],

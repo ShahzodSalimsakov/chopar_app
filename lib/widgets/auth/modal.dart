@@ -90,12 +90,6 @@ class AuthModal extends HookWidget {
       }
     }
 
-    useEffect(() {
-      return () async {
-        // AltSmsAutofill().unregisterListener();
-      };
-    });
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
