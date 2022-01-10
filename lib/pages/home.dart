@@ -50,7 +50,6 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
   var workTimeModalOpened = false;
@@ -138,8 +137,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   workTimeDialog() async {
     var startTime = DateTime.now();
+    DateTime dateC = DateTime.now();
     startTime.minute;
-    if (startTime.hour >= 2 && startTime.minute >= 45 && startTime.hour < 10) {
+
+    DateTime dateA = DateTime(dateC.year, dateC.month, dateC.day, 2, 45);
+    DateTime dateB = DateTime(dateC.year, dateC.month, dateC.day, 10);
+    if (dateA.isBefore(dateC) && dateB.isAfter(dateC)) {
       await Future.delayed(Duration(milliseconds: 50));
       if (!workTimeModalOpened) {
         _closeWorkModal = Flushbar(
@@ -185,6 +188,53 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         workTimeModalOpened = false;
       });
     }
+
+    // if (startTime.hour >= 2 && startTime.minute >= 45 && startTime.hour < 10) {
+    //   await Future.delayed(Duration(milliseconds: 50));
+    //   if (!workTimeModalOpened) {
+    //     _closeWorkModal = Flushbar(
+    //         message: "Откроемся в 10:00",
+    //         flushbarPosition: FlushbarPosition.TOP,
+    //         flushbarStyle: FlushbarStyle.FLOATING,
+    //         reverseAnimationCurve: Curves.decelerate,
+    //         forwardAnimationCurve: Curves.elasticOut,
+    //         backgroundColor: Colors.black87,
+    //         isDismissible: false,
+    //         duration: Duration(days: 4),
+    //         icon: Container(
+    //           padding: EdgeInsets.only(left: 10),
+    //           child: Icon(
+    //             Icons.lock_clock,
+    //             color: Colors.white,
+    //             size: 40,
+    //           ),
+    //         ),
+    //         messageText: Container(
+    //           padding: EdgeInsets.symmetric(vertical: 20),
+    //           child: Text(
+    //             "Откроемся в 10:00",
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //                 fontSize: 20.0,
+    //                 color: Colors.white,
+    //                 fontFamily: "ShadowsIntoLightTwo"),
+    //           ),
+    //         ),
+    //         margin: EdgeInsets.all(10),
+    //         borderRadius: BorderRadius.circular(10));
+    //     setState(() {
+    //       workTimeModalOpened = true;
+    //     });
+    //     _closeWorkModal.show(context);
+    //   }
+    // } else {
+    //   if (workTimeModalOpened && _closeWorkModal != null) {
+    //     _closeWorkModal.dismiss();
+    //   }
+    //   setState(() {
+    //     workTimeModalOpened = false;
+    //   });
+    // }
   }
 
   @override
