@@ -79,12 +79,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => DeliveryModal()));
             },
-            child: Text("Нет")),
+            child: Text("Да")),
         TextButton(
             onPressed: () {
               return Navigator.pop(context, true);
             },
-            child: Text("Да"))
+            child: Text("Нет"))
       ],
     );
     showPlatformDialog(
@@ -269,7 +269,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
 
       // location.enableBackgroundMode(enable: true);
-      location.changeSettings(distanceFilter: 200, interval: 20000);
+      location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.high);
       _locationData = await location.getLocation();
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -301,6 +301,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         setLocation(_locationData, deliveryData, house);
       }
       location.onLocationChanged.listen((LocationData currentLocation) async {
+        print(currentLocation);
         DeliveryLocationData? deliveryLocationData =
             Hive.box<DeliveryLocationData>('deliveryLocationData')
                 .get('deliveryLocationData');
