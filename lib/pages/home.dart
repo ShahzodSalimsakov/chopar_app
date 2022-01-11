@@ -55,45 +55,45 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   var workTimeModalOpened = false;
   late Flushbar _closeWorkModal;
 
-  showAlertOnChangeLocation(LocationData currentLocation,
-      DeliveryLocationData deliveryData, String house, String location) async {
-    await Future.delayed(Duration(milliseconds: 50));
-    String deliveryText = '';
-    if (deliveryData != null) {
-      deliveryText = deliveryData?.address ?? '';
-      String house =
-          deliveryData.house != null ? ', дом: ${deliveryData.house}' : '';
-      String flat =
-          deliveryData.flat != null ? ', кв.: ${deliveryData.flat}' : '';
-      String entrance = deliveryData.entrance != null
-          ? ', подъезд: ${deliveryData.entrance}'
-          : '';
-      deliveryText = '${deliveryText}${house}${flat}${entrance}';
-    }
-    PlatformAlertDialog alert = PlatformAlertDialog(
-      title: Text("Изменилось местоположение"),
-      content: Text("Ваш адрес: ${deliveryText}?"),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DeliveryModal()));
-            },
-            child: Text("Да")),
-        TextButton(
-            onPressed: () {
-              return Navigator.pop(context, true);
-            },
-            child: Text("Нет"))
-      ],
-    );
-    showPlatformDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  // showAlertOnChangeLocation(LocationData currentLocation,
+  //     DeliveryLocationData deliveryData, String house, String location) async {
+  //   await Future.delayed(Duration(milliseconds: 50));
+  //   String deliveryText = '';
+  //   if (deliveryData != null) {
+  //     deliveryText = deliveryData?.address ?? '';
+  //     String house =
+  //         deliveryData.house != null ? ', дом: ${deliveryData.house}' : '';
+  //     String flat =
+  //         deliveryData.flat != null ? ', кв.: ${deliveryData.flat}' : '';
+  //     String entrance = deliveryData.entrance != null
+  //         ? ', подъезд: ${deliveryData.entrance}'
+  //         : '';
+  //     deliveryText = '${deliveryText}${house}${flat}${entrance}';
+  //   }
+  //   PlatformAlertDialog alert = PlatformAlertDialog(
+  //     title: Text("Изменилось местоположение"),
+  //     content: Text("Ваш адрес: ${deliveryText}?"),
+  //     actions: [
+  //       TextButton(
+  //           onPressed: () {
+  //             Navigator.push(context,
+  //                 MaterialPageRoute(builder: (context) => DeliveryModal()));
+  //           },
+  //           child: Text("Да")),
+  //       TextButton(
+  //           onPressed: () {
+  //             return Navigator.pop(context, true);
+  //           },
+  //           child: Text("Нет"))
+  //     ],
+  //   );
+  //   showPlatformDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
   Future<void> setLocation(LocationData location,
       DeliveryLocationData deliveryData, String house) async {
@@ -188,53 +188,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         workTimeModalOpened = false;
       });
     }
-
-    // if (startTime.hour >= 2 && startTime.minute >= 45 && startTime.hour < 10) {
-    //   await Future.delayed(Duration(milliseconds: 50));
-    //   if (!workTimeModalOpened) {
-    //     _closeWorkModal = Flushbar(
-    //         message: "Откроемся в 10:00",
-    //         flushbarPosition: FlushbarPosition.TOP,
-    //         flushbarStyle: FlushbarStyle.FLOATING,
-    //         reverseAnimationCurve: Curves.decelerate,
-    //         forwardAnimationCurve: Curves.elasticOut,
-    //         backgroundColor: Colors.black87,
-    //         isDismissible: false,
-    //         duration: Duration(days: 4),
-    //         icon: Container(
-    //           padding: EdgeInsets.only(left: 10),
-    //           child: Icon(
-    //             Icons.lock_clock,
-    //             color: Colors.white,
-    //             size: 40,
-    //           ),
-    //         ),
-    //         messageText: Container(
-    //           padding: EdgeInsets.symmetric(vertical: 20),
-    //           child: Text(
-    //             "Откроемся в 10:00",
-    //             textAlign: TextAlign.center,
-    //             style: TextStyle(
-    //                 fontSize: 20.0,
-    //                 color: Colors.white,
-    //                 fontFamily: "ShadowsIntoLightTwo"),
-    //           ),
-    //         ),
-    //         margin: EdgeInsets.all(10),
-    //         borderRadius: BorderRadius.circular(10));
-    //     setState(() {
-    //       workTimeModalOpened = true;
-    //     });
-    //     _closeWorkModal.show(context);
-    //   }
-    // } else {
-    //   if (workTimeModalOpened && _closeWorkModal != null) {
-    //     _closeWorkModal.dismiss();
-    //   }
-    //   setState(() {
-    //     workTimeModalOpened = false;
-    //   });
-    // }
   }
 
   @override
@@ -269,7 +222,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
 
       // location.enableBackgroundMode(enable: true);
-      location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.high);
+      // location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.balanced);
       _locationData = await location.getLocation();
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -300,46 +253,45 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
         setLocation(_locationData, deliveryData, house);
       }
-      location.onLocationChanged.listen((LocationData currentLocation) async {
-        print(currentLocation);
-        DeliveryLocationData? deliveryLocationData =
-            Hive.box<DeliveryLocationData>('deliveryLocationData')
-                .get('deliveryLocationData');
-        if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
-            "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
-          Map<String, String> requestHeaders = {
-            'Content-type': 'application/json',
-            'Accept': 'application/json'
-          };
-          var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-            'lat': _locationData.latitude.toString(),
-            'lon': _locationData.longitude.toString()
-          });
-          var response = await http.get(url, headers: requestHeaders);
-          if (response.statusCode == 200) {
-            var json = jsonDecode(response.body);
-            var geoData = YandexGeoData.fromJson(json['data']);
-            var house = '';
-            geoData.addressItems?.forEach((element) {
-              if (element.kind == 'house') {
-                house = element.name;
-              }
-            });
-            DeliveryLocationData deliveryData = DeliveryLocationData(
-                house: house ?? '',
-                flat: '',
-                entrance: '',
-                doorCode: '',
-                lat: _locationData.latitude,
-                lon: _locationData.longitude,
-                address: geoData.formatted ?? '');
-
-            showAlertOnChangeLocation(currentLocation, deliveryData, house,
-                "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-            setLocation(currentLocation, deliveryData, house);
-          }
-        }
-      });
+      // location.onLocationChanged.listen((LocationData currentLocation) async {
+      //   DeliveryLocationData? deliveryLocationData =
+      //       Hive.box<DeliveryLocationData>('deliveryLocationData')
+      //           .get('deliveryLocationData');
+      //   if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
+      //       "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
+      //     Map<String, String> requestHeaders = {
+      //       'Content-type': 'application/json',
+      //       'Accept': 'application/json'
+      //     };
+      //     var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
+      //       'lat': _locationData.latitude.toString(),
+      //       'lon': _locationData.longitude.toString()
+      //     });
+      //     var response = await http.get(url, headers: requestHeaders);
+      //     if (response.statusCode == 200) {
+      //       var json = jsonDecode(response.body);
+      //       var geoData = YandexGeoData.fromJson(json['data']);
+      //       var house = '';
+      //       geoData.addressItems?.forEach((element) {
+      //         if (element.kind == 'house') {
+      //           house = element.name;
+      //         }
+      //       });
+      //       DeliveryLocationData deliveryData = DeliveryLocationData(
+      //           house: house ?? '',
+      //           flat: '',
+      //           entrance: '',
+      //           doorCode: '',
+      //           lat: _locationData.latitude,
+      //           lon: _locationData.longitude,
+      //           address: geoData.formatted ?? '');
+      //
+      //       showAlertOnChangeLocation(currentLocation, deliveryData, house,
+      //           "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
+      //       setLocation(currentLocation, deliveryData, house);
+      //     }
+      //   }
+      // });
     }();
   }
 
