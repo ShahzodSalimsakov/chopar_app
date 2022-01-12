@@ -222,7 +222,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
 
       // location.enableBackgroundMode(enable: true);
-      // location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.balanced);
+      location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.balanced);
       _locationData = await location.getLocation();
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -253,45 +253,45 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
         setLocation(_locationData, deliveryData, house);
       }
-      // location.onLocationChanged.listen((LocationData currentLocation) async {
-      //   DeliveryLocationData? deliveryLocationData =
-      //       Hive.box<DeliveryLocationData>('deliveryLocationData')
-      //           .get('deliveryLocationData');
-      //   if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
-      //       "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
-      //     Map<String, String> requestHeaders = {
-      //       'Content-type': 'application/json',
-      //       'Accept': 'application/json'
-      //     };
-      //     var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-      //       'lat': _locationData.latitude.toString(),
-      //       'lon': _locationData.longitude.toString()
-      //     });
-      //     var response = await http.get(url, headers: requestHeaders);
-      //     if (response.statusCode == 200) {
-      //       var json = jsonDecode(response.body);
-      //       var geoData = YandexGeoData.fromJson(json['data']);
-      //       var house = '';
-      //       geoData.addressItems?.forEach((element) {
-      //         if (element.kind == 'house') {
-      //           house = element.name;
-      //         }
-      //       });
-      //       DeliveryLocationData deliveryData = DeliveryLocationData(
-      //           house: house ?? '',
-      //           flat: '',
-      //           entrance: '',
-      //           doorCode: '',
-      //           lat: _locationData.latitude,
-      //           lon: _locationData.longitude,
-      //           address: geoData.formatted ?? '');
-      //
-      //       showAlertOnChangeLocation(currentLocation, deliveryData, house,
-      //           "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-      //       setLocation(currentLocation, deliveryData, house);
-      //     }
-      //   }
-      // });
+      location.onLocationChanged.listen((LocationData currentLocation) async {
+        DeliveryLocationData? deliveryLocationData =
+            Hive.box<DeliveryLocationData>('deliveryLocationData')
+                .get('deliveryLocationData');
+        if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
+            "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
+          Map<String, String> requestHeaders = {
+            'Content-type': 'application/json',
+            'Accept': 'application/json'
+          };
+          var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
+            'lat': _locationData.latitude.toString(),
+            'lon': _locationData.longitude.toString()
+          });
+          var response = await http.get(url, headers: requestHeaders);
+          if (response.statusCode == 200) {
+            var json = jsonDecode(response.body);
+            var geoData = YandexGeoData.fromJson(json['data']);
+            var house = '';
+            geoData.addressItems?.forEach((element) {
+              if (element.kind == 'house') {
+                house = element.name;
+              }
+            });
+            DeliveryLocationData deliveryData = DeliveryLocationData(
+                house: house ?? '',
+                flat: '',
+                entrance: '',
+                doorCode: '',
+                lat: _locationData.latitude,
+                lon: _locationData.longitude,
+                address: geoData.formatted ?? '');
+
+            // showAlertOnChangeLocation(currentLocation, deliveryData, house,
+            //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
+            setLocation(currentLocation, deliveryData, house);
+          }
+        }
+      });
     }();
   }
 
