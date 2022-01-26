@@ -152,39 +152,6 @@ class CreateOwnPizza extends HookWidget {
       activeCustomName.value
     ]);
 
-    final totalSummary = useMemoized(() {
-      int res = 0;
-      if (leftSelectedProduct.value != null) {
-        res += int.parse(double.parse(
-                leftSelectedProduct.value?.price.toString() ?? '0.0000')
-            .toStringAsFixed(0));
-      }
-
-      if (rightSelectedProduct.value != null) {
-        res += int.parse(double.parse(
-                rightSelectedProduct.value?.price.toString() ?? '0.0000')
-            .toStringAsFixed(0));
-      }
-
-      if (modifiers != null && modifiers.isNotEmpty) {
-        List<Modifiers> selectedModifiers = [
-          ...modifiers
-              .where((Modifiers mod) => activeModifiers.value.contains(mod.id)),
-        ];
-        selectedModifiers.map((Modifiers mod) {
-          res += int.parse(double.parse(mod.price.toString() ?? '0.0000')
-              .toStringAsFixed(0));
-        });
-      }
-
-      return res;
-    }, [
-      leftSelectedProduct.value,
-      rightSelectedProduct.value,
-      activeCustomName.value,
-      activeModifiers.value,
-    ]);
-
     useEffect(() {
       activeCustomName.value = customNames[0];
     }, [customNames]);
@@ -334,8 +301,8 @@ class CreateOwnPizza extends HookWidget {
           'basket_id': basket.encodedId,
           'variants': [
             {
-              'id': leftModifierProduct != null
-                  ? leftModifierProduct.id
+              'id': modifierProduct != null
+                  ? modifierProduct.id
                   : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
@@ -375,8 +342,8 @@ class CreateOwnPizza extends HookWidget {
         var formData = {
           'variants': [
             {
-              'id': leftModifierProduct != null
-                  ? leftModifierProduct.id
+              'id': modifierProduct != null
+                  ? modifierProduct.id
                   : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
@@ -406,6 +373,41 @@ class CreateOwnPizza extends HookWidget {
       isBasketLoading.value = false;
       Navigator.of(context).pop();
     }
+
+
+
+    final totalSummary = useMemoized(() {
+      int res = 0;
+      if (leftSelectedProduct.value != null) {
+        res += int.parse(double.parse(
+            leftSelectedProduct.value?.price.toString() ?? '0.0000')
+            .toStringAsFixed(0));
+      }
+
+      if (rightSelectedProduct.value != null) {
+        res += int.parse(double.parse(
+            rightSelectedProduct.value?.price.toString() ?? '0.0000')
+            .toStringAsFixed(0));
+      }
+
+      if (modifiers != null && modifiers.isNotEmpty) {
+        List<Modifiers> selectedModifiers = [
+          ...modifiers
+              .where((Modifiers mod) => activeModifiers.value.contains(mod.id)),
+        ];
+        selectedModifiers.forEach((Modifiers mod) {
+          res += int.parse(double.parse(mod.price.toString() ?? '0.0000')
+              .toStringAsFixed(0));
+        });
+      }
+
+      return res;
+    }, [
+      leftSelectedProduct.value,
+      rightSelectedProduct.value,
+      activeCustomName.value,
+      activeModifiers.value,
+    ]);
 
     Widget renderPage(BuildContext context) {
       if (isSecondPage.value) {
