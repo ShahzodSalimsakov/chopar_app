@@ -797,7 +797,7 @@ class Child {
   late String total;
   late String createdAt;
   late String updatedAt;
-  String? modifiers;
+  // List<dynamic>? modifiers;
   late String parentId;
   Variant? variant;
 
@@ -809,7 +809,7 @@ class Child {
         required this.total,
         required this.createdAt,
         required this.updatedAt,
-        this.modifiers,
+        // this.modifiers,
         required this.parentId,
         this.variant});
 
@@ -821,7 +821,7 @@ class Child {
     total = json['total'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    modifiers = json['modifiers'] != null ? json['modifiers'] : '';
+    // modifiers = json['modifiers'] != null ? json['modifiers'] : List<dynamic>.empty();
     parentId = json['parent_id'];
     variant =
     json['variant'] != null ? new Variant.fromJson(json['variant']) : null;
@@ -836,7 +836,7 @@ class Child {
     data['total'] = this.total;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['modifiers'] = this.modifiers;
+    // data['modifiers'] = this.modifiers;
     data['parent_id'] = this.parentId;
     if (this.variant != null) {
       data['variant'] = this.variant?.toJson();
