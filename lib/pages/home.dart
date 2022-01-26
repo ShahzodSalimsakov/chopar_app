@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
+import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
@@ -100,6 +101,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     final Box<DeliveryLocationData> deliveryLocationBox =
         Hive.box<DeliveryLocationData>('deliveryLocationData');
     deliveryLocationBox.put('deliveryLocationData', deliveryData);
+
+    Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+    DeliveryType? currentDeliver = box.get('deliveryType');
+    if (currentDeliver == null) {
+      DeliveryType deliveryType = DeliveryType();
+      deliveryType.value = DeliveryTypeEnum.deliver;
+      Box<DeliveryType> box =
+      Hive.box<DeliveryType>('deliveryType');
+      box.put('deliveryType', deliveryType);
+    } else if (currentDeliver.value != DeliveryTypeEnum.pickup) {
+      DeliveryType deliveryType = DeliveryType();
+      deliveryType.value = DeliveryTypeEnum.pickup;
+      Box<DeliveryType> box =
+      Hive.box<DeliveryType>('deliveryType');
+      box.put('deliveryType', deliveryType);
+    }
+
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json'
