@@ -3,44 +3,26 @@ import 'dart:convert';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
-import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
-import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/pages/main_page.dart';
-import 'package:chopar_app/services/user_repository.dart';
-import 'package:chopar_app/widgets/auth/modal.dart';
 import 'package:chopar_app/widgets/basket/basket.dart';
 import 'package:chopar_app/models/basket.dart';
-import 'package:chopar_app/widgets/bonus/modal.dart';
-import 'package:chopar_app/widgets/delivery/delivery_modal.dart';
-import 'package:chopar_app/widgets/home/ChooseCity.dart';
-import 'package:chopar_app/widgets/home/ChooseTypeDelivery.dart';
-import 'package:chopar_app/widgets/home/ProductsList.dart';
-import 'package:chopar_app/widgets/home/StoriesList.dart';
-import 'package:chopar_app/widgets/order_status/index.dart';
-import 'package:chopar_app/widgets/profile/PagesList.dart';
-import 'package:chopar_app/widgets/profile/UserName.dart';
 import 'package:chopar_app/widgets/profile/index.dart';
 import 'package:chopar_app/widgets/sales/sales.dart';
-import 'package:chopar_app/widgets/ui/styled_button.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flash/flash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:overlay_dialog/overlay_dialog.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'dart:developer' as developer;
 
 OverlayEntry? _previousEntry;
 
@@ -55,6 +37,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
   var workTimeModalOpened = false;
   late Flushbar _closeWorkModal;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   // showAlertOnChangeLocation(LocationData currentLocation,
   //     DeliveryLocationData deliveryData, String house, String location) async {
@@ -107,14 +92,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     if (currentDeliver == null) {
       DeliveryType deliveryType = DeliveryType();
       deliveryType.value = DeliveryTypeEnum.deliver;
-      Box<DeliveryType> box =
-      Hive.box<DeliveryType>('deliveryType');
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
     } else if (currentDeliver.value != DeliveryTypeEnum.pickup) {
       DeliveryType deliveryType = DeliveryType();
       deliveryType.value = DeliveryTypeEnum.pickup;
-      Box<DeliveryType> box =
-      Hive.box<DeliveryType>('deliveryType');
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
     }
 
@@ -208,10 +191,40 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     Timer.periodic(new Duration(seconds: 1), (timer) {
       workTimeDialog();
@@ -240,7 +253,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
 
       // location.enableBackgroundMode(enable: true);
-      location.changeSettings(distanceFilter: 100, interval: 60000, accuracy: LocationAccuracy.balanced);
+      location.changeSettings(
+          distanceFilter: 100,
+          interval: 60000,
+          accuracy: LocationAccuracy.balanced);
       _locationData = await location.getLocation();
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -314,6 +330,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tabs = [
       MainPage(),
@@ -330,7 +352,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(child: tabs[selectedIndex]),
+        body: _connectionStatus == ConnectivityResult.none
+            ? SafeArea(
+                child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.wifi,
+                      size: 100,
+                      color: Colors.yellow.shade800,
+                    ),
+                    Center(
+                        child: Text(
+                      'Проверьте подключение к интернету',
+                      style: TextStyle(fontSize: 18),
+                    )),
+                  ],
+                ),
+              ))
+            : SafeArea(child: tabs[selectedIndex]),
         bottomNavigationBar: Container(
             height: 80.0,
             decoration: BoxDecoration(
