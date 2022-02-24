@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -44,10 +45,18 @@ class HttpAssetLoader extends AssetLoader {
       url = url.replace(queryParameters: {
         "lang": locale.toString()
       });
-      return http.get(url).then((response) {
+      try {
+        final result = await InternetAddress.lookup('example.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
-        return json.decode(response.body.toString())['result'];
-      });
+          return http.get(url).then((response) {
+            return json.decode(response.body.toString())['result'];
+          });
+        }
+      } on SocketException catch (_) {
+        return Future.value({});
+      }
+      return Future.value({});
     } catch (e) {
       //Catch network exceptions
       return Future.value({});
