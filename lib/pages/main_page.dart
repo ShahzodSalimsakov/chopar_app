@@ -46,26 +46,5 @@ class _MainPageState extends State<MainPage>
         ),
       ),
     );
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: ValueListenableBuilder<Box<HomeIsScrolled>>(
-          valueListenable:
-              Hive.box<HomeIsScrolled>('homeIsScrolled').listenable(),
-          builder: (context, box, _) {
-            // HomeIsScrolled? homeIsScrolled =
-            // Hive.box<HomeIsScrolled>('homeIsScrolled')
-            //     .get('homeIsScrolled');
-            // double height = 150;
-            // if (homeIsScrolled != null) {
-            //   if (homeIsScrolled.value == true) {
-            //     height = 0;
-            //   } else {
-            //     height = 150;
-            //   }
-            // }
-
-            // return ;
-          }),
-    );
   }
 }
