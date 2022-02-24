@@ -402,7 +402,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       ? Colors.grey
                                       : Colors.yellow.shade700),
                             ),
-                            label: tr('headerMenuMenu'),
+                            label: 'Меню',
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
