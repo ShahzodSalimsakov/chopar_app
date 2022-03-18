@@ -25,6 +25,7 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:niku/niku.dart';
 import 'package:scrollable_list_tabview/scrollable_list_tabview.dart';
+import 'package:simple_html_css/simple_html_css.dart';
 
 class ProductsList extends HookWidget {
   @override
@@ -384,7 +385,12 @@ class ProductsList extends HookWidget {
                                 collapsedId.value = product.id;
                               }
                             },
-                            child: Text(parsedString ?? ''),
+                            child: RichText(
+                              text: HTML.toTextSpan(context, product.attributeData?.description?.chopar?.ru ?? ''),
+                              maxLines: collapsedId.value == product.id ? 20 : 4,
+                                overflow: TextOverflow.ellipsis
+                              //...
+                            ),
                           ),
                           productLine != null
                               ? Container(
