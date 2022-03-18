@@ -408,24 +408,24 @@ class BasketWidget extends HookWidget {
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
                     children: [
-                      Container(
-                        height: 60,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${basket.lineCount} товар',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 18),
-                            ),
-                            Text(
-                                formatCurrency
-                                    .format(basketData.value?.total ?? 0),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400, fontSize: 18))
-                          ],
-                        ),
-                      ),
+                      // Container(
+                      //   height: 60,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       Text(
+                      //         '${basket.lineCount} товар',
+                      //         style: TextStyle(
+                      //             fontWeight: FontWeight.w400, fontSize: 18),
+                      //       ),
+                      //       Text(
+                      //           formatCurrency
+                      //               .format(basketData.value?.total ?? 0),
+                      //           style: TextStyle(
+                      //               fontWeight: FontWeight.w400, fontSize: 18))
+                      //     ],
+                      //   ),
+                      // ),
                       // Container(
                       //   height: 60,
                       //   child: Row(

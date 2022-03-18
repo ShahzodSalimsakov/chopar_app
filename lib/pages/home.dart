@@ -367,6 +367,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         child: Text(
                       'Проверьте подключение к интернету',
                       style: TextStyle(fontSize: 18),
+                          textAlign: TextAlign.center,
                     )),
                   ],
                 ),
