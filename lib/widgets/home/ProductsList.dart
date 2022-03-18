@@ -19,6 +19,7 @@ import 'package:group_list_view/group_list_view.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -155,13 +156,13 @@ class ProductsList extends HookWidget {
           // width: MediaQuery.of(context).size.width / 2.5,
         );
       } else {
-          return ClipOval(
-            child: SvgPicture.network(
-              'https://choparpizza.uz/no_photo.svg',
-              width: 175.0,
-              height: 175.0,
-            ),
-          );
+        return ClipOval(
+          child: SvgPicture.network(
+            'https://choparpizza.uz/no_photo.svg',
+            width: 175.0,
+            height: 175.0,
+          ),
+        );
       }
     }
 
@@ -292,6 +293,11 @@ class ProductsList extends HookWidget {
         }
       }
 
+      var html = product.attributeData?.description?.chopar?.ru ?? '';
+
+      var document = parse(html);
+      String? parsedString = parse(document.body?.text).documentElement?.;
+
       return Opacity(
         opacity: isInStock ? 0.3 : 1,
         child: Card(
@@ -371,26 +377,14 @@ class ProductsList extends HookWidget {
                                 fontSize: 20.0, fontWeight: FontWeight.w700),
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               if (collapsedId.value == product.id) {
                                 collapsedId.value = null;
                               } else {
                                 collapsedId.value = product.id;
                               }
                             },
-                            child: Html(
-                              data: product
-                                      .attributeData?.description?.chopar?.ru ??
-                                  '',
-                              style: {
-                                "body": Style(
-                                    margin: EdgeInsets.only(left: 0),
-                                    maxLines: collapsedId.value != null && collapsedId.value == product.id ? 20 : 2,
-                                    textOverflow: TextOverflow.ellipsis),
-                              },
-                              // style: TextStyle(
-                              //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                            ),
+                            child: Text(parsedString ?? ''),
                           ),
                           productLine != null
                               ? Container(
@@ -545,65 +539,67 @@ class ProductsList extends HookWidget {
                 }
 
                 return Expanded(
-                    child:  NotificationListener<ScrollNotification>(
-                    onNotification: (scrollNotification) {
-                  var pixels = scrollNotification.metrics.pixels;
-                  HomeIsScrolled hm = new HomeIsScrolled();
-                  if (pixels > 20) {
-                    hm.value = true;
-                  } else {
-                    hm.value = false;
-                  }
-
-                  Hive.box<HomeIsScrolled>('homeIsScrolled').put('homeIsScrolled', hm);
-                  return true;
-
-
-                },
-                child: ScrollableListTabView(
-                        tabHeight: 50,
-                        bodyAnimationDuration:
-                            const Duration(milliseconds: 150),
-                        tabAnimationCurve: Curves.easeOut,
-                        tabAnimationDuration: const Duration(milliseconds: 200),
-                        tabs: products.value.map((section) {
-                          if (section.halfMode == 1) {
-                            return ScrollableListTab(
-                              tab: ListTab(
-                                  label: Text(
-                                      section.attributeData?.name?.chopar?.ru ??
-                                          ''),
-                                  // icon: Icon(Icons.group),
-                                  showIconOnList: false,
-                                  activeBackgroundColor: Colors.yellow.shade600,
-                                  borderRadius: BorderRadius.circular(20)),
-                              body: ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: 1,
-                                itemBuilder: (_, index) =>
-                                    renderCreatePizza(context, section.items),
-
-                              ),
-                            );
+                    child: NotificationListener<ScrollNotification>(
+                        onNotification: (scrollNotification) {
+                          var pixels = scrollNotification.metrics.pixels;
+                          HomeIsScrolled hm = new HomeIsScrolled();
+                          if (pixels > 20) {
+                            hm.value = true;
+                          } else {
+                            hm.value = false;
                           }
-                          return ScrollableListTab(
-                              tab: ListTab(
-                                  label: Text(
-                                      section.attributeData?.name?.chopar?.ru ??
+
+                          Hive.box<HomeIsScrolled>('homeIsScrolled')
+                              .put('homeIsScrolled', hm);
+                          return true;
+                        },
+                        child: ScrollableListTabView(
+                            tabHeight: 50,
+                            bodyAnimationDuration:
+                                const Duration(milliseconds: 150),
+                            tabAnimationCurve: Curves.easeOut,
+                            tabAnimationDuration:
+                                const Duration(milliseconds: 200),
+                            tabs: products.value.map((section) {
+                              if (section.halfMode == 1) {
+                                return ScrollableListTab(
+                                  tab: ListTab(
+                                      label: Text(section.attributeData?.name
+                                              ?.chopar?.ru ??
                                           ''),
-                                  // icon: Icon(Icons.group),
-                                  showIconOnList: false,
-                                  activeBackgroundColor: Colors.yellow.shade600,
-                                  borderRadius: BorderRadius.circular(20)),
-                              body: ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: section.items?.length ?? 1,
-                                itemBuilder: (_, index) => renderProduct(
-                                    context, section.items?[index]),
-                              ));
-                        }).toList())));
+                                      // icon: Icon(Icons.group),
+                                      showIconOnList: false,
+                                      activeBackgroundColor:
+                                          Colors.yellow.shade600,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  body: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: 1,
+                                    itemBuilder: (_, index) =>
+                                        renderCreatePizza(
+                                            context, section.items),
+                                  ),
+                                );
+                              }
+                              return ScrollableListTab(
+                                  tab: ListTab(
+                                      label: Text(section.attributeData?.name
+                                              ?.chopar?.ru ??
+                                          ''),
+                                      // icon: Icon(Icons.group),
+                                      showIconOnList: false,
+                                      activeBackgroundColor:
+                                          Colors.yellow.shade600,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  body: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: section.items?.length ?? 1,
+                                    itemBuilder: (_, index) => renderProduct(
+                                        context, section.items?[index]),
+                                  ));
+                            }).toList())));
               });
         });
   }
