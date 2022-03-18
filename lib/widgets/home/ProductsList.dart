@@ -296,7 +296,7 @@ class ProductsList extends HookWidget {
       var html = product.attributeData?.description?.chopar?.ru ?? '';
 
       var document = parse(html);
-      String? parsedString = parse(document.body?.text).documentElement?.;
+      String? parsedString = parse(document.body?.text).documentElement?.text;
 
       return Opacity(
         opacity: isInStock ? 0.3 : 1,
