@@ -695,7 +695,7 @@ class Product {
   AttributeData? attributeData;
   late String createdAt;
   late String updatedAt;
-  Null deletedAt;
+  String? deletedAt;
   late int productFamilyId;
   Null layoutId;
   late int groupPricing;

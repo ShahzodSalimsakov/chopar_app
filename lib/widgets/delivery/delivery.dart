@@ -14,19 +14,21 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class DeliveryWidget extends HookWidget {
   final _debouncer = Debouncer(milliseconds: 500);
   final TextEditingController queryController = TextEditingController();
+  late Point currentPoint;
 
   @override
   Widget build(BuildContext context) {
     final currentCity = Hive.box<City>('currentCity').get('currentCity');
     final suggestedData =
-    useState<List<YandexGeoData>>(List<YandexGeoData>.empty());
+        useState<List<YandexGeoData>>(List<YandexGeoData>.empty());
     final queryText = useState<String>('');
     final myAddresses = useState<List<MyAddress>>(List<MyAddress>.empty());
-
+    final geoData = useState<YandexGeoData?>(null);
     Future<void> getMyAddresses() async {
       Box box = Hive.box<User>('user');
       User currentUser = box.get('user');
@@ -85,6 +87,45 @@ class DeliveryWidget extends HookWidget {
                     //           geoData: suggestedData.value[index],
                     //         )));
                     if (address.lat != null) {
+                      Map<String, String> requestHeaders = {
+                        'Content-type': 'application/json',
+                        'Accept': 'application/json'
+                      };
+                      var url = Uri.https('api.choparpizza.uz', 'api/geocode',
+                          {'lat': address.lat, 'lon': address.lon});
+                      var response =
+                          await http.get(url, headers: requestHeaders);
+                      if (response.statusCode == 200) {
+                        var json = jsonDecode(response.body);
+                        YandexGeoData geoData =
+                            YandexGeoData.fromJson(json['data']);
+
+                        geoData.addressItems?.forEach((item) async {
+                          if (item.kind == 'province' || item.kind == 'area') {
+                            Map<String, String> requestHeaders = {
+                              'Content-type': 'application/json',
+                              'Accept': 'application/json'
+                            };
+                            var url = Uri.https(
+                                'api.choparpizza.uz', '/api/cities/public');
+                            var response =
+                                await http.get(url, headers: requestHeaders);
+                            if (response.statusCode == 200) {
+                              var json = jsonDecode(response.body);
+                              List<City> cityList = List<City>.from(json['data']
+                                  .map((m) => City.fromJson(m))
+                                  .toList());
+                              for (var element in cityList) {
+                                if (element.name == item.name) {
+                                  Hive.box<City>('currentCity')
+                                      .put('currentCity', element);
+                                }
+                              }
+                            }
+                          }
+                        });
+                      }
+
                       DeliveryLocationData deliveryData = DeliveryLocationData(
                           house: address.house ?? '',
                           flat: address.flat ?? '',
@@ -94,28 +135,27 @@ class DeliveryWidget extends HookWidget {
                           lon: double.parse(address.lon!),
                           address: address.address ?? '');
                       final Box<DeliveryLocationData> deliveryLocationBox =
-                      Hive.box<DeliveryLocationData>(
-                          'deliveryLocationData');
+                          Hive.box<DeliveryLocationData>(
+                              'deliveryLocationData');
                       deliveryLocationBox.put(
                           'deliveryLocationData', deliveryData);
                       Box<DeliveryType> box =
-                      Hive.box<DeliveryType>('deliveryType');
+                          Hive.box<DeliveryType>('deliveryType');
                       DeliveryType newDeliveryType = new DeliveryType();
                       newDeliveryType.value = DeliveryTypeEnum.deliver;
                       box.put('deliveryType', newDeliveryType);
 
-                      Map<String, String> requestHeaders = {
-                        'Content-type': 'application/json',
-                        'Accept': 'application/json'
-                      };
+                      // Map<String, String> requestHeaders = {
+                      //   'Content-type': 'application/json',
+                      //   'Accept': 'application/json'
+                      // };
 
-                      var url = Uri.https(
+                      url = Uri.https(
                           'api.choparpizza.uz', 'api/terminals/find_nearest', {
                         'lat': address.lat!.toString(),
                         'lon': address.lon!.toString()
                       });
-                      var response =
-                      await http.get(url, headers: requestHeaders);
+                      response = await http.get(url, headers: requestHeaders);
                       if (response.statusCode == 200) {
                         var json = jsonDecode(response.body);
                         List<Terminals> terminal = List<Terminals>.from(
@@ -123,7 +163,7 @@ class DeliveryWidget extends HookWidget {
                                 .map((m) => new Terminals.fromJson(m))
                                 .toList());
                         Box<Terminals> transaction =
-                        Hive.box<Terminals>('currentTerminal');
+                            Hive.box<Terminals>('currentTerminal');
                         if (terminal.length > 0) {
                           transaction.put('currentTerminal', terminal[0]);
 
@@ -132,12 +172,12 @@ class DeliveryWidget extends HookWidget {
                               'api/terminals/get_stock',
                               {'terminal_id': terminal[0].id.toString()});
                           var stockResponse =
-                          await http.get(stockUrl, headers: requestHeaders);
+                              await http.get(stockUrl, headers: requestHeaders);
                           if (stockResponse.statusCode == 200) {
                             var json = jsonDecode(stockResponse.body);
                             Stock newStockData = new Stock(
                                 prodIds: new List<int>.from(json[
-                                'data']) /* json['data'].map((id) => id as int).toList()*/);
+                                    'data']) /* json['data'].map((id) => id as int).toList()*/);
                             Box<Stock> box = Hive.box<Stock>('stock');
                             box.put('stock', newStockData);
                           }
@@ -168,8 +208,8 @@ class DeliveryWidget extends HookWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => DeliveryModal(
-                            geoData: suggestedData.value[index],
-                          )));
+                                geoData: suggestedData.value[index],
+                              )));
                 },
                 title: Text(suggestedData.value[index].title),
                 subtitle: Text(suggestedData.value[index].description),
@@ -199,73 +239,73 @@ class DeliveryWidget extends HookWidget {
       ),
       body: SafeArea(
           child: Container(
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white,
-            padding: EdgeInsets.only(top: 20, left: 15, right: 15),
-            child: Column(
-              children: [
-                Container(
-                  height: 65,
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 5,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ]),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.search,
-                        color: Colors.yellow.shade600,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Flexible(
-                        child: TextField(
-                          controller: queryController,
-                          onChanged: (String val) {
-                            _debouncer.run(() => getSuggestions(val));
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Введите адрес',
-                            border: InputBorder.none,
-                            prefixIcon: Center(
-                              child: Text(
-                                '${currentCity!.name}, ',
-                                style: TextStyle(fontSize: 17),
-                              ),
-                              widthFactor: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DeliveryModal()));
-                        },
-                        child: Text('Карта'),
-                      )
-                    ],
+        width: MediaQuery.of(context).size.width,
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+        child: Column(
+          children: [
+            Container(
+              height: 65,
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 5,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ]),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    color: Colors.yellow.shade600,
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Expanded(child: renderItems(context))
-              ],
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: TextField(
+                      controller: queryController,
+                      onChanged: (String val) {
+                        _debouncer.run(() => getSuggestions(val));
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Введите адрес',
+                        border: InputBorder.none,
+                        prefixIcon: Center(
+                          child: Text(
+                            '${currentCity!.name}, ',
+                            style: TextStyle(fontSize: 17),
+                          ),
+                          widthFactor: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                  VerticalDivider(),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeliveryModal()));
+                    },
+                    child: Text('Карта'),
+                  )
+                ],
+              ),
             ),
-          )),
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(child: renderItems(context))
+          ],
+        ),
+      )),
     );
   }
 }
