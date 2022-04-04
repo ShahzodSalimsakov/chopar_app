@@ -13,6 +13,8 @@ import 'package:hive/hive.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 import 'package:http/http.dart' as http;
 
+import '../../models/city.dart';
+
 class DeliveryModalSheet extends HookWidget {
   late Point currentPoint;
 
@@ -146,6 +148,30 @@ class DeliveryModalSheet extends HookWidget {
                     lat: currentPoint.latitude,
                     lon: currentPoint.longitude,
                     address: geoData.value?.formatted ?? '');
+
+                geoData.value?.addressItems?.forEach((item) async {
+                  if (item.kind == 'province' || item.kind == 'area') {
+                    Map<String, String> requestHeaders = {
+                      'Content-type': 'application/json',
+                      'Accept': 'application/json'
+                    };
+                    var url =
+                    Uri.https('api.choparpizza.uz', '/api/cities/public');
+                    var response =
+                    await http.get(url, headers: requestHeaders);
+                    if (response.statusCode == 200) {
+                      var json = jsonDecode(response.body);
+                      List<City> cityList = List<City>.from(
+                          json['data'].map((m) => City.fromJson(m)).toList());
+                      for (var element in cityList) {
+                        if (element.name == item.name) {
+                          Hive.box<City>('currentCity')
+                              .put('currentCity', element);
+                        }
+                      }
+                    }
+                  }
+                });
                 deliveryLocationBox.put('deliveryLocationData', deliveryData);
                 Map<String, String> requestHeaders = {
                   'Content-type': 'application/json',
