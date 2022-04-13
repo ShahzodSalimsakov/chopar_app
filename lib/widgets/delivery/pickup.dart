@@ -32,7 +32,7 @@ class Pickup extends HookWidget {
       LocationPermission permission;
       var formData = {'city_id': currentCity?.id.toString()};
       var url =
-      Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
+          Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -56,14 +56,18 @@ class Pickup extends HookWidget {
               closeWork = closeWork.setMonth(currentTime.month);
               closeWork = closeWork.setYear(currentTime.year);
 
-              if (closeWork.hour < openWork.hour) {
-                closeWork = closeWork.setDay(currentTime.day + 1);
-              }
-              if (currentTime.isAfter(openWork) &&
-                  currentTime.isBefore(closeWork)) {
-                t.isWorking = true;
+              if (closeWork.getHours < openWork.getHours) {
+                if (currentTime < openWork && currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               } else {
-                t.isWorking = false;
+                if (currentTime < openWork || currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               }
             }
           } else {
@@ -81,14 +85,18 @@ class Pickup extends HookWidget {
               closeWork = closeWork.setMonth(currentTime.month);
               closeWork = closeWork.setYear(currentTime.year);
 
-              if (closeWork.hour < openWork.hour) {
-                closeWork = closeWork.setDay(currentTime.day + 1);
-              }
-              if (currentTime.isAfter(openWork) &&
-                  currentTime.isBefore(closeWork)) {
-                t.isWorking = true;
+              if (closeWork.getHours < openWork.getHours) {
+                if (currentTime < openWork && currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               } else {
-                t.isWorking = false;
+                if (currentTime < openWork || currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               }
             }
           }
@@ -98,12 +106,12 @@ class Pickup extends HookWidget {
         terminals.value = resultTerminals;
       }
 
-
       bool isLocationSet = true;
 
       final Box<DeliveryLocationData> deliveryLocationBox =
-      Hive.box<DeliveryLocationData>('deliveryLocationData');
-      DeliveryLocationData? deliveryData = deliveryLocationBox.get('deliveryLocationData');
+          Hive.box<DeliveryLocationData>('deliveryLocationData');
+      DeliveryLocationData? deliveryData =
+          deliveryLocationBox.get('deliveryLocationData');
 
       if (deliveryData == null) {
         isLocationSet = false;
@@ -113,8 +121,6 @@ class Pickup extends HookWidget {
       var currentPosition;
 
       if (!isLocationSet) {
-
-
         // Test if location services are enabled.
         serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -138,7 +144,15 @@ class Pickup extends HookWidget {
           }
         } catch (e) {}
       } else {
-        currentPosition = new Position(longitude: deliveryData!.lon!, latitude: deliveryData!.lat!, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+        currentPosition = new Position(
+            longitude: deliveryData!.lon!,
+            latitude: deliveryData!.lat!,
+            timestamp: DateTime.now(),
+            accuracy: 0,
+            altitude: 0,
+            heading: 0,
+            speed: 0,
+            speedAccuracy: 0);
       }
 
       if (currentPosition != null) {
@@ -149,8 +163,7 @@ class Pickup extends HookWidget {
         };
       }
 
-      url =
-          Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
+      url = Uri.https('api.choparpizza.uz', 'api/terminals/pickup', formData);
       response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -174,14 +187,18 @@ class Pickup extends HookWidget {
               closeWork = closeWork.setMonth(currentTime.month);
               closeWork = closeWork.setYear(currentTime.year);
 
-              if (closeWork.hour < openWork.hour) {
-                closeWork = closeWork.setDay(currentTime.day + 1);
-              }
-              if (currentTime.isAfter(openWork) &&
-                  currentTime.isBefore(closeWork)) {
-                t.isWorking = true;
+              if (closeWork.getHours < openWork.getHours) {
+                if (currentTime < openWork && currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               } else {
-                t.isWorking = false;
+                if (currentTime < openWork || currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               }
             }
           } else {
@@ -199,14 +216,18 @@ class Pickup extends HookWidget {
               closeWork = closeWork.setMonth(currentTime.month);
               closeWork = closeWork.setYear(currentTime.year);
 
-              if (closeWork.hour < openWork.hour) {
-                closeWork = closeWork.setDay(currentTime.day + 1);
-              }
-              if (currentTime.isAfter(openWork) &&
-                  currentTime.isBefore(closeWork)) {
-                t.isWorking = true;
+              if (closeWork.getHours < openWork.getHours) {
+                if (currentTime < openWork && currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               } else {
-                t.isWorking = false;
+                if (currentTime < openWork || currentTime > closeWork) {
+                  t.isWorking = false;
+                } else {
+                  t.isWorking = true;
+                }
               }
             }
           }
