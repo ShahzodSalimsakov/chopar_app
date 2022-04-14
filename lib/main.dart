@@ -174,7 +174,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.white, // Color for Android
+        statusBarColor: Color.fromRGBO(47, 94, 142, 1), // Color for Android
         statusBarBrightness:
         Brightness.light // Dark == white status bar -- for IOS.
     ));
