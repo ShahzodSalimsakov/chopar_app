@@ -387,9 +387,7 @@ class BasketWidget extends HookWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Text("Проведите пальцем влево, чтобы удалить продукт"),
-                        Expanded(
-                          child: ListView.separated(
+                        Text("Проведите пальцем влево, чтобы удалить продукт"), ListView.separated(
                               shrinkWrap: true,
                               scrollDirection: Axis.vertical,
                               itemCount: basketData.value!.lines!.length ?? 0,
@@ -432,7 +430,6 @@ class BasketWidget extends HookWidget {
                                         ),
                                       );
                               }),
-                        ),
                         relatedData.value.isNotEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(
@@ -442,7 +439,7 @@ class BasketWidget extends HookWidget {
                                 child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                        tr('Рекомендуем к Вашему заказу'),
+                                        'Рекомендуем к Вашему заказу',
                                         style: const TextStyle(
                                             fontSize: 22,
                                             fontWeight: FontWeight.w500))),
