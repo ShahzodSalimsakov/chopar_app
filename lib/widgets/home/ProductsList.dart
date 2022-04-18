@@ -386,11 +386,16 @@ class ProductsList extends HookWidget {
                               }
                             },
                             child: RichText(
-                              text: HTML.toTextSpan(context, product.attributeData?.description?.chopar?.ru ?? ''),
-                              maxLines: collapsedId.value == product.id ? 20 : 4,
+                                text: HTML.toTextSpan(
+                                    context,
+                                    product.attributeData?.description?.chopar
+                                            ?.ru ??
+                                        ''),
+                                maxLines:
+                                    collapsedId.value == product.id ? 20 : 4,
                                 overflow: TextOverflow.ellipsis
-                              //...
-                            ),
+                                //...
+                                ),
                           ),
                           productLine != null
                               ? Container(
