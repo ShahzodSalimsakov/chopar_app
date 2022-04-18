@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
+import 'package:chopar_app/models/related_product.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_registration.dart';
 import 'package:chopar_app/services/user_repository.dart';
@@ -11,10 +12,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hashids2/hashids2.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 class BasketWidget extends HookWidget {
   @override
@@ -22,11 +21,14 @@ class BasketWidget extends HookWidget {
     Box<Basket> basketBox = Hive.box<Basket>('basket');
     Basket? basket = basketBox.get('basket');
     final basketData = useState<BasketData?>(null);
+    final relatedData =
+        useState<List<RelatedProduct>>(List<RelatedProduct>.empty());
     final hashids = HashIds(
       salt: 'basket',
       minHashLength: 15,
       alphabet: 'abcdefghijklmnopqrstuvwxyz1234567890',
     );
+    final _isBasketLoading = useState<bool>(false);
 
     Future<void> destroyLine(int lineId) async {
       Map<String, String> requestHeaders = {
@@ -124,6 +126,19 @@ class BasketWidget extends HookWidget {
       }
     }
 
+    String totalPrice = useMemoized(() {
+      String result = '0';
+      if (basketData.value != null) {
+        result = basketData.value!.total.toString();
+      }
+
+      final formatCurrency = NumberFormat.currency(
+          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+
+      result = formatCurrency.format(double.tryParse(result));
+      return result;
+    }, [basketData.value]);
+
     Widget renderProductImage(BuildContext context, Lines lineItem) {
       if (lineItem.child != null &&
           lineItem.child!.length > 0 &&
@@ -212,10 +227,10 @@ class BasketWidget extends HookWidget {
             int.parse(double.parse(lines.total ?? '0.0000').toStringAsFixed(0));
       }
       return Container(
-          margin: EdgeInsets.symmetric(vertical: 40),
-          padding: EdgeInsets.symmetric(
-            horizontal: 15,
-          ),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          // padding: EdgeInsets.symmetric(
+          //   horizontal: 15,
+          // ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -360,52 +375,357 @@ class BasketWidget extends HookWidget {
         );
       } else if (basketData.value != null) {
         return Container(
-            padding: EdgeInsets.symmetric(vertical: 30),
+            padding: EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               children: [
-                Text("Проведите пальцем влево, чтобы удалить продукт"),
                 Expanded(
-                  child: ListView.separated(
+                  child: Container(
+                    // height: MediaQuery.of(context).size.height * 0.4,
+                    child: ListView(
                       shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemCount: basketData.value!.lines!.length ?? 0,
-                      separatorBuilder: (context, index) {
-                        return Divider();
-                      },
-                      itemBuilder: (context, index) {
-                        final item = basketData.value!.lines![index];
-                        return item.bonusId != null
-                            ? basketItems(item)
-                            : Dismissible(
-                                direction: DismissDirection.endToStart,
-                                key: Key(item.id.toString()),
-                                child: basketItems(item),
-                                background: Container(
-                                  color: Colors.red,
+                      children: [
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text("Проведите пальцем влево, чтобы удалить продукт"),
+                        Expanded(
+                          child: ListView.separated(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: basketData.value!.lines!.length ?? 0,
+                              physics: NeverScrollableScrollPhysics(),
+                              separatorBuilder: (context, index) {
+                                return Divider();
+                              },
+                              itemBuilder: (context, index) {
+                                final item = basketData.value!.lines![index];
+                                return item.bonusId != null
+                                    ? basketItems(item)
+                                    : Dismissible(
+                                        direction: DismissDirection.endToStart,
+                                        key: Key(item.id.toString()),
+                                        child: basketItems(item),
+                                        background: Container(
+                                          color: Colors.red,
+                                        ),
+                                        onDismissed:
+                                            (DismissDirection direction) {
+                                          destroyLine(item.id);
+                                        },
+                                        secondaryBackground: Container(
+                                          color: Colors.red,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15, vertical: 5),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Icon(Icons.delete,
+                                                    color: Colors.white),
+                                                Text('Удалить',
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                              }),
+                        ),
+                        relatedData.value.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 45,
+                                  bottom: 10,
                                 ),
-                                onDismissed: (DismissDirection direction) {
-                                  destroyLine(item.id);
-                                },
-                                secondaryBackground: Container(
-                                  color: Colors.red,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Icon(Icons.delete, color: Colors.white),
-                                        Text('Удалить',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                        tr('Рекомендуем к Вашему заказу'),
+                                        style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w500))),
+                              )
+                            : const SizedBox(),
+                        relatedData.value.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 30),
+                                child: SizedBox(
+                                  height: 240,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: relatedData.value.length,
+                                      itemBuilder: (context, index) {
+                                        final formatCurrency =
+                                            NumberFormat.currency(
+                                                locale: 'ru_RU',
+                                                symbol: 'сум',
+                                                decimalDigits: 0);
+                                        String productPrice = '';
+
+                                        productPrice =
+                                            relatedData.value[index].price;
+
+                                        productPrice = formatCurrency.format(
+                                            double.tryParse(productPrice));
+                                        return Container(
+                                            width: 130,
+                                            margin: const EdgeInsets.only(
+                                                right: 10),
+                                            child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 10),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  color: Colors.white,
+                                                ),
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Image.network(
+                                                        relatedData
+                                                            .value[index].image,
+                                                        height: 100,
+                                                        width: 100,
+                                                      ),
+                                                      const Spacer(
+                                                        flex: 1,
+                                                      ),
+                                                      Text(
+                                                        relatedData.value[index]
+                                                            .customName,
+                                                        style: const TextStyle(
+                                                            fontSize: 15),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      const Spacer(
+                                                        flex: 1,
+                                                      ),
+                                                      SizedBox(
+                                                        height: 50,
+                                                        width: 144,
+                                                        child: ElevatedButton(
+                                                          onPressed: () async {
+                                                            List<
+                                                                    Map<String,
+                                                                        int>>?
+                                                                selectedModifiers;
+                                                            _isBasketLoading
+                                                                .value = true;
+
+                                                            int selectedProdId =
+                                                                relatedData
+                                                                    .value[
+                                                                        index]
+                                                                    .id;
+
+                                                            Box userBox =
+                                                                Hive.box<User>(
+                                                                    'user');
+                                                            User? user = userBox
+                                                                .get('user');
+                                                            Box basketBox = Hive
+                                                                .box<Basket>(
+                                                                    'basket');
+                                                            Basket? basket =
+                                                                basketBox.get(
+                                                                    'basket');
+
+                                                            if (basket !=
+                                                                    null &&
+                                                                basket.encodedId
+                                                                    .isNotEmpty &&
+                                                                basket.encodedId
+                                                                    .isNotEmpty) {
+                                                              Map<String,
+                                                                      String>
+                                                                  requestHeaders =
+                                                                  {
+                                                                'Content-type':
+                                                                    'application/json',
+                                                                'Accept':
+                                                                    'application/json'
+                                                              };
+
+                                                              if (user !=
+                                                                  null) {
+                                                                requestHeaders[
+                                                                        'Authorization'] =
+                                                                    'Bearer ${user.userToken}';
+                                                              }
+
+                                                              var url = Uri.https(
+                                                                  'api.choparpizza.uz',
+                                                                  '/api/baskets-lines');
+                                                              var formData = {
+                                                                'basket_id': basket
+                                                                    .encodedId,
+                                                                'variants': [
+                                                                  {
+                                                                    'id':
+                                                                        selectedProdId,
+                                                                    'quantity':
+                                                                        1,
+                                                                    'modifiers':
+                                                                        selectedModifiers
+                                                                  }
+                                                                ]
+                                                              };
+                                                              var response = await http.post(
+                                                                  url,
+                                                                  headers:
+                                                                      requestHeaders,
+                                                                  body: jsonEncode(
+                                                                      formData));
+                                                              if (response.statusCode ==
+                                                                      200 ||
+                                                                  response.statusCode ==
+                                                                      201) {
+                                                                var json =
+                                                                    jsonDecode(
+                                                                        response
+                                                                            .body);
+                                                                BasketData
+                                                                    basketLocalData =
+                                                                    BasketData
+                                                                        .fromJson(
+                                                                            json['data']);
+                                                                Basket newBasket = Basket(
+                                                                    encodedId:
+                                                                        basketLocalData.encodedId ??
+                                                                            '',
+                                                                    lineCount: basketLocalData
+                                                                            .lines
+                                                                            ?.length ??
+                                                                        0,
+                                                                    totalPrice:
+                                                                        basketLocalData
+                                                                            .total);
+                                                                basketBox.put(
+                                                                    'basket',
+                                                                    newBasket);
+                                                                basketData
+                                                                        .value =
+                                                                    basketLocalData;
+                                                              }
+                                                            } else {
+                                                              Map<String,
+                                                                      String>
+                                                                  requestHeaders =
+                                                                  {
+                                                                'Content-type':
+                                                                    'application/json',
+                                                                'Accept':
+                                                                    'application/json'
+                                                              };
+
+                                                              if (user !=
+                                                                  null) {
+                                                                requestHeaders[
+                                                                        'Authorization'] =
+                                                                    'Bearer ${user.userToken}';
+                                                              }
+
+                                                              var url = Uri.https(
+                                                                  'api.choparpizza.uz',
+                                                                  '/api/baskets');
+                                                              var formData = {
+                                                                'variants': [
+                                                                  {
+                                                                    'id':
+                                                                        selectedProdId,
+                                                                    'quantity':
+                                                                        1,
+                                                                    'modifiers':
+                                                                        selectedModifiers
+                                                                  }
+                                                                ]
+                                                              };
+                                                              var response = await http.post(
+                                                                  url,
+                                                                  headers:
+                                                                      requestHeaders,
+                                                                  body: jsonEncode(
+                                                                      formData));
+                                                              if (response.statusCode ==
+                                                                      200 ||
+                                                                  response.statusCode ==
+                                                                      201) {
+                                                                var json =
+                                                                    jsonDecode(
+                                                                        response
+                                                                            .body);
+                                                                BasketData
+                                                                    basketLocalData =
+                                                                    BasketData
+                                                                        .fromJson(
+                                                                            json['data']);
+                                                                Basket newBasket = Basket(
+                                                                    encodedId:
+                                                                        basketLocalData.encodedId ??
+                                                                            '',
+                                                                    lineCount: basketLocalData
+                                                                            .lines
+                                                                            ?.length ??
+                                                                        0,
+                                                                    totalPrice:
+                                                                        basketLocalData
+                                                                            .total);
+                                                                basketBox.put(
+                                                                    'basket',
+                                                                    newBasket);
+                                                                basketData
+                                                                        .value =
+                                                                    basketLocalData;
+                                                              }
+                                                            }
+                                                            _isBasketLoading
+                                                                .value = true;
+
+                                                            return;
+                                                          },
+                                                          child: Text(
+                                                              productPrice),
+                                                          style: ButtonStyle(
+                                                            shape: MaterialStateProperty.all<
+                                                                    RoundedRectangleBorder>(
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                            )),
+                                                            backgroundColor:
+                                                                MaterialStateProperty.all<
+                                                                        Color>(
+                                                                    Colors
+                                                                        .yellow
+                                                                        .shade700),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ])));
+                                      }),
                                 ),
-                              );
-                      }),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                  ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 5),
                   child: Column(
                     children: [
                       // Container(
@@ -443,7 +763,7 @@ class BasketWidget extends HookWidget {
                       //   ),
                       // ),
                       Container(
-                        height: 60,
+                        padding: EdgeInsets.symmetric(vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -521,8 +841,29 @@ class BasketWidget extends HookWidget {
       }
     }
 
+    Future<void> fetchRecomendedItems() async {
+      if (basket != null) {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+
+        var url = Uri.https(
+            'api.choparpizza.uz', '/api/baskets/related/${basket.encodedId}');
+        var response = await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var json = jsonDecode(response.body);
+          List<RelatedProduct> localRelatedProduct = List<RelatedProduct>.from(
+              json['data'].map((m) => RelatedProduct.fromJson(m)).toList());
+
+          relatedData.value = localRelatedProduct;
+        }
+      }
+    }
+
     useEffect(() {
       getBasket();
+      fetchRecomendedItems();
     }, []);
 
     return ValueListenableBuilder<Box<User>>(
@@ -535,7 +876,7 @@ class BasketWidget extends HookWidget {
                 builder: (context, box, _) {
                   return Scaffold(
                     appBar: AppBar(
-                      toolbarHeight: 88,
+                      toolbarHeight: 50,
                       title: Text('Корзина'),
                       titleTextStyle:
                           TextStyle(fontSize: 20, color: Colors.black),

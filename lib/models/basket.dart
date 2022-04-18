@@ -11,5 +11,8 @@ class Basket {
 
 	@HiveField(1)
   late int lineCount;
-  Basket({required this.encodedId, required this.lineCount});
+
+  @HiveField(2)
+  late int? totalPrice;
+  Basket({required this.encodedId, required this.lineCount, this.totalPrice});
 }
