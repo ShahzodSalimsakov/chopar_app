@@ -10,6 +10,7 @@ import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/pages/product_detail.dart';
 import 'package:chopar_app/widgets/products/50_50.dart';
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -34,6 +35,7 @@ class ProductsList extends HookWidget {
         useState<List<ProductSection>>(List<ProductSection>.empty());
     final scrolledIndex = useState<int>(0);
     final collapsedId = useState<int?>(null);
+    final configData = useState<Map<String, dynamic>?>(null);
     Box<Basket> basketBox = Hive.box<Basket>('basket');
     Basket? basket = basketBox.get('basket');
 
@@ -82,9 +84,23 @@ class ProductsList extends HookWidget {
       }
     }
 
+    Future<void> fetchConfig() async {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      };
+      var url = Uri.https('api.choparpizza.uz', 'api/configs/public');
+      var response = await http.get(url, headers: requestHeaders);
+
+      var json = jsonDecode(response.body);
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      configData.value = jsonDecode(stringToBase64.decode(json['data']));
+    }
+
     useEffect(() {
       getBasket();
       getProducts();
+      fetchConfig();
     }, []);
     ScrollController scrollController = new ScrollController();
 
@@ -282,6 +298,35 @@ class ProductsList extends HookWidget {
         productPrice = product!.price;
       }
 
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
+
+      Terminals? currentTerminal =
+          Hive.box<Terminals>('currentTerminal').get('currentTerminal');
+
+      if (configData.value?["discount_end_date"] != null &&
+          deliveryType?.value == DeliveryTypeEnum.pickup &&
+          currentTerminal != null &&
+          configData.value?["discount_catalog_sections"]
+              .split(',')
+              .map((i) => int.parse(i))
+              .contains(product.categoryId)) {
+        if (DateTime.now().weekday.toString() !=
+            configData.value?["discount_disable_day"]) {
+          if (DateTime.now().isBefore(
+              DateTime.parse(configData.value?["discount_end_date"]))) {
+            if (configData.value?["discount_value"] != null) {
+              productPrice = (double.parse(productPrice) *
+                      ((100 -
+                              double.parse(
+                                  configData.value!["discount_value"])) /
+                          100))
+                  .toString();
+            }
+          }
+        }
+      }
+
       productPrice = formatCurrency.format(double.tryParse(productPrice));
 
       bool isInStock = false;
@@ -316,12 +361,6 @@ class ProductsList extends HookWidget {
                     child: InkWell(
                       child: productImage(image),
                       onTap: () {
-                        Box<DeliveryType> box =
-                            Hive.box<DeliveryType>('deliveryType');
-                        DeliveryType? deliveryType = box.get('deliveryType');
-                        Terminals? currentTerminal =
-                            Hive.box<Terminals>('currentTerminal')
-                                .get('currentTerminal');
                         DeliveryLocationData? deliveryLocationData =
                             Hive.box<DeliveryLocationData>(
                                     'deliveryLocationData')
@@ -523,6 +562,24 @@ class ProductsList extends HookWidget {
       );
     }
 
+    var discountValue = useMemoized(() {
+      var res = 0;
+      if (configData.value != null) {
+        if (configData.value?["discount_end_date"] != null) {
+          if (DateTime.now().weekday.toString() !=
+              configData.value?["discount_disable_day"]) {
+            if (DateTime.now().isBefore(
+                DateTime.parse(configData.value?["discount_end_date"]))) {
+              if (configData.value?["discount_value"] != null) {
+                res = int.parse(configData.value?["discount_value"]);
+              }
+            }
+          }
+        }
+      }
+
+      return res;
+    }, [configData.value]);
     return ValueListenableBuilder<Box<Stock>>(
         valueListenable: Hive.box<Stock>('stock').listenable(),
         builder: (context, box, _) {
