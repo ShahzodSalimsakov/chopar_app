@@ -15,6 +15,8 @@ import 'package:hashids2/hashids2.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../models/delivery_type.dart';
+
 class BasketWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,13 @@ class BasketWidget extends HookWidget {
         'Accept': 'application/json'
       };
 
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
+      Map<String, dynamic> queryParameters = {};
+      if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+        queryParameters = {"delivery_type": "pickup"};
+      }
+
       var url = Uri.https(
           'api.choparpizza.uz', '/api/basket-lines/${hashids.encode(lineId)}');
       var response = await http.delete(url, headers: requestHeaders);
@@ -47,8 +56,8 @@ class BasketWidget extends HookWidget {
           'Accept': 'application/json'
         };
 
-        url = Uri.https(
-            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+        url = Uri.https('api.choparpizza.uz',
+            '/api/baskets/${basket!.encodedId}', queryParameters);
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
@@ -76,6 +85,13 @@ class BasketWidget extends HookWidget {
         'Accept': 'application/json'
       };
 
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
+      Map<String, dynamic> queryParameters = {};
+      if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+        queryParameters = {"delivery_type": "pickup"};
+      }
+
       var url = Uri.https(
           'api.choparpizza.uz',
           '/api/v1/basket-lines/${hashids.encode(line.id.toString())}/remove',
@@ -88,8 +104,8 @@ class BasketWidget extends HookWidget {
           'Accept': 'application/json'
         };
 
-        url = Uri.https(
-            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+        url = Uri.https('api.choparpizza.uz',
+            '/api/baskets/${basket!.encodedId}', queryParameters);
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           json = jsonDecode(response.body);
@@ -104,6 +120,13 @@ class BasketWidget extends HookWidget {
         'Accept': 'application/json'
       };
 
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
+      Map<String, dynamic> queryParameters = {};
+      if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+        queryParameters = {"delivery_type": "pickup"};
+      }
+
       var url = Uri.https(
           'api.choparpizza.uz',
           '/api/v1/basket-lines/${hashids.encode(line.id.toString())}/add',
@@ -116,8 +139,8 @@ class BasketWidget extends HookWidget {
           'Accept': 'application/json'
         };
 
-        url = Uri.https(
-            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+        url = Uri.https('api.choparpizza.uz',
+            '/api/baskets/${basket!.encodedId}', queryParameters);
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           json = jsonDecode(response.body);
@@ -206,11 +229,11 @@ class BasketWidget extends HookWidget {
       var productTotalPrice = 0;
       if (lines.child != null && lines.child!.length > 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
-        productTotalPrice = (int.parse(
-                    double.parse(lines.total ?? '0.0000').toStringAsFixed(0)) +
-                int.parse(double.parse(lines.child![0].total ?? '0.0000')
-                    .toStringAsFixed(0))) *
-            lines.quantity;
+        productTotalPrice =
+            (int.parse((lines.total ?? 0.0000).toStringAsFixed(0)) +
+                    int.parse(double.parse(lines.child![0].total ?? '0.0000')
+                        .toStringAsFixed(0))) *
+                lines.quantity;
         String childsName = lines.child!
             .where((Child child) =>
                 lines.variant!.product!.boxId != child.variant!.product!.id)
@@ -224,7 +247,7 @@ class BasketWidget extends HookWidget {
       } else {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
         productTotalPrice =
-            int.parse(double.parse(lines.total ?? '0.0000').toStringAsFixed(0));
+            int.parse((lines.total ?? 0.0000).toStringAsFixed(0));
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 10),
@@ -261,8 +284,20 @@ class BasketWidget extends HookWidget {
               ),
               Column(
                 children: [
+                  lines.discountValue != null && lines.discountValue! > 0
+                      ? Text(
+                          formatCurrency.format(lines.total),
+                          style: TextStyle(
+                              fontSize: 18,
+                              decoration: TextDecoration.lineThrough),
+                        )
+                      : SizedBox(),
                   Text(
-                    formatCurrency.format(productTotalPrice),
+                    formatCurrency.format(
+                      lines.discountValue != null && lines.discountValue! > 0
+                          ? lines.total - lines.discountValue!
+                          : lines.total,
+                    ),
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(
@@ -387,49 +422,50 @@ class BasketWidget extends HookWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Text("Проведите пальцем влево, чтобы удалить продукт"), ListView.separated(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: basketData.value!.lines!.length ?? 0,
-                              physics: NeverScrollableScrollPhysics(),
-                              separatorBuilder: (context, index) {
-                                return Divider();
-                              },
-                              itemBuilder: (context, index) {
-                                final item = basketData.value!.lines![index];
-                                return item.bonusId != null
-                                    ? basketItems(item)
-                                    : Dismissible(
-                                        direction: DismissDirection.endToStart,
-                                        key: Key(item.id.toString()),
-                                        child: basketItems(item),
-                                        background: Container(
-                                          color: Colors.red,
-                                        ),
-                                        onDismissed:
-                                            (DismissDirection direction) {
-                                          destroyLine(item.id);
-                                        },
-                                        secondaryBackground: Container(
-                                          color: Colors.red,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 15, vertical: 5),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Icon(Icons.delete,
-                                                    color: Colors.white),
-                                                Text('Удалить',
-                                                    style: TextStyle(
-                                                        color: Colors.white)),
-                                              ],
-                                            ),
+                        Text("Проведите пальцем влево, чтобы удалить продукт"),
+                        ListView.separated(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: basketData.value!.lines!.length ?? 0,
+                            physics: NeverScrollableScrollPhysics(),
+                            separatorBuilder: (context, index) {
+                              return Divider();
+                            },
+                            itemBuilder: (context, index) {
+                              final item = basketData.value!.lines![index];
+                              return item.bonusId != null
+                                  ? basketItems(item)
+                                  : Dismissible(
+                                      direction: DismissDirection.endToStart,
+                                      key: Key(item.id.toString()),
+                                      child: basketItems(item),
+                                      background: Container(
+                                        color: Colors.red,
+                                      ),
+                                      onDismissed:
+                                          (DismissDirection direction) {
+                                        destroyLine(item.id);
+                                      },
+                                      secondaryBackground: Container(
+                                        color: Colors.red,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Icon(Icons.delete,
+                                                  color: Colors.white),
+                                              Text('Удалить',
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
+                                            ],
                                           ),
                                         ),
-                                      );
-                              }),
+                                      ),
+                                    );
+                            }),
                         relatedData.value.isNotEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(
@@ -438,8 +474,7 @@ class BasketWidget extends HookWidget {
                                 ),
                                 child: Align(
                                     alignment: Alignment.centerLeft,
-                                    child: Text(
-                                        'Рекомендуем к Вашему заказу',
+                                    child: Text('Рекомендуем к Вашему заказу',
                                         style: const TextStyle(
                                             fontSize: 22,
                                             fontWeight: FontWeight.w500))),
@@ -565,6 +600,16 @@ class BasketWidget extends HookWidget {
                                                               var url = Uri.https(
                                                                   'api.choparpizza.uz',
                                                                   '/api/baskets-lines');
+
+                                                              Box<DeliveryType>
+                                                                  box =
+                                                                  Hive.box<
+                                                                          DeliveryType>(
+                                                                      'deliveryType');
+                                                              DeliveryType?
+                                                                  deliveryType =
+                                                                  box.get(
+                                                                      'deliveryType');
                                                               var formData = {
                                                                 'basket_id': basket
                                                                     .encodedId,
@@ -579,6 +624,15 @@ class BasketWidget extends HookWidget {
                                                                   }
                                                                 ]
                                                               };
+                                                              if (deliveryType
+                                                                      ?.value ==
+                                                                  DeliveryTypeEnum
+                                                                      .pickup) {
+                                                                formData[
+                                                                        "delivery_type"] =
+                                                                    "pickup";
+                                                              }
+
                                                               var response = await http.post(
                                                                   url,
                                                                   headers:
@@ -637,6 +691,20 @@ class BasketWidget extends HookWidget {
                                                               var url = Uri.https(
                                                                   'api.choparpizza.uz',
                                                                   '/api/baskets');
+
+                                                              Box<DeliveryType>
+                                                                  box =
+                                                                  Hive.box<
+                                                                          DeliveryType>(
+                                                                      'deliveryType');
+                                                              DeliveryType?
+                                                                  deliveryType =
+                                                                  box.get(
+                                                                      'deliveryType');
+                                                              Map<String,
+                                                                      dynamic>
+                                                                  queryParameters =
+                                                                  {};
                                                               var formData = {
                                                                 'variants': [
                                                                   {
@@ -649,6 +717,16 @@ class BasketWidget extends HookWidget {
                                                                   }
                                                                 ]
                                                               };
+                                                              if (deliveryType
+                                                                      ?.value ==
+                                                                  DeliveryTypeEnum
+                                                                      .pickup) {
+                                                                formData[
+                                                                        "delivery_type"] =
+                                                                    "pickup" as List<
+                                                                        Map<String,
+                                                                            Object?>>;
+                                                              }
                                                               var response = await http.post(
                                                                   url,
                                                                   headers:
@@ -803,7 +881,10 @@ class BasketWidget extends HookWidget {
                                           RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(22.0),
-                                  )))))
+                                  ))))),
+                      SizedBox(
+                        height: 10,
+                      ),
                     ],
                   ),
                 )
@@ -823,8 +904,15 @@ class BasketWidget extends HookWidget {
           'Accept': 'application/json'
         };
 
-        var url = Uri.https(
-            'api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+        Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+        DeliveryType? deliveryType = box.get('deliveryType');
+        Map<String, dynamic> queryParameters = {};
+        if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+          queryParameters = {"delivery_type": "pickup"};
+        }
+
+        var url = Uri.https('api.choparpizza.uz',
+            '/api/baskets/${basket!.encodedId}', queryParameters);
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);

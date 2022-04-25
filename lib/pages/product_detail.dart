@@ -15,6 +15,9 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/delivery_type.dart';
+import '../models/terminals.dart';
+
 var _scrollController = ScrollController();
 
 class ProductDetail extends HookWidget {
@@ -165,6 +168,20 @@ class ProductDetail extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final configData = useState<Map<String, dynamic>?>(null);
+    Future<void> fetchConfig() async {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      };
+      var url = Uri.https('api.choparpizza.uz', 'api/configs/public');
+      var response = await http.get(url, headers: requestHeaders);
+
+      var json = jsonDecode(response.body);
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      configData.value = jsonDecode(stringToBase64.decode(json['data']));
+    }
+
     useEffect(() {
       Future.delayed(Duration(seconds: 1), () {
         _scrollController
@@ -182,6 +199,7 @@ class ProductDetail extends HookWidget {
         });
         // _scrollController.dispose();
       });
+      fetchConfig();
     });
 
     final formatCurrency = new NumberFormat.currency(
@@ -301,7 +319,7 @@ class ProductDetail extends HookWidget {
       }
     }
 
-    final totalPrice = useMemoized(() {
+    var totalPrice = useMemoized(() {
       int price =
           int.parse(double.parse(detail.price ?? '0.0000').toStringAsFixed(0));
       if (detail.variants != null && detail.variants.length > 0) {
@@ -325,9 +343,40 @@ class ProductDetail extends HookWidget {
           }
         } catch (e) {}
       }
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
 
+      Terminals? currentTerminal =
+          Hive.box<Terminals>('currentTerminal').get('currentTerminal');
+
+      if (configData.value?["discount_end_date"] != null &&
+          deliveryType?.value == DeliveryTypeEnum.pickup &&
+          currentTerminal != null &&
+          configData.value?["discount_catalog_sections"]
+              .split(',')
+              .map((i) => int.parse(i))
+              .contains(detail.categoryId)) {
+        if (DateTime.now().weekday.toString() !=
+            configData.value?["discount_disable_day"]) {
+          if (DateTime.now().isBefore(
+              DateTime.parse(configData.value?["discount_end_date"]))) {
+            if (configData.value?["discount_value"] != null) {
+              price = (price *
+                  ((100 - int.parse(configData.value!["discount_value"])) /
+                      100)).toInt();
+            }
+          }
+        }
+      }
       return price;
-    }, [detail.price, detail.variants, modifiers, activeModifiers.value]);
+    }, [
+      detail.price,
+      detail.variants,
+      modifiers,
+      activeModifiers.value,
+      detail.categoryId,
+      configData.value
+    ]);
 
     Future<void> addToBasket({List<int>? mods}) async {
       ModifierProduct? modifierProduct;
@@ -503,78 +552,80 @@ class ProductDetail extends HookWidget {
                           // controller: _scrollController,
                           // physics: const NeverScrollableScrollPhysics(),
                           child: Column(
-                            children: [
-                              IconButton(
-                                icon: Icon(FontAwesomeIcons.chevronDown, color: Colors.grey,),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              Center(
-                                  child: Hero(
-                                      child: Image.network(
-                                        detail.image,
-                                        width: 250.0,
-                                        height: 250.0,
-                                        // width: MediaQuery.of(context).size.width / 2.5,
-                                      ),
-                                      tag: detail.image)),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Text(
-                                detail.attributeData?.name?.chopar?.ru ?? '',
-                                style: TextStyle(fontSize: 26),
-                              ),
-                              Html(
-                                data: detail.attributeData?.description?.chopar
-                                        ?.ru ??
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              FontAwesomeIcons.chevronDown,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          Center(
+                              child: Hero(
+                                  child: Image.network(
+                                    detail.image,
+                                    width: 250.0,
+                                    height: 250.0,
+                                    // width: MediaQuery.of(context).size.width / 2.5,
+                                  ),
+                                  tag: detail.image)),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text(
+                            detail.attributeData?.name?.chopar?.ru ?? '',
+                            style: TextStyle(fontSize: 26),
+                          ),
+                          Html(
+                            data:
+                                detail.attributeData?.description?.chopar?.ru ??
                                     '',
-                                // style: TextStyle(
-                                //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: List<Widget>.generate(
-                                      detail.variants.length, (index) {
-                                    return Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 3.0),
-                                        child: ElevatedButton(
-                                            style: ButtonStyle(
-                                                shape: MaterialStateProperty.all(
-                                                    RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                25.0))),
-                                                backgroundColor: MaterialStateProperty.all(selectedVariant.value == detail.variants[index].customName
+                            // style: TextStyle(
+                            //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                          ),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List<Widget>.generate(
+                                  detail.variants.length, (index) {
+                                return Container(
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 3.0),
+                                    child: ElevatedButton(
+                                        style: ButtonStyle(
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(
+                                                        25.0))),
+                                            backgroundColor: MaterialStateProperty.all(
+                                                selectedVariant.value == detail.variants[index].customName
                                                     ? Colors.yellow.shade600
                                                     : Colors.grey.shade100)),
-                                            child: Text(detail.variants[index].customName,
-                                                style: TextStyle(
-                                                    fontSize: 13.0,
-                                                    color: selectedVariant.value == detail.variants[index].customName
-                                                        ? Colors.white
-                                                        : Colors.grey)),
-                                            onPressed: () {
-                                              selectedVariant.value = detail
-                                                  .variants[index].customName;
-                                            }));
-                                  }),
-                                ),
-                              ),
-                              ...modifiersList(modifiers, addModifier,
-                                  activeModifiers, context),
-                              // SizedBox(
-                              //   height: 50,
-                              // )
-                              //   ],
-                              // )),
-                            ],
-                          )),
+                                        child: Text(detail.variants[index].customName,
+                                            style: TextStyle(
+                                                fontSize: 13.0,
+                                                color: selectedVariant.value == detail.variants[index].customName
+                                                    ? Colors.white
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          selectedVariant.value =
+                                              detail.variants[index].customName;
+                                        }));
+                              }),
+                            ),
+                          ),
+                          ...modifiersList(
+                              modifiers, addModifier, activeModifiers, context),
+                          // SizedBox(
+                          //   height: 50,
+                          // )
+                          //   ],
+                          // )),
+                        ],
+                      )),
                     ),
                     Positioned(
                         child: Container(

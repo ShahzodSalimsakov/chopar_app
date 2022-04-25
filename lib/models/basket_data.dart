@@ -18,6 +18,7 @@ class BasketData {
   late int total;
   late int subTotal;
   String? encodedId;
+  late int discount_value;
 
   BasketData(
       {required this.id, this.userId, this.mergedId, this.completedAt, required this.currency, required this.createdAt, required this.updatedAt, this.otp, this.order, this.lines, required this.total, required this.subTotal, this.encodedId});
@@ -36,6 +37,7 @@ class BasketData {
       lines = json['lines'].map<Lines>((m) => new Lines.fromJson(m)).toList();
     }
     total = json['total'];
+    discount_value = json['discount_value'];
     subTotal = json['sub_total'];
     encodedId = json['encoded_id'] != null ? json['encoded_id'] : null;
   }
@@ -55,6 +57,7 @@ class BasketData {
       data['lines'] = this.lines?.map((v) => v.toJson()).toList();
     }
     data['total'] = this.total;
+    data['discount_value'] = this.discount_value;
     data['sub_total'] = this.subTotal;
     if (this.encodedId != null) {
       data['encoded_id'] = this.encodedId;
@@ -68,17 +71,18 @@ class Lines {
   late int basketId;
   late int productVariantId;
   late int quantity;
-  late String total;
+  late int total;
   late String createdAt;
   late String updatedAt;
   late String? bonusId;
+  late int? discountValue;
   List<BasketModifiers>? modifiers;
   String? parentId;
   Variant? variant;
   List<Child>? child;
 
   Lines(
-      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.bonusId, this.modifiers, this.parentId, this.variant, this.child});
+      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.bonusId, this.modifiers, this.parentId, this.variant, this.child,  this.discountValue});
 
   Lines.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -86,6 +90,7 @@ class Lines {
     productVariantId = json['product_variant_id'];
     quantity = json['quantity'];
     total = json['total'];
+    discountValue = json['discount_value'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     bonusId = json['bonus_id'];
@@ -117,6 +122,7 @@ class Lines {
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['bonus_id'] = this.bonusId;
+    data['discount_value'] = this.discountValue;
     if (this.modifiers != null) {
       data['modifiers'] = this.modifiers?.map((v) => v.toJson()).toList();
     }

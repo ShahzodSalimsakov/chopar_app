@@ -151,6 +151,7 @@ class Items {
   late String? image;
   List<Variants>? variants;
   List<Modifiers>? modifiers;
+  late int? categoryId;
 
   Items(
       {required this.id,
@@ -172,7 +173,8 @@ class Items {
       required this.price,
       required this.image,
       this.variants,
-      this.modifiers});
+      this.modifiers,
+      this.categoryId});
 
   Items.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -216,6 +218,7 @@ class Items {
       //   variants?.add(new Variants.fromJson(v));
       // });
     }
+    categoryId = json['category_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -248,6 +251,8 @@ class Items {
     if (this.modifiers != null) {
       data['modifiers'] = this.modifiers?.map((v) => v.toJson()).toList();
     }
+
+    data['category_id'] = this.categoryId;
     return data;
   }
 }

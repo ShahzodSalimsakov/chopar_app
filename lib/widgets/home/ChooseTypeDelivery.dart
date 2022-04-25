@@ -5,6 +5,7 @@ import 'package:chopar_app/models/modal_fit.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/delivery.dart';
 import 'package:chopar_app/widgets/delivery/pickup.dart';
+import 'package:chopar_app/widgets/home/DiscountWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -25,7 +26,9 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     with SingleTickerProviderStateMixin {
   final myTabs = <Tab>[
     Tab(text: 'Доставка'),
-    Tab(text: 'Самовывоз'),
+    Tab(child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [Text('Самовывоз- '), DiscountWidget()],)),
   ];
 
   late TabController _tabController;
