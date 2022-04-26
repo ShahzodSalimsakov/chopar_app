@@ -48,10 +48,8 @@ class DiscountWidget extends HookWidget {
 
     return Container(
         child: discountValue > 0
-            ? Text(
-                ' -$discountValue%',
-                style: TextStyle(color: Colors.red, fontSize: 20),
-              )
-            : Text(''));
+            ? Image.asset('assets/images/sale.png',
+            height: 50, width: 50)
+            : SizedBox());
   }
 }

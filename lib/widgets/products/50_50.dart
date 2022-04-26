@@ -4,6 +4,7 @@ import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -12,6 +13,9 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
+
+import '../../models/delivery_type.dart';
+import '../../models/terminals.dart';
 
 class CreateOwnPizza extends HookWidget {
   final formatCurrency = new NumberFormat.currency(
@@ -56,6 +60,7 @@ class CreateOwnPizza extends HookWidget {
     final rightSelectedProduct = useState<Items?>(null);
     final isSecondPage = useState<bool>(false);
     final isBasketLoading = useState<bool>(false);
+    final configData = useState<Map<String, dynamic>?>(null);
 
     changeToSecondPage() {
       if (leftSelectedProduct.value == null ||
@@ -79,15 +84,48 @@ class CreateOwnPizza extends HookWidget {
     final activeCustomName = useState<String>(customNames[0]);
 
     final readyProductList = useMemoized(() {
+      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+      DeliveryType? deliveryType = box.get('deliveryType');
+
+      Terminals? currentTerminal =
+      Hive.box<Terminals>('currentTerminal').get('currentTerminal');
       return items?.map((Items item) {
         item.variants?.forEach((Variants vars) {
           if (vars.customName == activeCustomName.value) {
             item.price = vars.price;
           }
         });
+
+        item.beforePrice = null;
+        if (configData.value?["discount_end_date"] != null &&
+            deliveryType?.value == DeliveryTypeEnum.pickup &&
+            currentTerminal != null &&
+            configData.value?["discount_catalog_sections"]
+                .split(',')
+                .map((i) => int.parse(i))
+                .contains(item.categoryId)) {
+          if (DateTime.now().weekday.toString() !=
+              configData.value?["discount_disable_day"]) {
+            if (DateTime.now().isBefore(
+                DateTime.parse(configData.value?["discount_end_date"]))) {
+              if (configData.value?["discount_value"] != null) {
+                item.beforePrice = int.parse(double.parse(
+                    item.price ?? '0.0000')
+                    .toStringAsFixed(0));
+                item.price = (double.parse(item.price) *
+                        ((100 -
+                                double.parse(
+                                    configData.value!["discount_value"])) /
+                            100))
+                    .toString();
+              }
+            }
+          }
+        }
+
         return item;
       }).toList();
-    }, [items, activeCustomName.value]);
+    }, [items, activeCustomName.value, configData.value]);
 
     final modifiers = useMemoized(() {
       if (leftSelectedProduct.value == null ||
@@ -152,8 +190,23 @@ class CreateOwnPizza extends HookWidget {
       activeCustomName.value
     ]);
 
+    Future<void> fetchConfig() async {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      };
+      var url = Uri.https('api.choparpizza.uz', 'api/configs/public');
+      var response = await http.get(url, headers: requestHeaders);
+
+      var json = jsonDecode(response.body);
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      configData.value = jsonDecode(stringToBase64.decode(json['data']));
+    }
+
     useEffect(() {
       activeCustomName.value = customNames[0];
+      fetchConfig();
+      return null;
     }, [customNames]);
 
     addModifier(int id) {
@@ -301,9 +354,8 @@ class CreateOwnPizza extends HookWidget {
           'basket_id': basket.encodedId,
           'variants': [
             {
-              'id': modifierProduct != null
-                  ? modifierProduct.id
-                  : leftProduct.id,
+              'id':
+                  modifierProduct != null ? modifierProduct.id : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
@@ -342,9 +394,8 @@ class CreateOwnPizza extends HookWidget {
         var formData = {
           'variants': [
             {
-              'id': modifierProduct != null
-                  ? modifierProduct.id
-                  : leftProduct.id,
+              'id':
+                  modifierProduct != null ? modifierProduct.id : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
@@ -374,19 +425,17 @@ class CreateOwnPizza extends HookWidget {
       Navigator.of(context).pop();
     }
 
-
-
     final totalSummary = useMemoized(() {
       int res = 0;
       if (leftSelectedProduct.value != null) {
         res += int.parse(double.parse(
-            leftSelectedProduct.value?.price.toString() ?? '0.0000')
+                leftSelectedProduct.value?.price.toString() ?? '0.0000')
             .toStringAsFixed(0));
       }
 
       if (rightSelectedProduct.value != null) {
         res += int.parse(double.parse(
-            rightSelectedProduct.value?.price.toString() ?? '0.0000')
+                rightSelectedProduct.value?.price.toString() ?? '0.0000')
             .toStringAsFixed(0));
       }
 
@@ -669,7 +718,8 @@ class CreateOwnPizza extends HookWidget {
                   itemCount: 3,
                   itemBuilder: (ctx, index) {
                     return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 3.0, vertical: 5.0),
                         child: ElevatedButton(
                             style: ButtonStyle(
                                 shape: MaterialStateProperty.all(
@@ -760,6 +810,12 @@ class CreateOwnPizza extends HookWidget {
                                         style: TextStyle(fontSize: 20.0),
                                         textAlign: TextAlign.center,
                                       ),
+                                      readyProductList?[index]
+                                          .beforePrice != null ?
+                                      Text(formatCurrency.format(
+                                          readyProductList?[index]
+                                              .beforePrice ??
+                                              0.0000), style: TextStyle(decoration: TextDecoration.lineThrough),) : SizedBox(),
                                       Text(formatCurrency.format(int.parse(
                                           double.parse(readyProductList?[index]
                                                       .price ??
@@ -849,6 +905,12 @@ class CreateOwnPizza extends HookWidget {
                                       style: TextStyle(fontSize: 20.0),
                                       textAlign: TextAlign.center,
                                     ),
+                                    readyProductList?[index]
+                                        .beforePrice != null ?
+                                    Text(formatCurrency.format(
+                                        readyProductList?[index]
+                                            .beforePrice ??
+                                            0.0000), style: TextStyle(decoration: TextDecoration.lineThrough),) : SizedBox(),
                                     Text(formatCurrency.format(int.parse(
                                         double.parse(readyProductList?[index]
                                                     .price ??
