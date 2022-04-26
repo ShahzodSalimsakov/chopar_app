@@ -152,6 +152,8 @@ class Items {
   List<Variants>? variants;
   List<Modifiers>? modifiers;
   late int? categoryId;
+  late int? beforePrice;
+  late int? discountValue;
 
   Items(
       {required this.id,
@@ -174,7 +176,9 @@ class Items {
       required this.image,
       this.variants,
       this.modifiers,
-      this.categoryId});
+      this.categoryId,
+      this.beforePrice,
+      this.discountValue});
 
   Items.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -219,6 +223,7 @@ class Items {
       // });
     }
     categoryId = json['category_id'];
+    discountValue = json['discount_value'];
   }
 
   Map<String, dynamic> toJson() {
@@ -245,6 +250,7 @@ class Items {
     data['modifier_prod_id'] = this.modifierProdId;
     data['price'] = this.price;
     data['image'] = this.image;
+    data['discount_value'] = this.discountValue;
     if (this.variants != null) {
       data['variants'] = this.variants?.map((v) => v.toJson()).toList();
     }

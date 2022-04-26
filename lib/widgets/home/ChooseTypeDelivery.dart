@@ -28,7 +28,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     Tab(text: 'Доставка'),
     Tab(child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [Text('Самовывоз- '), DiscountWidget()],)),
+      children: [Text('Самовывоз '), DiscountWidget()],)),
   ];
 
   late TabController _tabController;

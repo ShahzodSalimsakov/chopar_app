@@ -36,7 +36,9 @@ class _MainPageState extends State<MainPage>
         backgroundColor: Colors.white,
         body: UpgradeAlert(
           shouldPopScope: () => true,
-          debugLogging: true,
+          debugLogging: false,
+          showIgnore: false,
+          showLater: false,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Container(

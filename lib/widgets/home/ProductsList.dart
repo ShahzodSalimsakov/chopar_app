@@ -11,6 +11,7 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/pages/product_detail.dart';
 import 'package:chopar_app/widgets/products/50_50.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -103,6 +104,25 @@ class ProductsList extends HookWidget {
       fetchConfig();
     }, []);
     ScrollController scrollController = new ScrollController();
+
+    var discountValue = useMemoized(() {
+      var res = 0;
+      if (configData.value != null) {
+        if (configData.value?["discount_end_date"] != null) {
+          if (DateTime.now().weekday.toString() !=
+              configData.value?["discount_disable_day"]) {
+            if (DateTime.now().isBefore(
+                DateTime.parse(configData.value?["discount_end_date"]))) {
+              if (configData.value?["discount_value"] != null) {
+                res = int.parse(configData.value?["discount_value"]);
+              }
+            }
+          }
+        }
+      }
+
+      return res;
+    }, [configData.value]);
 
     Future<void> decreaseQuantity(Lines line) async {
       if (line.quantity == 1) {
@@ -291,6 +311,7 @@ class ProductsList extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       String productPrice = '';
+      String beforePrice = '';
 
       if (product?.variants != null && product!.variants!.isNotEmpty) {
         productPrice = product.variants!.first.price;
@@ -322,6 +343,12 @@ class ProductsList extends HookWidget {
                                   configData.value!["discount_value"])) /
                           100))
                   .toString();
+
+              if (product?.variants != null && product!.variants!.isNotEmpty) {
+                beforePrice = product.variants!.first.price;
+              } else {
+                beforePrice = product!.price;
+              }
             }
           }
         }
@@ -411,6 +438,13 @@ class ProductsList extends HookWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          beforePrice.isNotEmpty
+                              ? Align(
+                                  child: Image.asset('assets/images/sale.png',
+                                      height: 50, width: 50),
+                                  alignment: AlignmentDirectional.topEnd,
+                                )
+                              : SizedBox(),
                           Text(
                             product.attributeData?.name?.chopar?.ru ?? '',
                             style: TextStyle(
@@ -475,10 +509,24 @@ class ProductsList extends HookWidget {
                                   ),
                                 )
                               : OutlinedButton(
-                                  child: Text(
-                                    'от ' + productPrice,
-                                    style: TextStyle(
-                                        color: Colors.yellow.shade600),
+                                  child: Column(
+                                    children: [
+                                      beforePrice.isNotEmpty
+                                          ? Text(
+                                              double.tryParse(beforePrice)!
+                                                  .toStringAsFixed(0),
+                                              style: TextStyle(
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  color: Colors.red),
+                                            )
+                                          : SizedBox(),
+                                      Text(
+                                        'от ' + productPrice,
+                                        style: TextStyle(
+                                            color: Colors.yellow.shade600),
+                                      ),
+                                    ],
                                   ),
                                   style: ButtonStyle(
                                       side: MaterialStateProperty.all(
@@ -562,24 +610,6 @@ class ProductsList extends HookWidget {
       );
     }
 
-    var discountValue = useMemoized(() {
-      var res = 0;
-      if (configData.value != null) {
-        if (configData.value?["discount_end_date"] != null) {
-          if (DateTime.now().weekday.toString() !=
-              configData.value?["discount_disable_day"]) {
-            if (DateTime.now().isBefore(
-                DateTime.parse(configData.value?["discount_end_date"]))) {
-              if (configData.value?["discount_value"] != null) {
-                res = int.parse(configData.value?["discount_value"]);
-              }
-            }
-          }
-        }
-      }
-
-      return res;
-    }, [configData.value]);
     return ValueListenableBuilder<Box<Stock>>(
         valueListenable: Hive.box<Stock>('stock').listenable(),
         builder: (context, box, _) {
