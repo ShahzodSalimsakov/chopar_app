@@ -441,7 +441,7 @@ class ProductsList extends HookWidget {
                           beforePrice.isNotEmpty
                               ? Align(
                                   child: Image.asset('assets/images/sale.png',
-                                      height: 50, width: 50),
+                                      height: 30, width: 30),
                                   alignment: AlignmentDirectional.topEnd,
                                 )
                               : SizedBox(),
@@ -524,7 +524,7 @@ class ProductsList extends HookWidget {
                                       Text(
                                         'от ' + productPrice,
                                         style: TextStyle(
-                                            color: Colors.yellow.shade600),
+                                            color: Colors.yellow.shade600, fontSize: beforePrice.isNotEmpty ? 17 : 16),
                                       ),
                                     ],
                                   ),
