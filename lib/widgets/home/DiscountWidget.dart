@@ -49,7 +49,7 @@ class DiscountWidget extends HookWidget {
     return Container(
         child: discountValue > 0
             ? Image.asset('assets/images/sale.png',
-            height: 50, width: 50)
+            height: 35, width: 30)
             : SizedBox());
   }
 }
