@@ -9,6 +9,7 @@ import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/pages/main_page.dart';
 import 'package:chopar_app/widgets/basket/basket.dart';
 import 'package:chopar_app/models/basket.dart';
+import 'package:chopar_app/widgets/home/WorkTime.dart';
 import 'package:chopar_app/widgets/profile/index.dart';
 import 'package:chopar_app/widgets/sales/sales.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -24,6 +25,8 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'dart:developer' as developer;
 
+import '../models/city.dart';
+
 OverlayEntry? _previousEntry;
 
 class Home extends StatefulWidget {
@@ -35,8 +38,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
-  var workTimeModalOpened = false;
-  late Flushbar _closeWorkModal;
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
@@ -82,7 +83,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // }
 
   Future<void> setLocation(LocationData location,
-      DeliveryLocationData deliveryData, String house) async {
+      DeliveryLocationData deliveryData, String house, List<AddressItems>? addressItems) async {
     final Box<DeliveryLocationData> deliveryLocationBox =
         Hive.box<DeliveryLocationData>('deliveryLocationData');
     deliveryLocationBox.put('deliveryLocationData', deliveryData);
@@ -100,6 +101,29 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
     }
+    addressItems?.forEach((item) async {
+      if (item.kind == 'province' || item.kind == 'area') {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+        var url =
+        Uri.https('api.choparpizza.uz', '/api/cities/public');
+        var response =
+        await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          List<City> cityList = List<City>.from(
+              json['data'].map((m) => City.fromJson(m)).toList());
+          for (var element in cityList) {
+            if (element.name == item.name) {
+              Hive.box<City>('currentCity')
+                  .put('currentCity', element);
+            }
+          }
+        }
+      }
+    });
 
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
@@ -133,61 +157,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           box.put('stock', newStockData);
         }
       }
-    }
-  }
-
-  workTimeDialog() async {
-    var startTime = DateTime.now();
-    DateTime dateC = DateTime.now();
-    startTime.minute;
-
-    DateTime dateA = DateTime(dateC.year, dateC.month, dateC.day, 2, 45);
-    DateTime dateB = DateTime(dateC.year, dateC.month, dateC.day, 10);
-    if (dateA.isBefore(dateC) && dateB.isAfter(dateC)) {
-      await Future.delayed(Duration(milliseconds: 50));
-      if (!workTimeModalOpened) {
-        _closeWorkModal = Flushbar(
-            message: "Откроемся в 10:00",
-            flushbarPosition: FlushbarPosition.TOP,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            reverseAnimationCurve: Curves.decelerate,
-            forwardAnimationCurve: Curves.elasticOut,
-            backgroundColor: Colors.black87,
-            isDismissible: false,
-            duration: Duration(days: 4),
-            icon: Container(
-              padding: EdgeInsets.only(left: 10),
-              child: Icon(
-                Icons.lock_clock,
-                color: Colors.white,
-                size: 40,
-              ),
-            ),
-            messageText: Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                "Откроемся в 10:00",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                    fontFamily: "ShadowsIntoLightTwo"),
-              ),
-            ),
-            margin: EdgeInsets.all(10),
-            borderRadius: BorderRadius.circular(10));
-        setState(() {
-          workTimeModalOpened = true;
-        });
-        _closeWorkModal.show(context);
-      }
-    } else {
-      if (workTimeModalOpened && _closeWorkModal != null) {
-        _closeWorkModal.dismiss();
-      }
-      setState(() {
-        workTimeModalOpened = false;
-      });
     }
   }
 
@@ -226,9 +195,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
-    Timer.periodic(new Duration(seconds: 1), (timer) {
-      workTimeDialog();
-    });
     () async {
       Location location = new Location();
 
@@ -285,7 +251,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             lon: _locationData.longitude,
             address: geoData.formatted ?? '');
 
-        setLocation(_locationData, deliveryData, house);
+        setLocation(_locationData, deliveryData, house, geoData.addressItems);
       }
       location.onLocationChanged.listen((LocationData currentLocation) async {
         DeliveryLocationData? deliveryLocationData =
@@ -322,7 +288,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
             // showAlertOnChangeLocation(currentLocation, deliveryData, house,
             //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-            setLocation(currentLocation, deliveryData, house);
+            setLocation(currentLocation, deliveryData, house, geoData.addressItems);
           }
         }
       });
@@ -367,12 +333,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         child: Text(
                       'Проверьте подключение к интернету',
                       style: TextStyle(fontSize: 18),
-                          textAlign: TextAlign.center,
+                      textAlign: TextAlign.center,
                     )),
                   ],
                 ),
               ))
-            : SafeArea(child: tabs[selectedIndex]),
+            : SafeArea(
+                child: Column(
+                children: [WorkTimeWidget(), Expanded(child: tabs[selectedIndex])],
+              )),
         bottomNavigationBar: Container(
             height: 80.0,
             decoration: BoxDecoration(
