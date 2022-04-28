@@ -25,6 +25,8 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'dart:developer' as developer;
 
+import '../models/city.dart';
+
 OverlayEntry? _previousEntry;
 
 class Home extends StatefulWidget {
@@ -81,7 +83,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // }
 
   Future<void> setLocation(LocationData location,
-      DeliveryLocationData deliveryData, String house) async {
+      DeliveryLocationData deliveryData, String house, List<AddressItems>? addressItems) async {
     final Box<DeliveryLocationData> deliveryLocationBox =
         Hive.box<DeliveryLocationData>('deliveryLocationData');
     deliveryLocationBox.put('deliveryLocationData', deliveryData);
@@ -99,6 +101,29 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
     }
+    addressItems?.forEach((item) async {
+      if (item.kind == 'province' || item.kind == 'area') {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+        var url =
+        Uri.https('api.choparpizza.uz', '/api/cities/public');
+        var response =
+        await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          List<City> cityList = List<City>.from(
+              json['data'].map((m) => City.fromJson(m)).toList());
+          for (var element in cityList) {
+            if (element.name == item.name) {
+              Hive.box<City>('currentCity')
+                  .put('currentCity', element);
+            }
+          }
+        }
+      }
+    });
 
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
@@ -226,7 +251,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             lon: _locationData.longitude,
             address: geoData.formatted ?? '');
 
-        setLocation(_locationData, deliveryData, house);
+        setLocation(_locationData, deliveryData, house, geoData.addressItems);
       }
       location.onLocationChanged.listen((LocationData currentLocation) async {
         DeliveryLocationData? deliveryLocationData =
@@ -263,7 +288,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
             // showAlertOnChangeLocation(currentLocation, deliveryData, house,
             //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-            setLocation(currentLocation, deliveryData, house);
+            setLocation(currentLocation, deliveryData, house, geoData.addressItems);
           }
         }
       });
