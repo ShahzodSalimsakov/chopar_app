@@ -9,6 +9,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:upgrader/upgrader.dart';
 
+import '../widgets/home/ProductListListen.dart';
+
 // late final ScrollController _scrollController;
 
 class MainPage extends StatefulWidget {
@@ -50,7 +52,7 @@ class _MainPageState extends State<MainPage>
                   ChooseCity(),
                   ChooseTypeDelivery(),
                   SizedBox(height: 10.0),
-                  ProductsList(),
+                  ProductListListen(),
                 ],
               ),
             ),
