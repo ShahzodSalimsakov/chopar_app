@@ -88,7 +88,7 @@ class CreateOwnPizza extends HookWidget {
       DeliveryType? deliveryType = box.get('deliveryType');
 
       Terminals? currentTerminal =
-      Hive.box<Terminals>('currentTerminal').get('currentTerminal');
+          Hive.box<Terminals>('currentTerminal').get('currentTerminal');
       return items?.map((Items item) {
         item.variants?.forEach((Variants vars) {
           if (vars.customName == activeCustomName.value) {
@@ -109,9 +109,8 @@ class CreateOwnPizza extends HookWidget {
             if (DateTime.now().isBefore(
                 DateTime.parse(configData.value?["discount_end_date"]))) {
               if (configData.value?["discount_value"] != null) {
-                item.beforePrice = int.parse(double.parse(
-                    item.price ?? '0.0000')
-                    .toStringAsFixed(0));
+                item.beforePrice = int.parse(
+                    double.parse(item.price ?? '0.0000').toStringAsFixed(0));
                 item.price = (double.parse(item.price) *
                         ((100 -
                                 double.parse(
@@ -368,7 +367,8 @@ class CreateOwnPizza extends HookWidget {
                 ]
               }
             }
-          ]
+          ],
+          'sourceType': "app"
         };
         var response = await http.post(url,
             headers: requestHeaders, body: jsonEncode(formData));
@@ -810,12 +810,18 @@ class CreateOwnPizza extends HookWidget {
                                         style: TextStyle(fontSize: 20.0),
                                         textAlign: TextAlign.center,
                                       ),
-                                      readyProductList?[index]
-                                          .beforePrice != null ?
-                                      Text(formatCurrency.format(
-                                          readyProductList?[index]
-                                              .beforePrice ??
-                                              0.0000), style: TextStyle(decoration: TextDecoration.lineThrough),) : SizedBox(),
+                                      readyProductList?[index].beforePrice !=
+                                              null
+                                          ? Text(
+                                              formatCurrency.format(
+                                                  readyProductList?[index]
+                                                          .beforePrice ??
+                                                      0.0000),
+                                              style: TextStyle(
+                                                  decoration: TextDecoration
+                                                      .lineThrough),
+                                            )
+                                          : SizedBox(),
                                       Text(formatCurrency.format(int.parse(
                                           double.parse(readyProductList?[index]
                                                       .price ??
@@ -905,12 +911,17 @@ class CreateOwnPizza extends HookWidget {
                                       style: TextStyle(fontSize: 20.0),
                                       textAlign: TextAlign.center,
                                     ),
-                                    readyProductList?[index]
-                                        .beforePrice != null ?
-                                    Text(formatCurrency.format(
-                                        readyProductList?[index]
-                                            .beforePrice ??
-                                            0.0000), style: TextStyle(decoration: TextDecoration.lineThrough),) : SizedBox(),
+                                    readyProductList?[index].beforePrice != null
+                                        ? Text(
+                                            formatCurrency.format(
+                                                readyProductList?[index]
+                                                        .beforePrice ??
+                                                    0.0000),
+                                            style: TextStyle(
+                                                decoration:
+                                                    TextDecoration.lineThrough),
+                                          )
+                                        : SizedBox(),
                                     Text(formatCurrency.format(int.parse(
                                         double.parse(readyProductList?[index]
                                                     .price ??

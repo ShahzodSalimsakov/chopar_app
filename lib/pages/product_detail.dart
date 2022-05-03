@@ -362,8 +362,9 @@ class ProductDetail extends HookWidget {
               DateTime.parse(configData.value?["discount_end_date"]))) {
             if (configData.value?["discount_value"] != null) {
               price = (price *
-                  ((100 - int.parse(configData.value!["discount_value"])) /
-                      100)).toInt();
+                      ((100 - int.parse(configData.value!["discount_value"])) /
+                          100))
+                  .toInt();
             }
           }
         }
@@ -449,7 +450,8 @@ class ProductDetail extends HookWidget {
               'quantity': 1,
               'modifiers': selectedModifiers
             }
-          ]
+          ],
+          'sourceType': "app"
         };
         var response = await http.post(url,
             headers: requestHeaders, body: jsonEncode(formData));
