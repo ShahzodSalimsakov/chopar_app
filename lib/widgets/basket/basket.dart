@@ -946,9 +946,46 @@ class BasketWidget extends HookWidget {
       }
     }
 
+    Future<void> checkBonusBasket() async {
+      Box userBox = Hive.box<User>('user');
+      User? user = userBox.get('user');
+      if (basket != null && user != null) {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${user.userToken}'
+        };
+
+        Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+        DeliveryType? deliveryType = box.get('deliveryType');
+        Map<String, dynamic> queryParameters = {
+          'basketId': basket!.encodedId,
+          'sourceType': 'app'
+        };
+        if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+          queryParameters["delivery_type"] = "pickup";
+        }
+
+        var url = Uri.https('api.choparpizza.uz',
+            '/api/baskets/check-bonus-for-source/', queryParameters);
+        var response = await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          var json = jsonDecode(response.body);
+          BasketData basketLocalData = BasketData.fromJson(json['data']);
+          if (basketLocalData.lines != null) {
+            basket.lineCount = basketLocalData.lines!.length;
+            basketBox.put('basket', basket);
+          }
+          basketData.value = basketLocalData;
+        }
+      }
+    }
+
     useEffect(() {
       getBasket();
       fetchRecomendedItems();
+      checkBonusBasket();
+      return null;
     }, []);
 
     return ValueListenableBuilder<Box<User>>(
