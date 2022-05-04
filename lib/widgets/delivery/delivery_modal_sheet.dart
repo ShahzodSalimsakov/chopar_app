@@ -15,6 +15,11 @@ import 'package:http/http.dart' as http;
 
 import '../../models/city.dart';
 
+Map<String, String> terminalFoundErrors = {
+  "nearest_terminal_not_found": "Ближайший к Вам филиал не найден",
+  "nearest_terminals_is_closed": "Ближайший к Вам филиал закрыт"
+};
+
 class DeliveryModalSheet extends HookWidget {
   late Point currentPoint;
 
@@ -33,6 +38,9 @@ class DeliveryModalSheet extends HookWidget {
     final entranceText = useState<String>(deliveryLocationData?.entrance ?? '');
     final doorCodeText = useState<String>(deliveryLocationData?.doorCode ?? '');
 
+    var currentTerminal = useState<Terminals?>(null);
+    var notFoundText = useState<String>('nearest_terminal_not_found');
+
     Future<void> getPointData() async {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -46,6 +54,29 @@ class DeliveryModalSheet extends HookWidget {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         geoData.value = YandexGeoData.fromJson(json['data']);
+
+
+        var url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
+          'lat': currentPoint!.latitude.toString(),
+          'lon': currentPoint!.longitude.toString()
+        });
+        response = await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          List<Terminals> terminal = List<Terminals>.from(json['data']
+          ['items']
+              .map((m) => Terminals.fromJson(m))
+              .toList());
+          notFoundText.value = json['data']['errorMessage'];
+          if (terminal.isNotEmpty) {
+            currentTerminal.value = terminal[0];
+          } else {
+            currentTerminal.value = null;
+          }
+        } else {
+          currentTerminal.value = null;
+          notFoundText.value = 'nearest_terminal_not_found';
+        }
       }
     }
 
@@ -156,9 +187,8 @@ class DeliveryModalSheet extends HookWidget {
                       'Accept': 'application/json'
                     };
                     var url =
-                    Uri.https('api.choparpizza.uz', '/api/cities/public');
-                    var response =
-                    await http.get(url, headers: requestHeaders);
+                        Uri.https('api.choparpizza.uz', '/api/cities/public');
+                    var response = await http.get(url, headers: requestHeaders);
                     if (response.statusCode == 200) {
                       var json = jsonDecode(response.body);
                       List<City> cityList = List<City>.from(
@@ -209,11 +239,8 @@ class DeliveryModalSheet extends HookWidget {
                     box.put('stock', newStockData);
                   }
 
-
-
                   Box<DeliveryType> box =
-                  Hive.box<DeliveryType>(
-                      'deliveryType');
+                      Hive.box<DeliveryType>('deliveryType');
                   DeliveryType newDeliveryType = new DeliveryType();
                   newDeliveryType.value = DeliveryTypeEnum.deliver;
                   box.put('deliveryType', newDeliveryType);
@@ -264,8 +291,13 @@ class DeliveryModalSheet extends HookWidget {
                         width: 10,
                         height: 10),
                   ),
-                  title: Text(geoData.value?.title ?? ''),
-                  subtitle: Text(geoData.value?.description ?? ''),
+                  title: Text(
+                      currentTerminal.value == null
+                          ? terminalFoundErrors[notFoundText.value]!
+                          : geoData.value!.title!),
+                  subtitle: Text(currentTerminal.value == null
+                      ? ''
+                      : geoData.value!.description!),
                 );
               },
               separatorBuilder: (context, index) {
@@ -277,6 +309,9 @@ class DeliveryModalSheet extends HookWidget {
             child: DefaultStyledButton(
                 width: MediaQuery.of(context).size.width,
                 onPressed: () {
+                  if (currentTerminal.value == null) {
+                    return;
+                  }
                   houseText.value = '';
                   flatText.value = '';
                   entranceText.value = '';
