@@ -349,7 +349,7 @@ class OrderDetail extends HookWidget {
                             equipment.value == 0.0 ||
                             delivery.value == 0.0) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(tr("Сначало выберите"))));
+                              SnackBar(content: Text(tr("Сначала выберите"))));
                         } else {
                           Map<String, String> requestHeaders = {
                             'Content-type': 'application/json',
