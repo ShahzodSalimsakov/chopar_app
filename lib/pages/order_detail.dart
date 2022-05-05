@@ -4,6 +4,7 @@ import 'package:chopar_app/models/user.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -29,33 +30,33 @@ class OrderDetail extends HookWidget {
           children: [
             Expanded(
                 child: Stack(
-                  clipBehavior: Clip.hardEdge,
-                  children: [
-                    Positioned(
-                        left: 0,
-                        child: Container(
-                          child: Image.network(
-                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                            height: 50,
-                          ),
-                          width: MediaQuery.of(context).size.width - 30,
-                        ))
-                  ],
-                )),
+              clipBehavior: Clip.hardEdge,
+              children: [
+                Positioned(
+                    left: 0,
+                    child: Container(
+                      child: Image.network(
+                        'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                        height: 50,
+                      ),
+                      width: MediaQuery.of(context).size.width - 30,
+                    ))
+              ],
+            )),
             Expanded(
                 child: Stack(
-                  children: [
-                    Positioned(
-                        right: 0,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 30,
-                          child: Image.network(
-                            'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
-                            height: 50,
-                          ),
-                        ))
-                  ],
-                ))
+              children: [
+                Positioned(
+                    right: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width - 30,
+                      child: Image.network(
+                        'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                        height: 50,
+                      ),
+                    ))
+              ],
+            ))
           ],
         ),
       );
@@ -77,6 +78,9 @@ class OrderDetail extends HookWidget {
 
   Widget build(BuildContext context) {
     final order = useState<Order?>(null);
+    final product = useState(0.0);
+    final equipment = useState(0.0);
+    final delivery = useState(0.0);
 
     Future<void> loadOrder() async {
       Box<User> transaction = Hive.box<User>('user');
@@ -110,18 +114,17 @@ class OrderDetail extends HookWidget {
             child: CircularProgressIndicator(),
           ));
     } else {
-      var t = AppLocalizations.of(context);
       DateTime createdAt =
-      DateTime.parse(order.value!.createdAt ?? '').toLocal();
+          DateTime.parse(order.value!.createdAt ?? '').toLocal();
       // createdAt = createdAt.toLocal();
       DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
 
       String house =
-      order.value!.house != null ? ', дом: ${order.value!.house}' : '';
+          order.value!.house != null ? ', дом: ${order.value!.house}' : '';
       String flat =
-      order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
+          order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
       String entrance = order.value!.entrance != null
           ? ', подъезд: ${order.value!.entrance}'
           : '';
@@ -129,7 +132,7 @@ class OrderDetail extends HookWidget {
           ? ', код на двери: ${order.value!.doorCode}'
           : '';
       String address =
-          '${order.value!.billingAddress}${house}${flat}${entrance}${doorCode}';
+          '${order.value!.billingAddress}$house$flat$entrance$doorCode';
 
       return Scaffold(
         appBar: AppBar(
@@ -138,115 +141,253 @@ class OrderDetail extends HookWidget {
           foregroundColor: Colors.black,
           backgroundColor: Colors.white,
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        body: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '№ ${order.value!.id}',
-                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
-                  ),
-                  Text(tr('order_status_${order.value!.status}'),
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: order.value!.status == 'cancelled' ? Colors.red : Colors.green))
-                ],
-              ),
-              Row(
-                children: [
-                  Text(createdAtFormat.format(createdAt),
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: Colors.grey)),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: Colors.grey,
-              ),
-              Row(
-                children: [
-                  Flexible(
-                      child: Text(address,
+              Container(
+                height: MediaQuery.of(context).size.height * 0.5,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '№ ${order.value!.id}',
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ))),
-                ],
+                              fontWeight: FontWeight.w400, fontSize: 20),
+                        ),
+                        Text(tr('order_status_${order.value!.status}'),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: order.value!.status == 'cancelled'
+                                    ? Colors.red
+                                    : Colors.green))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(createdAtFormat.format(createdAt),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: Colors.grey)),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                            child: Text(address,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ))),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                        child: ListView.separated(
+                            itemBuilder: (context, index) {
+                              Lines lineItem =
+                                  order.value!.basket!.lines![index];
+                              return ListTile(
+                                title: Text(lineItem.variant?.product
+                                        ?.attributeData?.name?.chopar?.ru ??
+                                    ''),
+                                leading: renderProductImage(context, lineItem),
+                                trailing: Text(
+                                    '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} ${formatCurrency.format(double.parse(order.value!.basket!.lines![index].total))}'),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return Divider();
+                            },
+                            itemCount:
+                                order.value!.basket?.lines?.length ?? 0)),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Общая сумма:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            )),
+                        // Text(
+                        //   t!.prodCount(order.basket?.lines?.length ?? 0),
+                        //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                        // ),
+                        Text(
+                            formatCurrency
+                                .format(order.value!.orderTotal / 100),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                    )
+                  ],
+                ),
               ),
-              SizedBox(
-                height: 8,
-              ),
-              Divider(
-                color: Colors.grey,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        Lines lineItem = order.value!.basket!.lines![index];
-                        return ListTile(
-                          title: Text(lineItem.variant?.product?.attributeData
-                              ?.name?.chopar?.ru ??
-                              ''),
-                          leading: renderProductImage(context, lineItem),
-                          trailing: Text(
-                              '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} ${formatCurrency.format(double.parse(order.value!.basket!.lines![index].total))}'),
-                        );
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(26)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Column(
+                  children: [
+                    Align(
+                      heightFactor: 2,
+                      alignment: Alignment.topLeft,
+                      child: Text("Оставьте отзыв",
+                          style: const TextStyle(fontSize: 20)),
+                    ),
+                    Text("Продукт", style: const TextStyle(fontSize: 18)),
+                    RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        product.value = rating;
                       },
-                      separatorBuilder: (context, index) {
-                        return Divider();
+                    ),
+                    Text("Комплектация", style: const TextStyle(fontSize: 18)),
+                    RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        equipment.value = rating;
                       },
-                      itemCount: order.value!.basket?.lines?.length ?? 0)),
-              SizedBox(
-                height: 10,
+                    ),
+                    Text("Доставка", style: const TextStyle(fontSize: 18)),
+                    RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        delivery.value = rating;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        if (product.value == 0.0 ||
+                            equipment.value == 0.0 ||
+                            delivery.value == 0.0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(tr("Сначала выберите"))));
+                        } else {
+                          Map<String, String> requestHeaders = {
+                            'Content-type': 'application/json',
+                            'Accept': 'application/json',
+                          };
+                          var url = Uri.https('crm.choparpizza.uz',
+                              '/rest/1/5boca3dtup3vevqk/new.review.neutral');
+                          var response = await http.post(url,
+                              headers: requestHeaders,
+                              body: jsonEncode({
+                                "phone": order.value!.billingPhone,
+                                "order_id": order.value!.id,
+                                "project": "chopar",
+                                "product": product.value,
+                                "service": equipment.value,
+                                "courier": delivery.value
+                              }));
+                          if (response.statusCode == 200) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(tr("Отзыв отправлен"))));
+                          }
+                        }
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 73, vertical: 20),
+                          decoration: const BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Text(
+                            tr('send'),
+                            style: const TextStyle(fontSize: 20),
+                          )),
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Общая сумма:", style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              )),
-                  // Text(
-                  //   t!.prodCount(order.basket?.lines?.length ?? 0),
-                  //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                  // ),
-                  Text(formatCurrency.format(order.value!.orderTotal / 100),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ))
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: Colors.grey,
-              )
             ],
           ),
         ),

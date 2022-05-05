@@ -19,17 +19,20 @@ class BasketAdapter extends TypeAdapter<Basket> {
     return Basket(
       encodedId: fields[0] as String,
       lineCount: fields[1] as int,
+      totalPrice: fields[2] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Basket obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.encodedId)
       ..writeByte(1)
-      ..write(obj.lineCount);
+      ..write(obj.lineCount)
+      ..writeByte(2)
+      ..write(obj.totalPrice);
   }
 
   @override
