@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chopar_app/models/order.dart';
 import 'package:chopar_app/models/user.dart';
+import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -112,7 +113,9 @@ class OrderDetail extends HookWidget {
           ),
           body: Center(
             child: CircularProgressIndicator(),
-          ));
+          ),
+
+      );
     } else {
       DateTime createdAt =
           DateTime.parse(order.value!.createdAt ?? '').toLocal();
@@ -195,26 +198,30 @@ class OrderDetail extends HookWidget {
                     Divider(
                       color: Colors.grey,
                     ),
-                    order.value?.deliveryType == 'deliver' ?
-                    Row(
-                      children: [
-                        Flexible(
-                            child: Text(address,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                ))),
-                      ],
-                    ): order.value?.terminalData != null ? Row(
-                      children: [
-                        Flexible(
-                            child: Text('Филиал: ${order.value?.terminalData?.name ?? ''}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                ))),
-                      ],
-                    ): SizedBox(),
+                    order.value?.deliveryType == 'deliver'
+                        ? Row(
+                            children: [
+                              Flexible(
+                                  child: Text(address,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 16,
+                                      ))),
+                            ],
+                          )
+                        : order.value?.terminalData != null
+                            ? Row(
+                                children: [
+                                  Flexible(
+                                      child: Text(
+                                          'Филиал: ${order.value?.terminalData?.name ?? ''}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16,
+                                          ))),
+                                ],
+                              )
+                            : SizedBox(),
                     Divider(
                       color: Colors.grey,
                     ),
@@ -380,23 +387,30 @@ class OrderDetail extends HookWidget {
                           }
                         }
                       },
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 73, vertical: 20),
-                          decoration: const BoxDecoration(
-                            color: Colors.amber,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          child: Text(
-                            tr('send'),
-                            style: const TextStyle(fontSize: 20),
-                          )),
+
+                      child:
+                      DefaultStyledButton(
+                          width: 100,
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/');
+                          },
+                          text: tr('send'))
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 70,)
             ],
           ),
+        ),
+        bottomSheet: Container(
+          padding: EdgeInsets.all(10),
+          child: DefaultStyledButton(
+              width: double.infinity,
+              onPressed: () {
+                Navigator.pushNamed(context, '/');
+              },
+              text: "Главная"),
         ),
       );
     }
