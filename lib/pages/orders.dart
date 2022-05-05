@@ -140,6 +140,7 @@ class Orders extends HookWidget {
                       SizedBox(
                         height: 10,
                       ),
+                      order.deliveryType == 'deliver' ?
                       Row(
                         children: [
                           Flexible(
@@ -149,7 +150,16 @@ class Orders extends HookWidget {
                                     fontSize: 16,
                                   ))),
                         ],
-                      ),
+                      ): order.terminalData != null ? Row(
+                        children: [
+                          Flexible(
+                              child: Text('Филиал: ${order.terminalData?.name ?? ''}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                  ))),
+                        ],
+                      ): SizedBox(),
                       SizedBox(
                         height: 10,
                       ),

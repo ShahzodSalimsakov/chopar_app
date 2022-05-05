@@ -195,6 +195,7 @@ class OrderDetail extends HookWidget {
                     Divider(
                       color: Colors.grey,
                     ),
+                    order.value?.deliveryType == 'deliver' ?
                     Row(
                       children: [
                         Flexible(
@@ -204,10 +205,16 @@ class OrderDetail extends HookWidget {
                                   fontSize: 16,
                                 ))),
                       ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    ): order.value?.terminalData != null ? Row(
+                      children: [
+                        Flexible(
+                            child: Text('Филиал: ${order.value?.terminalData?.name ?? ''}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ))),
+                      ],
+                    ): SizedBox(),
                     Divider(
                       color: Colors.grey,
                     ),
