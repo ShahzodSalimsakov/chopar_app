@@ -88,6 +88,7 @@ dependencies:
   simple_html_css: ^3.0.1+1
   upgrader: ^3.13.0
   scrollable_positioned_list: ^0.2.3
+  flutter_rating_bar: ^4.0.0
 
 dependency_overrides:
   firebase_messaging_platform_interface: 3.1.6
