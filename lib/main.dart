@@ -9,6 +9,7 @@ import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/home_is_scrolled.dart';
 import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
+import 'package:chopar_app/models/registered_review.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/pages/order_detail.dart';
@@ -94,6 +95,7 @@ void main() async {
   Hive.registerAdapter(AdditionalPhoneNumberAdapter());
   Hive.registerAdapter(HomeIsScrolledAdapter());
   Hive.registerAdapter(HomeScrollPositionAdapter());
+  Hive.registerAdapter(RegisteredReviewAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -109,6 +111,7 @@ void main() async {
   await Hive.openBox<AdditionalPhoneNumber>('additionalPhoneNumber');
   await Hive.openBox<HomeIsScrolled>('homeIsScrolled');
   await Hive.openBox<HomeScrollPosition>('homeScrollPosition');
+  await Hive.openBox<RegisteredReview>('registeredReview');
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],

@@ -8,10 +8,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/registered_review.dart';
 
 class OrderDetail extends HookWidget {
   final String orderId;
@@ -101,20 +104,20 @@ class OrderDetail extends HookWidget {
 
     useEffect(() {
       loadOrder();
+      return null;
     }, []);
 
     if (order.value == null) {
       return Scaffold(
-          appBar: AppBar(
-            title: Text('Загрузка...'),
-            centerTitle: true,
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-          ),
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-
+        appBar: AppBar(
+          title: Text('Загрузка...'),
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     } else {
       DateTime createdAt =
@@ -280,126 +283,158 @@ class OrderDetail extends HookWidget {
                   ],
                 ),
               ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(26)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: Column(
-                  children: [
-                    Align(
-                      heightFactor: 2,
-                      alignment: Alignment.topLeft,
-                      child: Text("Оставьте отзыв",
-                          style: const TextStyle(fontSize: 20)),
-                    ),
-                    Text("Продукт", style: const TextStyle(fontSize: 18)),
-                    RatingBar.builder(
-                      initialRating: 0,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (rating) {
-                        product.value = rating;
-                      },
-                    ),
-                    Text("Комплектация", style: const TextStyle(fontSize: 18)),
-                    RatingBar.builder(
-                      initialRating: 0,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (rating) {
-                        equipment.value = rating;
-                      },
-                    ),
-                    Text("Доставка", style: const TextStyle(fontSize: 18)),
-                    RatingBar.builder(
-                      initialRating: 0,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (rating) {
-                        delivery.value = rating;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        if (product.value == 0.0 ||
-                            equipment.value == 0.0 ||
-                            delivery.value == 0.0) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(tr("Сначала выберите"))));
-                        } else {
-                          Map<String, String> requestHeaders = {
-                            'Content-type': 'application/json',
-                            'Accept': 'application/json',
-                          };
-                          var url = Uri.https('crm.choparpizza.uz',
-                              '/rest/1/5boca3dtup3vevqk/new.review.neutral');
-                          var response = await http.post(url,
-                              headers: requestHeaders,
-                              body: jsonEncode({
-                                "phone": order.value!.billingPhone,
-                                "order_id": order.value!.id,
-                                "project": "chopar",
-                                "product": product.value,
-                                "service": equipment.value,
-                                "courier": delivery.value
-                              }));
-                          if (response.statusCode == 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(tr("Отзыв отправлен"))));
-                          }
-                        }
-                      },
-
-                      child:
-                      DefaultStyledButton(
-                          width: 100,
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/');
-                          },
-                          text: tr('send'))
-                    ),
-                  ],
-                ),
+          ValueListenableBuilder<Box<RegisteredReview>>(
+          valueListenable: Hive.box<RegisteredReview>('registeredReview').listenable(),
+    builder: (context, box, _) {
+      RegisteredReview? registeredView = box.get(order.value!.id);
+      if (registeredView == null) {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(26)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
               ),
-              SizedBox(height: 70,)
+            ],
+          ),
+          padding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          margin:
+          const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          child: Column(
+            children: [
+              Align(
+                heightFactor: 2,
+                alignment: Alignment.topLeft,
+                child: Text("Оставьте отзыв",
+                    style: const TextStyle(fontSize: 20)),
+              ),
+              Text("Продукт", style: const TextStyle(fontSize: 18)),
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  product.value = rating;
+                },
+              ),
+              Text("Комплектация", style: const TextStyle(fontSize: 18)),
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  equipment.value = rating;
+                },
+              ),
+              order.value?.deliveryType == 'deliver'
+                  ? Text("Доставка", style: const TextStyle(fontSize: 18))
+                  : SizedBox(),
+              order.value?.deliveryType == 'deliver'
+                  ? RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding:
+                const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  delivery.value = rating;
+                },
+              )
+                  : SizedBox(),
+              const SizedBox(
+                height: 10,
+              ),
+              DefaultStyledButton(
+                  width: double.infinity,
+                  onPressed: () async {
+                    if (product.value == 0.0 || equipment.value == 0.0) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(tr("Сначала выберите"))));
+                    } else {
+                      Map<String, String> requestHeaders = {
+                        'Content-type': 'application/json',
+                        'Accept': 'application/json',
+                      };
+                      var url = Uri.https('crm.choparpizza.uz',
+                          '/rest/1/5boca3dtup3vevqk/new.review.neutral');
+                      var response = await http.post(url,
+                          headers: requestHeaders,
+                          body: jsonEncode({
+                            "phone": order.value!.billingPhone,
+                            "order_id": order.value!.id,
+                            "project": "chopar",
+                            "product": product.value,
+                            "service": equipment.value,
+                            "courier": delivery.value
+                          }));
+                      if (response.statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(tr("Отзыв отправлен"))));
+                        RegisteredReview newRegisteredView = new RegisteredReview();
+                        newRegisteredView.orderId = order.value!.id;
+                        box.put(order.value!.id, newRegisteredView);
+                      }
+                    }
+                  },
+                  text: tr('send'))
+            ],
+          ),
+        );
+      } else {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(26)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          padding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          margin:
+          const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          child: Center(
+            child: Text('Ваш отзыв успешно принят'),
+          ),
+        );
+      }
+    }),
+              SizedBox(
+                height: 70,
+              )
             ],
           ),
         ),
