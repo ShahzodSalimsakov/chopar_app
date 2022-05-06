@@ -1,38 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'basket.dart';
+part of 'registered_review.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class BasketAdapter extends TypeAdapter<Basket> {
+class RegisteredReviewAdapter extends TypeAdapter<RegisteredReview> {
   @override
-  final int typeId = 2;
+  final int typeId = 17;
 
   @override
-  Basket read(BinaryReader reader) {
+  RegisteredReview read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Basket(
-      encodedId: fields[0] as String,
-      lineCount: fields[1] as int,
-      totalPrice: fields[2] as int?,
-    );
+    return RegisteredReview()..orderId = fields[0] as int;
   }
 
   @override
-  void write(BinaryWriter writer, Basket obj) {
+  void write(BinaryWriter writer, RegisteredReview obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
-      ..write(obj.encodedId)
       ..writeByte(1)
-      ..write(obj.lineCount)
-      ..writeByte(2)
-      ..write(obj.totalPrice);
+      ..writeByte(0)
+      ..write(obj.orderId);
   }
 
   @override
@@ -41,7 +33,7 @@ class BasketAdapter extends TypeAdapter<Basket> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is BasketAdapter &&
+      other is RegisteredReviewAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
