@@ -105,16 +105,15 @@ class OrderDetail extends HookWidget {
 
     if (order.value == null) {
       return Scaffold(
-          appBar: AppBar(
-            title: Text('Загрузка...'),
-            centerTitle: true,
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-          ),
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-
+        appBar: AppBar(
+          title: Text('Загрузка...'),
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     } else {
       DateTime createdAt =
@@ -338,68 +337,67 @@ class OrderDetail extends HookWidget {
                         equipment.value = rating;
                       },
                     ),
-                    Text("Доставка", style: const TextStyle(fontSize: 18)),
-                    RatingBar.builder(
-                      initialRating: 0,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (rating) {
-                        delivery.value = rating;
-                      },
-                    ),
+                    order.value?.deliveryType == 'deliver'
+                        ? Text("Доставка", style: const TextStyle(fontSize: 18))
+                        : SizedBox(),
+                    order.value?.deliveryType == 'deliver'
+                        ? RatingBar.builder(
+                            initialRating: 0,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: false,
+                            itemCount: 5,
+                            itemPadding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (rating) {
+                              delivery.value = rating;
+                            },
+                          )
+                        : SizedBox(),
                     const SizedBox(
                       height: 10,
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        if (product.value == 0.0 ||
-                            equipment.value == 0.0 ||
-                            delivery.value == 0.0) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(tr("Сначала выберите"))));
-                        } else {
-                          Map<String, String> requestHeaders = {
-                            'Content-type': 'application/json',
-                            'Accept': 'application/json',
-                          };
-                          var url = Uri.https('crm.choparpizza.uz',
-                              '/rest/1/5boca3dtup3vevqk/new.review.neutral');
-                          var response = await http.post(url,
-                              headers: requestHeaders,
-                              body: jsonEncode({
-                                "phone": order.value!.billingPhone,
-                                "order_id": order.value!.id,
-                                "project": "chopar",
-                                "product": product.value,
-                                "service": equipment.value,
-                                "courier": delivery.value
-                              }));
-                          if (response.statusCode == 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(tr("Отзыв отправлен"))));
+                    DefaultStyledButton(
+                        width: 100,
+                        onPressed: () async {
+                          if (product.value == 0.0 || equipment.value == 0.0) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(tr("Сначала выберите"))));
+                          } else {
+                            Map<String, String> requestHeaders = {
+                              'Content-type': 'application/json',
+                              'Accept': 'application/json',
+                            };
+                            var url = Uri.https('crm.choparpizza.uz',
+                                '/rest/1/5boca3dtup3vevqk/new.review.neutral');
+                            var response = await http.post(url,
+                                headers: requestHeaders,
+                                body: jsonEncode({
+                                  "phone": order.value!.billingPhone,
+                                  "order_id": order.value!.id,
+                                  "project": "chopar",
+                                  "product": product.value,
+                                  "service": equipment.value,
+                                  "courier": delivery.value
+                                }));
+                            if (response.statusCode == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(tr("Отзыв отправлен"))));
+                            }
                           }
-                        }
-                      },
-
-                      child:
-                      DefaultStyledButton(
-                          width: 100,
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/');
-                          },
-                          text: tr('send'))
-                    ),
+                        },
+                        text: tr('send'))
                   ],
                 ),
               ),
-              SizedBox(height: 70,)
+              SizedBox(
+                height: 70,
+              )
             ],
           ),
         ),
