@@ -5,7 +5,6 @@ import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,6 +13,7 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/city.dart';
+import '../../models/user.dart';
 
 Map<String, String> terminalFoundErrors = {
   "nearest_terminal_not_found": "Ближайший к Вам филиал не найден",
@@ -37,6 +37,7 @@ class DeliveryModalSheet extends HookWidget {
     final flatText = useState<String>(deliveryLocationData?.flat ?? '');
     final entranceText = useState<String>(deliveryLocationData?.entrance ?? '');
     final doorCodeText = useState<String>(deliveryLocationData?.doorCode ?? '');
+    final addressLabel = useState<String>(deliveryLocationData?.label ?? '');
 
     var currentTerminal = useState<Terminals?>(null);
     var notFoundText = useState<String>('nearest_terminal_not_found');
@@ -55,18 +56,16 @@ class DeliveryModalSheet extends HookWidget {
         var json = jsonDecode(response.body);
         geoData.value = YandexGeoData.fromJson(json['data']);
 
-
-        var url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
+        var url =
+            Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
           'lat': currentPoint!.latitude.toString(),
           'lon': currentPoint!.longitude.toString()
         });
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
-          List<Terminals> terminal = List<Terminals>.from(json['data']
-          ['items']
-              .map((m) => Terminals.fromJson(m))
-              .toList());
+          List<Terminals> terminal = List<Terminals>.from(
+              json['data']['items'].map((m) => Terminals.fromJson(m)).toList());
           notFoundText.value = json['data']['errorMessage'];
           if (terminal.isNotEmpty) {
             currentTerminal.value = terminal[0];
@@ -161,6 +160,12 @@ class DeliveryModalSheet extends HookWidget {
                       decoration: InputDecoration(labelText: 'Домофон'),
                       initialValue: doorCodeText.value,
                     ),
+                    FormBuilderTextField(
+                      name: 'addressLabel',
+                      // keyboardType: TextInputType.number,
+                      decoration: InputDecoration(labelText: 'Название адреса'),
+                      initialValue: addressLabel.value,
+                    ),
                   ],
                 )),
           )),
@@ -176,6 +181,7 @@ class DeliveryModalSheet extends HookWidget {
                     flat: formValue['flat'] ?? '',
                     entrance: formValue['entrance'] ?? '',
                     doorCode: formValue['doorCode'] ?? '',
+                    label: formValue['addressLabel'] ?? '',
                     lat: currentPoint.latitude,
                     lon: currentPoint.longitude,
                     address: geoData.value?.formatted ?? '');
@@ -250,6 +256,35 @@ class DeliveryModalSheet extends HookWidget {
                     ..pop()
                     ..pop();
                 }
+
+                Box box = Hive.box<User>('user');
+                User currentUser = box.get('user');
+                if (currentUser != null) {
+                  Map<String, String> requestHeaders = {
+                    'Content-type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ${currentUser.userToken}'
+                  };
+                  var url = Uri.https('api.choparpizza.uz', '/api/address/new');
+                  var formData = {
+                    'lat': currentPoint.latitude.toString(),
+                    'lon': currentPoint.longitude.toString(),
+                    "label": formValue['addressLabel'] ?? '',
+                    "addressId": '',
+                    "house": formValue['house'] ?? '',
+                    "flat": formValue['flat'] ?? '',
+                    "entrance": formValue['entrance'] ?? '',
+                    "door_code": formValue['doorCode'] ?? '',
+                    "address": geoData.value?.formatted ?? ''
+                  };
+                  var response = await http.post(url,
+                      headers: requestHeaders, body: jsonEncode(formData));
+                  // if (response.statusCode == 200) {
+                  //   var json = jsonDecode(response.body);
+                  // } else {
+                  //   print(response.body);
+                  // }
+                }
               },
               text: 'Готово',
             ),
@@ -291,10 +326,9 @@ class DeliveryModalSheet extends HookWidget {
                         width: 10,
                         height: 10),
                   ),
-                  title: Text(
-                      currentTerminal.value == null
-                          ? terminalFoundErrors[notFoundText.value]!
-                          : geoData.value!.title!),
+                  title: Text(currentTerminal.value == null
+                      ? terminalFoundErrors[notFoundText.value]!
+                      : geoData.value!.title!),
                   subtitle: Text(currentTerminal.value == null
                       ? ''
                       : geoData.value!.description!),
@@ -316,6 +350,7 @@ class DeliveryModalSheet extends HookWidget {
                   flatText.value = '';
                   entranceText.value = '';
                   doorCodeText.value = '';
+                  addressLabel.value = '';
                   geoData.value!.addressItems!.forEach((element) {
                     if (element.kind == 'house') {
                       houseText.value = element.name;

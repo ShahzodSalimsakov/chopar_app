@@ -187,7 +187,34 @@ class DeliveryWidget extends HookWidget {
                       }
                     }
                   },
-                  title: Text(myAddresses.value[index].address ?? ''),
+                  title: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.bookmark_border_outlined),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            myAddresses.value[index].label != null
+                                ? Text(
+                                    myAddresses.value[index].label
+                                            ?.toUpperCase() ??
+                                        '',
+                                    style: TextStyle())
+                                : SizedBox(height: 3),
+                            Text(myAddresses.value[index].address ?? '',
+                                style: TextStyle(
+                                    color:
+                                        myAddresses.value[index].label != null
+                                            ? Colors.grey
+                                            : Colors.black)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
               separatorBuilder: (context, index) {
