@@ -162,25 +162,25 @@ class _PayTypeState extends State<PayTypeWidget>
       SizedBox(
         width: 10,
       ),
-      GestureDetector(
-          onTap: () {
-            PayType newPayType = new PayType();
-            newPayType.value = 'humo';
-            Hive.box<PayType>('payType').put('payType', newPayType);
-          },
-          child: Container(
-            height: 78,
-            width: 78,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: payType != null && payType.value == 'humo'
-                    ? Border.all(color: Colors.yellow.shade700)
-                    : Border.all(width: 0)),
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Image.asset(
-              'assets/images/humo.png',
-            ),
-          )),
+      // GestureDetector(
+      //     onTap: () {
+      //       PayType newPayType = new PayType();
+      //       newPayType.value = 'humo';
+      //       Hive.box<PayType>('payType').put('payType', newPayType);
+      //     },
+      //     child: Container(
+      //       height: 78,
+      //       width: 78,
+      //       decoration: BoxDecoration(
+      //           borderRadius: BorderRadius.circular(15),
+      //           border: payType != null && payType.value == 'humo'
+      //               ? Border.all(color: Colors.yellow.shade700)
+      //               : Border.all(width: 0)),
+      //       padding: EdgeInsets.symmetric(vertical: 10),
+      //       child: Image.asset(
+      //         'assets/images/humo.png',
+      //       ),
+      //     )),
     ]);
   }
 

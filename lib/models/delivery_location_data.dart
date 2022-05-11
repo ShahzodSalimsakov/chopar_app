@@ -25,5 +25,8 @@ class DeliveryLocationData {
   @HiveField(7)
   late String? address;
 
-  DeliveryLocationData({this.house, this.flat, this.entrance, this.doorCode, this.lat, this.lon, this.address});
+  @HiveField(8)
+  late String? label;
+
+  DeliveryLocationData({this.house, this.flat, this.entrance, this.doorCode, this.lat, this.lon, this.address, this.label});
 }

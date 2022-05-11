@@ -278,7 +278,8 @@ class OrderRegistration extends HookWidget {
                                           'entrance': '',
                                           'door_code': '',
                                           'deliveryType': '',
-                                          'sourceType': "app"
+                                          'sourceType': "app",
+                                          'label': ''
                                         }
                                       };
                                       if (deliveryType!.value ==
@@ -299,6 +300,8 @@ class OrderRegistration extends HookWidget {
                                           deliveryLocationData.lat,
                                           deliveryLocationData.lon
                                         ];
+                                        formData['formData']['label'] =
+                                            deliveryLocationData.label ?? '';
                                       } else {
                                         formData['formData']['deliveryType'] =
                                             'pickup';
@@ -440,12 +443,15 @@ class OrderRegistration extends HookWidget {
                                         //     lineCount: basketData.lines?.length ?? 0);
                                         // basketBox.put('basket', newBasket);
                                       } else {
-                                        var errResponse = jsonDecode(response.body);
+                                        var errResponse =
+                                            jsonDecode(response.body);
                                         _isOrderLoading.value = false;
                                         // print(response.body);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
-                                            content: Text(errResponse['error']['message'])));
+                                                content: Text(
+                                                    errResponse['error']
+                                                        ['message'])));
                                         return;
                                       }
                                     },
