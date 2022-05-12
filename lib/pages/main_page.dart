@@ -23,6 +23,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   var _tabController;
+  ScrollController _parentScrollController = ScrollController();
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _MainPageState extends State<MainPage>
           showIgnore: false,
           showLater: false,
           child: SingleChildScrollView(
+            controller: _parentScrollController,
             scrollDirection: Axis.vertical,
             child: Container(
               height: MediaQuery.of(context).size.height * 1,
@@ -52,7 +54,7 @@ class _MainPageState extends State<MainPage>
                   ChooseCity(),
                   ChooseTypeDelivery(),
                   SizedBox(height: 10.0),
-                  ProductListListen(),
+                  ProductListListen(parentScrollController: _parentScrollController),
                 ],
               ),
             ),
