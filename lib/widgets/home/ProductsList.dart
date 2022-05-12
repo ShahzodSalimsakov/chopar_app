@@ -27,11 +27,22 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:niku/niku.dart';
 import 'package:scrollable_list_tabview/scrollable_list_tabview.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_html_css/simple_html_css.dart';
 
 class ProductsList extends HookWidget {
+  final ScrollController parentScrollController;
+
+  ProductsList(this.parentScrollController);
+
   @override
   Widget build(BuildContext context) {
+    ItemScrollController itemScrollController = ItemScrollController();
+    ItemPositionsListener itemPositionsListener =
+        ItemPositionsListener.create();
+    ItemScrollController verticalScrollController = ItemScrollController();
+    ItemPositionsListener verticalPositionsListener =
+        ItemPositionsListener.create();
     final products =
         useState<List<ProductSection>>(List<ProductSection>.empty());
     final scrolledIndex = useState<int>(0);
@@ -98,10 +109,38 @@ class ProductsList extends HookWidget {
       configData.value = jsonDecode(stringToBase64.decode(json['data']));
     }
 
+    scrollListening() {
+      print('listened');
+      print(verticalPositionsListener.itemPositions.value);
+      verticalPositionsListener.itemPositions.addListener(() {
+        int min;
+        print(verticalPositionsListener.itemPositions.value);
+        if (verticalPositionsListener.itemPositions.value.isNotEmpty) {
+          min = verticalPositionsListener.itemPositions.value
+              .where((ItemPosition position) => position.itemTrailingEdge > 0)
+              .reduce((ItemPosition min, ItemPosition position) =>
+          position.itemTrailingEdge < min.itemTrailingEdge
+              ? position
+              : min)
+              .index;
+          print('Min Index $min');
+        }
+      });
+    }
+
+
     useEffect(() {
       getBasket();
       getProducts();
       fetchConfig();
+      itemScrollController = ItemScrollController();
+      itemPositionsListener =
+      ItemPositionsListener.create();
+      verticalScrollController = ItemScrollController();
+      verticalPositionsListener =
+      ItemPositionsListener.create();
+      scrollListening();
+      return null;
     }, []);
     ScrollController scrollController = new ScrollController();
 
@@ -524,7 +563,10 @@ class ProductsList extends HookWidget {
                                       Text(
                                         'от ' + productPrice,
                                         style: TextStyle(
-                                            color: Colors.yellow.shade600, fontSize: beforePrice.isNotEmpty ? 17 : 16),
+                                            color: Colors.yellow.shade600,
+                                            fontSize: beforePrice.isNotEmpty
+                                                ? 17
+                                                : 16),
                                       ),
                                     ],
                                   ),
@@ -635,6 +677,43 @@ class ProductsList extends HookWidget {
                     }
                   }
                 }
+
+                // return Expanded(
+                //     child: Column(
+                //   children: [
+                //     Container(child:
+                //     ScrollablePositionedList.builder(
+                //       itemCount: products.value.length,
+                //       itemBuilder: (context, index) => SizedBox(
+                //         height: 40,
+                //         width: 150,
+                //         child: Text(products
+                //             .value[index].attributeData?.name?.chopar?.ru ??
+                //             ''),
+                //       ),
+                //       itemScrollController: itemScrollController,
+                //       itemPositionsListener: itemPositionsListener,
+                //       scrollDirection: Axis.horizontal,
+                //     ),
+                //     height: 50,),
+                //     Expanded(child:
+                //     ScrollablePositionedList.builder(
+                //       shrinkWrap: true,
+                //       itemCount: products.value.length,
+                //       itemBuilder: (context, index) => SizedBox(
+                //         height: 200,
+                //         width: double.infinity,
+                //         child: Text(products
+                //             .value[index].attributeData?.name?.chopar?.ru ??
+                //             ''),
+                //       ),
+                //       itemScrollController: verticalScrollController,
+                //       itemPositionsListener: verticalPositionsListener,
+                //       scrollDirection: Axis.vertical,
+                //     )
+                //     ),
+                //   ],
+                // ));
 
                 return Expanded(
                     child: NotificationListener<ScrollNotification>(
