@@ -89,6 +89,7 @@ dependencies:
   upgrader: ^3.13.0
   scrollable_positioned_list: ^0.2.3
   flutter_rating_bar: ^4.0.0
+  scrolls_to_top: ^1.1.1
 
 dependency_overrides:
   firebase_messaging_platform_interface: 3.1.6
