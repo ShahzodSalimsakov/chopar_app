@@ -95,12 +95,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       deliveryType.value = DeliveryTypeEnum.deliver;
       Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
-    } else if (currentDeliver.value != DeliveryTypeEnum.pickup) {
-      DeliveryType deliveryType = DeliveryType();
-      deliveryType.value = DeliveryTypeEnum.pickup;
-      Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
-      box.put('deliveryType', deliveryType);
     }
+    // else if (currentDeliver.value != DeliveryTypeEnum.pickup) {
+    //   DeliveryType deliveryType = DeliveryType();
+    //   deliveryType.value = DeliveryTypeEnum.pickup;
+    //   Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+    //   box.put('deliveryType', deliveryType);
+    // }
     addressItems?.forEach((item) async {
       if (item.kind == 'province' || item.kind == 'area') {
         Map<String, String> requestHeaders = {
