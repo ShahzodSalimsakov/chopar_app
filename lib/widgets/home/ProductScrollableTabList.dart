@@ -10,6 +10,7 @@ import 'package:html/parser.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:http/http.dart' as http;
+import 'package:scrolls_to_top/scrolls_to_top.dart';
 import 'package:simple_html_css/simple_html_css.dart';
 
 import '../../models/basket.dart';
@@ -22,22 +23,35 @@ import '../../models/terminals.dart';
 import '../../pages/product_detail.dart';
 import '../products/50_50.dart';
 
-class ProductScrollableList extends StatefulWidget {
+extension IndexedIterable<E> on Iterable<E> {
+  Iterable<T> mapIndexed<T>(T Function(E e, int i) f) {
+    var i = 0;
+    return map((e) => f(e, i++));
+  }
+}
+
+class ProductScrollableTabList extends StatefulWidget {
   final ScrollController parentScrollController;
 
-  const ProductScrollableList({Key? key, required this.parentScrollController})
+  const ProductScrollableTabList(
+      {Key? key, required this.parentScrollController})
       : super(key: key);
 
   @override
-  State<ProductScrollableList> createState() => _ProductScrollableListState();
+  State<ProductScrollableTabList> createState() =>
+      _ProductScrollableListTabState();
 }
 
-class _ProductScrollableListState extends State<ProductScrollableList> {
-  ItemScrollController itemScrollController = ItemScrollController();
-  ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-  ItemScrollController verticalScrollController = ItemScrollController();
-  ItemPositionsListener verticalPositionsListener =
-      ItemPositionsListener.create();
+class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
+  List<GlobalKey> categories = [];
+  late ScrollController scrollCont;
+  BuildContext? tabContext;
+
+  // ItemScrollController itemScrollController = ItemScrollController();
+  // ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  // ItemScrollController verticalScrollController = ItemScrollController();
+  // ItemPositionsListener verticalPositionsListener =
+  //     ItemPositionsListener.create();
   List<ProductSection> products = List<ProductSection>.empty();
   int scrolledIndex = 0;
   int? collapsedId;
@@ -92,9 +106,14 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
       var json = jsonDecode(response.body);
       List<ProductSection> productSections = List<ProductSection>.from(
           json['data'].map((m) => new ProductSection.fromJson(m)).toList());
-
+      List<GlobalKey> localCategories = [];
+      for (var i = 0; i < productSections.length; i++) {
+        localCategories.add(GlobalKey());
+      }
       setState(() {
         products = productSections;
+        categories = localCategories;
+        scrollCont.addListener(changeTabs);
       });
     }
   }
@@ -114,47 +133,48 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     });
   }
 
-  scrollListening() {
-    // print('listened');
-    // print(verticalPositionsListener.itemPositions.value);
-    verticalPositionsListener.itemPositions.addListener(() {
-      ItemPosition min;
-      print(verticalPositionsListener.itemPositions.value);
-      if (verticalPositionsListener.itemPositions.value.isNotEmpty) {
-        min = verticalPositionsListener.itemPositions.value.first;
-        // print('Min Index $min');
-        // print('Products count ${products.length}');
-        // print(widget.parentScrollController.position.pixels);
-        // print(widget.parentScrollController.position.maxScrollExtent);
-        if (min.itemLeadingEdge < 0 &&
-            widget.parentScrollController.position.maxScrollExtent !=
-                widget.parentScrollController.position.pixels) {
-          widget.parentScrollController.animateTo(
-              widget.parentScrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 200),
-              curve: Curves.easeIn);
-        } else if (min.itemLeadingEdge == 0 && min.index == 0 &&
-            widget.parentScrollController.position.pixels != 0.0) {
-          widget.parentScrollController.animateTo(0.0,
-              duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-        }
-
-        itemScrollController.scrollTo(
-            index: min.index,
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeInOutCubic,
-            alignment: 0.02);
-
-        if (scrolledIndex != min.index) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            setState(() {
-              scrolledIndex = min.index;
-            });
-          });
-        }
-      }
-    });
-  }
+  // scrollListening() {
+  //   // print('listened');
+  //   // print(verticalPositionsListener.itemPositions.value);
+  //   verticalPositionsListener.itemPositions.addListener(() {
+  //     ItemPosition min;
+  //     print(verticalPositionsListener.itemPositions.value);
+  //     if (verticalPositionsListener.itemPositions.value.isNotEmpty) {
+  //       min = verticalPositionsListener.itemPositions.value.first;
+  //       // print('Min Index $min');
+  //       // print('Products count ${products.length}');
+  //       // print(widget.parentScrollController.position.pixels);
+  //       // print(widget.parentScrollController.position.maxScrollExtent);
+  //       if (min.itemLeadingEdge < 0 &&
+  //           widget.parentScrollController.position.maxScrollExtent !=
+  //               widget.parentScrollController.position.pixels) {
+  //         widget.parentScrollController.animateTo(
+  //             widget.parentScrollController.position.maxScrollExtent,
+  //             duration: Duration(milliseconds: 200),
+  //             curve: Curves.easeIn);
+  //       } else if (min.itemLeadingEdge == 0 &&
+  //           min.index == 0 &&
+  //           widget.parentScrollController.position.pixels != 0.0) {
+  //         widget.parentScrollController.animateTo(0.0,
+  //             duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+  //       }
+  //
+  //       itemScrollController.scrollTo(
+  //           index: min.index,
+  //           duration: Duration(milliseconds: 200),
+  //           curve: Curves.easeInOutCubic,
+  //           alignment: 0.02);
+  //
+  //       if (scrolledIndex != min.index) {
+  //         Future.delayed(const Duration(milliseconds: 200), () {
+  //           setState(() {
+  //             scrolledIndex = min.index;
+  //           });
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 
   Future<void> decreaseQuantity(Lines line) async {
     if (line.quantity == 1) {
@@ -647,7 +667,6 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     );
   }
 
-
   double getProductHeight(ProductSection section) {
     double height = 200;
 
@@ -662,23 +681,103 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     return height;
   }
 
+  List<Widget> getSectionsList() {
+    List<Widget> sections = [];
+
+    products.asMap().forEach((index, section) {
+      sections.add(Padding(
+        key: categories[index],
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: Text(
+          section.attributeData?.name?.chopar?.ru ?? '',
+          style: TextStyle(fontSize: 20),
+        ),
+      ));
+      if (section.halfMode == 1) {
+        sections.add(ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: 1,
+          itemBuilder: (_, index) =>
+              renderCreatePizza(tabContext!, section.items),
+        ));
+      } else {
+        sections.add(ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: section.items?.length ?? 1,
+          itemBuilder: (_, prodIndex) =>
+              renderProduct(tabContext!, section.items?[prodIndex]),
+        ));
+      }
+    });
+
+    return sections;
+  }
+
+  changeTabs() {
+    late RenderBox box;
+    int scrolledIndex = 0;
+    late Offset position;
+    for (var i = 0; i < categories.length; i++) {
+      box = categories[i].currentContext!.findRenderObject() as RenderBox;
+      position = box.localToGlobal(Offset.zero);
+      // print('Scroll ${scrollCont.offset}');
+      // print('Position ${position.dy}');
+      // Scrollable.of(tabContext!).v
+      if (scrollCont.offset >= position.dy && position.dy < 250) {
+        scrolledIndex = i;
+        position = box.localToGlobal(Offset.zero);
+      }
+    }
+    // print(scrolledIndex);
+    // print(scrollCont.offset);
+    // print(widget.parentScrollController.position.maxScrollExtent);
+    if (scrolledIndex == 0) {
+      if (scrollCont.offset == 0) {
+        widget.parentScrollController.animateTo(0.0,
+            duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+      } else {
+        widget.parentScrollController.animateTo(
+            widget.parentScrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 100),
+            curve: Curves.easeIn);
+      }
+    }
+    DefaultTabController.of(tabContext!)!.animateTo(
+      scrolledIndex,
+      duration: Duration(milliseconds: 100),
+    );
+  }
+
+  scrollTo(int index) async {
+    scrollCont.removeListener(changeTabs);
+    final category = categories[index].currentContext!;
+    await Scrollable.ensureVisible(
+      category,
+      duration: Duration(milliseconds: 600),
+    );
+    scrollCont.addListener(changeTabs);
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     getBasket();
     getProducts();
     fetchConfig();
-    itemScrollController = ItemScrollController();
-    itemPositionsListener = ItemPositionsListener.create();
-    verticalScrollController = ItemScrollController();
-    verticalPositionsListener = ItemPositionsListener.create();
-    scrollListening();
+    scrollCont = ScrollController();
+    // itemScrollController = ItemScrollController();
+    // itemPositionsListener = ItemPositionsListener.create();
+    // verticalScrollController = ItemScrollController();
+    // verticalPositionsListener = ItemPositionsListener.create();
+    // scrollListening();
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
   void dispose() {
-    verticalPositionsListener.itemPositions.removeListener(() {});
+    // verticalPositionsListener.itemPositions.removeListener(() {});
     // TODO: implement dispose
     super.dispose();
   }
@@ -688,109 +787,92 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     return ValueListenableBuilder<Box<Stock>>(
         valueListenable: Hive.box<Stock>('stock').listenable(),
         builder: (context, box, _) {
-          return ValueListenableBuilder(
-              valueListenable: Hive.box<Basket>('basket').listenable(),
-              builder: (context, box, _) {
-                // getBasket();
-
-                Box<Basket> basketBox = Hive.box<Basket>('basket');
-                Basket? basket = basketBox.get('basket');
-
-                if (basket != null) {
-                  if (basketData == null) {
-                    getBasket();
-                  } else if (basketData != null) {
-                    // print(basketData.value!.lines);
-                    if (basketData!.lines != null) {
-                      if (basket.lineCount != basketData!.lines!.length) {
-                        getBasket();
-                      }
-                    } else {
-                      // getBasket();
-                    }
-                  }
-                }
-
-                return Expanded(
-                    child: Column(
-                  children: [
-                    Container(
-                      child: ScrollablePositionedList.builder(
-                        itemCount: products.length,
-                        itemBuilder: (context, index) => SizedBox(
-                          width: 110,
-                          child: GestureDetector(
-                            onTap: () {
-                              verticalScrollController.scrollTo(
-                              index: index,
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOutCubic,
-                              alignment: 0.0005);
-                              // verticalScrollController.jumpTo(index: index);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                              margin: EdgeInsets.symmetric(horizontal: 5),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: scrolledIndex == index ? Colors.white : Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(20),
-                                color: scrolledIndex == index ? Colors.yellow.shade600 : Colors.white
-                              ),
-                              child: Center(
-                                child: Text(
-                                    products[index].attributeData?.name?.chopar?.ru ??
-                                        '', style: TextStyle(color: scrolledIndex == index ? Colors.white : Colors.grey.shade300),),
-                              ),
-                            ),
-                          ),
+          return ScrollsToTop(
+            onScrollsToTop: (ScrollsToTopEvent event) async {
+              scrollTo(0);
+              DefaultTabController.of(tabContext!)!.animateTo(
+                0,
+                duration: Duration(milliseconds: 100),
+              );
+            },
+            child: DefaultTabController(
+                length: products.length,
+                child: Builder(builder: (BuildContext context) {
+                  tabContext = context;
+                  return Expanded(
+                      child: Column(
+                    children: [
+                      Container(
+                        child: TabBar(
+                          indicator: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.yellow.shade600),
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.grey.shade300,
+                          isScrollable: true,
+                          tabs: products.map((section) {
+                            return Text(
+                              section.attributeData?.name?.chopar?.ru ?? '',
+                            );
+                          }).toList(),
+                          onTap: (int index) => scrollTo(index),
                         ),
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                        scrollDirection: Axis.horizontal,
+                        height: 30,
                       ),
-                      height: 30,
-                    ),
-                    SizedBox(height: 10,),
-                    Expanded(
-                        child: ScrollablePositionedList.builder(
-                      shrinkWrap: true,
-                      itemCount: products.length,
-                      itemBuilder: (context, index) => SizedBox(
-                        height: getProductHeight(products[index]),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(products[index]
-                                    .attributeData
-                                    ?.name
-                                    ?.chopar
-                                    ?.ru ??
-                                '', style: TextStyle(fontSize: 20),),
-                            products[index].halfMode == 1 ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 1,
-                              itemBuilder: (_, index) =>
-                                  renderCreatePizza(
-                                      context, products[index].items),
-                            ) : ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: products[index].items?.length ?? 1,
-                              itemBuilder: (_, prodIndex) => renderProduct(
-                                  context, products[index].items?[prodIndex]),
-                            )
-                          ],
-                        ),
+                      SizedBox(
+                        height: 10,
                       ),
-                      itemScrollController: verticalScrollController,
-                      itemPositionsListener: verticalPositionsListener,
-                      scrollDirection: Axis.vertical,
-                    )),
-                  ],
-                ));
-              });
+                      Expanded(
+                          child: SingleChildScrollView(
+                              controller: scrollCont,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: getSectionsList()))),
+                      // Expanded(
+                      //     child: ScrollablePositionedList.builder(
+                      //   shrinkWrap: true,
+                      //   itemCount: products.length,
+                      //   itemBuilder: (context, index) => SizedBox(
+                      //     height: getProductHeight(products[index]),
+                      //     width: double.infinity,
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         Text(
+                      //           products[index].attributeData?.name?.chopar?.ru ??
+                      //               '',
+                      //           style: TextStyle(fontSize: 20),
+                      //         ),
+                      //         products[index].halfMode == 1
+                      //             ? ListView.builder(
+                      //                 shrinkWrap: true,
+                      //                 physics: NeverScrollableScrollPhysics(),
+                      //                 itemCount: 1,
+                      //                 itemBuilder: (_, index) =>
+                      //                     renderCreatePizza(
+                      //                         context, products[index].items),
+                      //               )
+                      //             : ListView.builder(
+                      //                 shrinkWrap: true,
+                      //                 physics: NeverScrollableScrollPhysics(),
+                      //                 itemCount:
+                      //                     products[index].items?.length ?? 1,
+                      //                 itemBuilder: (_, prodIndex) =>
+                      //                     renderProduct(context,
+                      //                         products[index].items?[prodIndex]),
+                      //               )
+                      //       ],
+                      //     ),
+                      //   ),
+                      //   itemScrollController: verticalScrollController,
+                      //   itemPositionsListener: verticalPositionsListener,
+                      //   scrollDirection: Axis.vertical,
+                      // )),
+                    ],
+                  ));
+                })),
+          );
         });
   }
 }

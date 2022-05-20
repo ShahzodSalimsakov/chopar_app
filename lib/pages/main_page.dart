@@ -7,6 +7,7 @@ import 'package:chopar_app/widgets/order_status/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:scrolls_to_top/scrolls_to_top.dart';
 import 'package:upgrader/upgrader.dart';
 
 import '../widgets/home/ProductListListen.dart';
@@ -23,6 +24,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   var _tabController;
+  ScrollController _parentScrollController = ScrollController();
 
   @override
   void initState() {
@@ -34,29 +36,38 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: UpgradeAlert(
-          shouldPopScope: () => true,
-          debugLogging: false,
-          showIgnore: false,
-          showLater: false,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              height: MediaQuery.of(context).size.height * 1,
-              margin: EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  OrderStatus(),
-                  ChooseCity(),
-                  ChooseTypeDelivery(),
-                  SizedBox(height: 10.0),
-                  ProductListListen(),
-                ],
+    return ScrollsToTop(
+      onScrollsToTop: (ScrollsToTopEvent event) async {
+        // print('parent');
+        // _parentScrollController.animateTo(0,
+        //     duration: Duration(milliseconds: 500), curve: Curves.ease);
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: UpgradeAlert(
+            shouldPopScope: () => true,
+            debugLogging: false,
+            showIgnore: false,
+            showLater: false,
+            child: SingleChildScrollView(
+              controller: _parentScrollController,
+              scrollDirection: Axis.vertical,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 1,
+                margin: EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    OrderStatus(),
+                    ChooseCity(),
+                    ChooseTypeDelivery(),
+                    SizedBox(height: 25.0),
+                    ProductListListen(
+                        parentScrollController: _parentScrollController),
+                  ],
+                ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 }
