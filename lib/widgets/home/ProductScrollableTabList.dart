@@ -417,8 +417,16 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
 
     if (stock != null) {
       if (stock.prodIds.length > 0) {
-        if (stock.prodIds.indexOf(product.id) >= 0) {
-          isInStock = true;
+        if (product.variants != null) {
+          product.variants!.forEach((element) {
+            if (stock.prodIds.indexOf(element.id) >= 0) {
+              isInStock = true;
+            }
+          });
+        } else {
+          if (stock.prodIds.indexOf(product.id) >= 0) {
+            isInStock = true;
+          }
         }
       }
     }
@@ -809,7 +817,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
                               borderRadius: BorderRadius.circular(20),
                               color: Colors.yellow.shade600),
                           labelColor: Colors.white,
-                          unselectedLabelColor: Colors.grey.shade300,
+                          unselectedLabelColor: Colors.grey.shade500,
                           isScrollable: true,
                           tabs: products.map((section) {
                             return Text(

@@ -10,7 +10,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
 import 'package:upgrader/upgrader.dart';
 
+import '../models/product_section.dart';
 import '../widgets/home/ProductListListen.dart';
+import '../widgets/home/productTabListStateful.dart';
 
 // late final ScrollController _scrollController;
 
@@ -25,6 +27,8 @@ class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   var _tabController;
   ScrollController _parentScrollController = ScrollController();
+  List<ProductSection> products = List<ProductSection>.empty();
+  bool isProductsLoading = true;
 
   @override
   void initState() {
@@ -34,9 +38,20 @@ class _MainPageState extends State<MainPage>
     // _scrollController = ScrollController();
   }
 
+  late double pinnedHeaderHeight;
+
   @override
   Widget build(BuildContext context) {
-    return ScrollsToTop(
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+    pinnedHeaderHeight =
+    //statusBar height
+    statusBarHeight +
+        //pinned SliverAppBar height in header
+        kToolbarHeight;
+
+    // return Scaffold(body: isProductsLoading ? Container() : ProductTabListStateful(products: products));
+
+      return ScrollsToTop(
       onScrollsToTop: (ScrollsToTopEvent event) async {
         // print('parent');
         // _parentScrollController.animateTo(0,
@@ -49,7 +64,8 @@ class _MainPageState extends State<MainPage>
             debugLogging: false,
             showIgnore: false,
             showLater: false,
-            child: SingleChildScrollView(
+            child:
+            SingleChildScrollView(
               controller: _parentScrollController,
               scrollDirection: Axis.vertical,
               child: Container(

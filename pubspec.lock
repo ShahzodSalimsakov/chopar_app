@@ -1120,6 +1120,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
+  rect_getter:
+    dependency: transitive
+    description:
+      name: rect_getter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
+  scroll_to_index:
+    dependency: transitive
+    description:
+      name: scroll_to_index
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   scrollable_list_tabview:
     dependency: "direct main"
     description:
@@ -1426,6 +1440,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  vertical_scrollable_tabview:
+    dependency: "direct main"
+    description:
+      name: vertical_scrollable_tabview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.7"
   very_good_analysis:
     dependency: transitive
     description:

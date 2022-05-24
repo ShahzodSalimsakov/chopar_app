@@ -110,7 +110,6 @@ class ProductsList extends HookWidget {
     }
 
     scrollListening() {
-      print('listened');
       print(verticalPositionsListener.itemPositions.value);
       verticalPositionsListener.itemPositions.addListener(() {
         int min;
@@ -123,7 +122,6 @@ class ProductsList extends HookWidget {
               ? position
               : min)
               .index;
-          print('Min Index $min');
         }
       });
     }

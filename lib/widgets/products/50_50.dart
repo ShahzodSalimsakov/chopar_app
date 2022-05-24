@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
 
 import '../../models/delivery_type.dart';
+import '../../models/stock.dart';
 import '../../models/terminals.dart';
 
 class CreateOwnPizza extends HookWidget {
@@ -705,6 +706,8 @@ class CreateOwnPizza extends HookWidget {
           ],
         );
       } else {
+        Box<Stock> stockBox = Hive.box<Stock>('stock');
+        Stock? stock = stockBox.get('stock');
         return Column(
           children: [
             Container(
@@ -757,12 +760,33 @@ class CreateOwnPizza extends HookWidget {
                     scrollDirection: Axis.vertical,
                     itemCount: readyProductList?.length ?? 0,
                     itemBuilder: (context, index) {
+                      bool isInStock = false;
+                      if (stock != null) {
+                        if (stock.prodIds.length > 0) {
+                          if (readyProductList?[index].variants != null) {
+                            readyProductList?[index]
+                                .variants!
+                                .forEach((element) {
+                              if (stock.prodIds.indexOf(element.id) >= 0) {
+                                isInStock = true;
+                              }
+                            });
+                          } else {
+                            if (stock.prodIds
+                                    .indexOf(readyProductList![index].id) >=
+                                0) {
+                              isInStock = true;
+                            }
+                          }
+                        }
+                      }
                       return InkWell(
                         child: Stack(
                           children: [
                             Opacity(
                                 opacity: rightSelectedProduct.value?.id ==
-                                        readyProductList?[index].id
+                                            readyProductList?[index].id ||
+                                        isInStock
                                     ? 0.25
                                     : 1,
                                 child: Container(
@@ -844,6 +868,9 @@ class CreateOwnPizza extends HookWidget {
                           ],
                         ),
                         onTap: () {
+                          if (isInStock) {
+                            return;
+                          }
                           if (rightSelectedProduct.value?.id ==
                               readyProductList?[index].id) {
                             return;
@@ -859,12 +886,33 @@ class CreateOwnPizza extends HookWidget {
                     scrollDirection: Axis.vertical,
                     itemCount: readyProductList?.length ?? 0,
                     itemBuilder: (context, index) {
+                      bool isInStock = false;
+                      if (stock != null) {
+                        if (stock.prodIds.length > 0) {
+                          if (readyProductList?[index].variants != null) {
+                            readyProductList?[index]
+                                .variants!
+                                .forEach((element) {
+                              if (stock.prodIds.indexOf(element.id) >= 0) {
+                                isInStock = true;
+                              }
+                            });
+                          } else {
+                            if (stock.prodIds
+                                    .indexOf(readyProductList![index].id) >=
+                                0) {
+                              isInStock = true;
+                            }
+                          }
+                        }
+                      }
                       return InkWell(
                         child: Stack(
                           children: [
                             Opacity(
                               opacity: leftSelectedProduct.value?.id ==
-                                      readyProductList?[index].id
+                                          readyProductList?[index].id ||
+                                      isInStock
                                   ? 0.25
                                   : 1,
                               child: Container(
@@ -945,6 +993,9 @@ class CreateOwnPizza extends HookWidget {
                           ],
                         ),
                         onTap: () {
+                          if (isInStock) {
+                            return;
+                          }
                           if (leftSelectedProduct.value?.id ==
                               readyProductList?[index].id) {
                             return;
