@@ -24,13 +24,14 @@ class DeliveryLocationDataAdapter extends TypeAdapter<DeliveryLocationData> {
       lat: fields[5] as double?,
       lon: fields[6] as double?,
       address: fields[7] as String?,
+      label: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DeliveryLocationData obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.house)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class DeliveryLocationDataAdapter extends TypeAdapter<DeliveryLocationData> {
       ..writeByte(6)
       ..write(obj.lon)
       ..writeByte(7)
-      ..write(obj.address);
+      ..write(obj.address)
+      ..writeByte(8)
+      ..write(obj.label);
   }
 
   @override

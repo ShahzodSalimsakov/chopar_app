@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
 import 'package:chopar_app/models/order.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
@@ -19,7 +20,7 @@ import '../models/registered_review.dart';
 class OrderDetail extends HookWidget {
   final String orderId;
 
-  OrderDetail({required this.orderId});
+  OrderDetail({Key? key, @PathParam() required this.orderId}) : super(key: key);
 
   Widget renderProductImage(BuildContext context, Lines lineItem) {
     if (lineItem.child != null &&
@@ -461,7 +462,18 @@ class OrderDetail extends HookWidget {
           child: DefaultStyledButton(
               width: double.infinity,
               onPressed: () {
-                Navigator.pushNamed(context, '/');
+                // context.router.popUntil((route) => route.name == 'HomeRoute');
+                // context.router.popUntilRouteWithName('HomePage');
+                // context.router.popUntilRoot();
+                // context.navigateNamedTo('HomePage');
+
+                // Navigator.pushNamed(context, '/');
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).pop(
+                  '/',
+                );
               },
               text: "Главная"),
         ),

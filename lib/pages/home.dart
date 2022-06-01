@@ -14,6 +14,7 @@ import 'package:chopar_app/widgets/profile/index.dart';
 import 'package:chopar_app/widgets/sales/sales.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -82,8 +83,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //   );
   // }
 
-  Future<void> setLocation(LocationData location,
-      DeliveryLocationData deliveryData, String house, List<AddressItems>? addressItems) async {
+  Future<void> setLocation(
+      LocationData location,
+      DeliveryLocationData deliveryData,
+      String house,
+      List<AddressItems>? addressItems) async {
     final Box<DeliveryLocationData> deliveryLocationBox =
         Hive.box<DeliveryLocationData>('deliveryLocationData');
     deliveryLocationBox.put('deliveryLocationData', deliveryData);
@@ -108,18 +112,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           'Content-type': 'application/json',
           'Accept': 'application/json'
         };
-        var url =
-        Uri.https('api.choparpizza.uz', '/api/cities/public');
-        var response =
-        await http.get(url, headers: requestHeaders);
+        var url = Uri.https('api.choparpizza.uz', '/api/cities/public');
+        var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
           List<City> cityList = List<City>.from(
               json['data'].map((m) => City.fromJson(m)).toList());
           for (var element in cityList) {
             if (element.name == item.name) {
-              Hive.box<City>('currentCity')
-                  .put('currentCity', element);
+              Hive.box<City>('currentCity').put('currentCity', element);
             }
           }
         }
@@ -187,11 +188,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  void _instanceId() async {
+    var token = await FirebaseMessaging.instance.getToken();
+    print("Print Instance Token ID: " + token!);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initConnectivity();
+
+    _instanceId();
 
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
@@ -289,7 +297,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
             // showAlertOnChangeLocation(currentLocation, deliveryData, house,
             //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-            setLocation(currentLocation, deliveryData, house, geoData.addressItems);
+            setLocation(
+                currentLocation, deliveryData, house, geoData.addressItems);
           }
         }
       });
@@ -341,7 +350,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ))
             : SafeArea(
                 child: Column(
-                children: [WorkTimeWidget(), Expanded(child: tabs[selectedIndex])],
+                children: [
+                  WorkTimeWidget(),
+                  Expanded(child: tabs[selectedIndex])
+                ],
               )),
         bottomNavigationBar: Container(
             height: 80.0,
