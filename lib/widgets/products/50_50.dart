@@ -277,10 +277,32 @@ class CreateOwnPizza extends HookWidget {
       List<Map<String, int>>? selectedModifiers;
       List<int> selectedIntModifiers = [...activeModifiers.value];
       List<Modifiers>? leftModifiers = List<Modifiers>.empty();
+      Variants leftProduct = leftSelectedProduct.value!.variants!
+          .firstWhere((v) => v.customName == activeCustomName.value);
 
+      Variants rightProduct = rightSelectedProduct.value!.variants!
+          .firstWhere((v) => v.customName == activeCustomName.value);
       leftSelectedProduct.value?.variants?.forEach((Variants vars) {
         if (vars.customName == activeCustomName.value) {
           leftModifiers = [...vars.modifiers!];
+          if (leftProduct.modifierProduct != null) {
+            leftModifiers?.add(new Modifiers(
+              id: leftProduct.modifierProduct?.id ?? 0,
+              createdAt: '',
+              updatedAt: '',
+              name: 'Сосисочный борт',
+              xmlId: '',
+              price: (int.parse(double.parse(
+                  leftProduct.modifierProduct?.price ?? '0.0000')
+                  .toStringAsFixed(0)) -
+                  int.parse(double.parse(leftProduct.modifierProduct?.price ?? '0.00')
+                      .toStringAsFixed(0))) *
+                  2,
+              weight: 0,
+              groupId: '',
+              nameUz: 'Sosiskali tomoni',
+            ));
+          }
         }
       });
       List<Modifiers> allModifiers = [...leftModifiers!];
@@ -295,24 +317,22 @@ class CreateOwnPizza extends HookWidget {
           .map((m) => ({'id': m.id}))
           .toList();
 
-      Variants leftProduct = leftSelectedProduct.value!.variants!
-          .firstWhere((v) => v.customName == activeCustomName.value);
 
-      Variants rightProduct = rightSelectedProduct.value!.variants!
-          .firstWhere((v) => v.customName == activeCustomName.value);
 
       ModifierProduct? leftModifierProduct;
       if (leftProduct.modifierProduct != null) {
         modifierProduct = leftProduct.modifierProduct;
       }
       ModifierProduct? rightModifierProduct;
-      if (rightProduct.modifierProduct != null) {
-        rightModifierProduct = rightProduct.modifierProduct;
-      }
 
       if (selectedModifiers.length > 0 && modifierProduct != null) {
         if ([...activeModifiers.value].contains(modifierProduct.id)) {
-          leftModifierProduct = modifierProduct;
+          if (leftProduct.modifierProduct != null) {
+            leftModifierProduct = leftProduct.modifierProduct;
+          }
+          if (rightProduct.modifierProduct != null) {
+            rightModifierProduct = rightProduct.modifierProduct;
+          }
           List<int> currentProductModifiersPrices = [
             ...leftModifiers!
                 .where((mod) =>
@@ -355,7 +375,7 @@ class CreateOwnPizza extends HookWidget {
           'variants': [
             {
               'id':
-                  modifierProduct != null ? modifierProduct.id : leftProduct.id,
+                  leftModifierProduct != null ? leftModifierProduct.id : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
@@ -396,7 +416,7 @@ class CreateOwnPizza extends HookWidget {
           'variants': [
             {
               'id':
-                  modifierProduct != null ? modifierProduct.id : leftProduct.id,
+              leftModifierProduct != null ? leftModifierProduct.id : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
