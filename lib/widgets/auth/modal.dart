@@ -8,6 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:otp_autofill/otp_autofill.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -16,10 +17,12 @@ class AuthModal extends HookWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
 
-  final TextEditingController controller = TextEditingController();
+  // final TextEditingController controller = TextEditingController();
   final TextEditingController nameFieldController = TextEditingController();
   final initialCountry = 'UZ';
   final number = PhoneNumber(isoCode: 'UZ');
+  late OTPTextEditController controller;
+  late OTPInteractor _otpInteractor;
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +93,33 @@ class AuthModal extends HookWidget {
       }
     }
 
+    useEffect(() {
+      // listenForCode();
+      _otpInteractor = OTPInteractor();
+      _otpInteractor.getAppSignature()
+          .then((value) => print('signature - $value'));
+
+      controller = OTPTextEditController(
+        codeLength: 4,
+        onCodeReceive: (code) => print('Your Application receive code - $code'),
+      )..startListenUserConsent(
+            (code) {
+          print(code);
+          final exp = RegExp(r'(\d{4})');
+          return exp.stringMatch(code ?? '') ?? '';
+        },
+        // strategies: [
+        //   SampleStrategy(),
+        // ],
+      );
+
+      return () {
+        // SmsAutoFill().unregisterListener();
+        controller.stopListen();
+        print('Unregistered');
+      };
+    }, const []);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -144,8 +174,10 @@ class AuthModal extends HookWidget {
                     appContext: context,
                     keyboardType: TextInputType.number,
                     onCompleted: (String code) {
-                      otpCode.value = code;
-                      trySignIn();
+                      if (code!.length == 4) {
+                        otpCode.value = code;
+                        trySignIn();
+                      }
                     },
                     pinTheme: PinTheme(
                         borderRadius: BorderRadius.circular(25),
