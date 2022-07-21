@@ -384,10 +384,10 @@ class AuthModal extends HookWidget {
                         : SizedBox(),
                     _isShowNameField.value
                         ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text('Укажите ваш пол',
-                                  style: TextStyle(fontSize: 18)),
+                              // Text('Укажите ваш пол',
+                              //     style: TextStyle(fontSize: 18)),
                               SizedBox(
                                 width: 100,
                                 child: ListTile(
