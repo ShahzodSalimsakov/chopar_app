@@ -24,7 +24,15 @@ class DeliveryModal extends StatefulWidget {
 
 class _DeliveryModalState extends State<DeliveryModal> {
   late YandexMapController controller;
-  Placemark? _placemark;
+  final MapObjectId placemarkId = const MapObjectId('delivery_placemark');
+  final MapObjectId mapObjectCollectionId =
+      const MapObjectId('map_object_collection');
+  final animation =
+      const MapAnimation(type: MapAnimationType.smooth, duration: 1.5);
+
+  List<MapObject> mapObjects = [];
+
+  bool zoomGesturesEnabled = true;
 
   bool isLookingLocation = false;
 
@@ -100,28 +108,34 @@ class _DeliveryModalState extends State<DeliveryModal> {
             speed: 0,
             speedAccuracy: 0);
       }
-      if (_placemark != null) {
-        await controller.removePlacemark(_placemark!);
-      }
 
-      _placemark = Placemark(
+      var _placemark = PlacemarkMapObject(
+        mapId: placemarkId,
         point: Point(
             latitude: currentPosition.latitude,
             longitude: currentPosition.longitude),
         // onTap: (Placemark self, Point point) =>
         //     setCurrentTerminal(element),
-        style: PlacemarkStyle(
+        icon: PlacemarkIcon.single(PlacemarkIconStyle(
+            image: BitmapDescriptor.fromAssetImage(
+                'assets/images/chosen_point.png'),
+            rotationType: RotationType.noRotation,
             scale: 2,
-            opacity: 0.95,
-            iconName: 'assets/images/chosen_point.png'),
+            anchor: Offset.fromDirection(1.1, 1))),
       );
-      await controller.addPlacemark(_placemark!);
-      await controller.move(
-          point: Point(
-              latitude: currentPosition.latitude,
-              longitude: currentPosition.longitude),
-          animation: MapAnimation(smooth: true, duration: 1.5),
-          zoom: 17);
+      List<MapObject> mapsList = <MapObject>[];
+      mapsList.add(_placemark);
+      setState(() {
+        mapObjects = mapsList;
+      });
+
+      await controller.moveCamera(
+          CameraUpdate.newCameraPosition(CameraPosition(
+              target: Point(
+                  latitude: currentPosition!.latitude,
+                  longitude: currentPosition.longitude),
+              zoom: 17)),
+          animation: animation);
       showBottomSheet(Point(
           latitude: currentPosition.latitude,
           longitude: currentPosition.longitude));
@@ -140,43 +154,54 @@ class _DeliveryModalState extends State<DeliveryModal> {
         Container(
             padding: EdgeInsets.all(8),
             child: YandexMap(
+              mapObjects: mapObjects,
+              zoomGesturesEnabled: zoomGesturesEnabled,
               onMapCreated: (YandexMapController yandexMapController) async {
+                controller = yandexMapController;
                 setState(() {
                   isLookingLocation = true;
                 });
-                controller = yandexMapController;
                 Box<City> box = Hive.box<City>('currentCity');
                 City? currentCity = box.get('currentCity');
-                await controller.move(
-                    point: Point(
-                        latitude: double.parse(currentCity!.lat),
-                        longitude: double.parse(currentCity.lon)),
-                    zoom: 12,
-                    animation: MapAnimation(smooth: true, duration: 1.5));
-                await controller.toggleZoomGestures(enabled: true);
+                await controller.moveCamera(
+                    CameraUpdate.newCameraPosition(CameraPosition(
+                        target: Point(
+                            latitude: double.parse(currentCity!.lat),
+                            longitude: double.parse(currentCity.lon)),
+                        zoom: 12)),
+                    animation: animation);
 
                 if (widget.geoData != null) {
-                  _placemark = Placemark(
+                  var _placemark = PlacemarkMapObject(
+                    mapId: placemarkId,
                     point: Point(
                         latitude: double.parse(widget.geoData!.coordinates.lat),
                         longitude:
                             double.parse(widget.geoData!.coordinates.long)),
                     // onTap: (Placemark self, Point point) =>
                     //     setCurrentTerminal(element),
-                    style: PlacemarkStyle(
+                    icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                        image: BitmapDescriptor.fromAssetImage(
+                            'assets/images/chosen_point.png'),
+                        rotationType: RotationType.noRotation,
                         scale: 2,
-                        opacity: 0.95,
-                        iconName: 'assets/images/chosen_point.png'),
+                        anchor: Offset.fromDirection(1.1, 1))),
                   );
-                  await controller.addPlacemark(_placemark!);
-                  await controller.move(
-                      point: Point(
-                          latitude:
-                              double.parse(widget.geoData!.coordinates.lat),
-                          longitude:
-                              double.parse(widget.geoData!.coordinates.long)),
-                      animation: MapAnimation(smooth: true, duration: 1.5),
-                      zoom: 17);
+                  List<MapObject> mapsList = <MapObject>[];
+                  mapsList.add(_placemark);
+                  setState(() {
+                    mapObjects = mapsList;
+                  });
+
+                  await controller.moveCamera(
+                      CameraUpdate.newCameraPosition(CameraPosition(
+                          target: Point(
+                              latitude:
+                                  double.parse(widget.geoData!.coordinates.lat),
+                              longitude: double.parse(
+                                  widget.geoData!.coordinates.long)),
+                          zoom: 17)),
+                      animation: animation);
                 } else {
                   bool serviceEnabled;
                   bool hasPermission = true;
@@ -203,34 +228,46 @@ class _DeliveryModalState extends State<DeliveryModal> {
                   if (hasPermission) {
                     Position currentPosition =
                         await Geolocator.getCurrentPosition();
-                    _placemark = Placemark(
+                    List<PlacemarkMapObject> mapsList = <PlacemarkMapObject>[];
+
+                    var _placemark = PlacemarkMapObject(
+                      mapId: placemarkId,
                       point: Point(
                           latitude: currentPosition.latitude,
                           longitude: currentPosition.longitude),
                       // onTap: (Placemark self, Point point) =>
                       //     setCurrentTerminal(element),
-                      style: PlacemarkStyle(
+                      icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                          image: BitmapDescriptor.fromAssetImage(
+                              'assets/images/chosen_point.png'),
+                          rotationType: RotationType.noRotation,
                           scale: 2,
-                          opacity: 0.95,
-                          iconName: 'assets/images/chosen_point.png'),
+                          anchor: Offset.fromDirection(1.1, 1))),
                     );
-                    await controller.addPlacemark(_placemark!);
-                    await controller.move(
-                        point: Point(
-                            latitude: currentPosition.latitude,
-                            longitude: currentPosition.longitude),
-                        animation: MapAnimation(smooth: true, duration: 1.5),
-                        zoom: 17);
+                    List<MapObject> mapsLists = <MapObject>[];
+                    mapsLists.add(_placemark);
+                    setState(() {
+                      mapObjects = mapsLists;
+                    });
+
+                    await controller.moveCamera(
+                        CameraUpdate.newCameraPosition(CameraPosition(
+                            target: Point(
+                                latitude: currentPosition.latitude,
+                                longitude: currentPosition.longitude),
+                            zoom: 17)),
+                        animation: animation);
                     showBottomSheet(Point(
                         latitude: currentPosition.latitude,
                         longitude: currentPosition.longitude));
                   } else {
-                    await controller.move(
-                        point: Point(
-                            latitude: double.parse(currentCity!.lat!),
-                            longitude: double.parse(currentCity!.lon!)),
-                        animation: MapAnimation(smooth: true, duration: 1.5),
-                        zoom: double.parse(currentCity.mapZoom));
+                    await controller.moveCamera(
+                        CameraUpdate.newCameraPosition(CameraPosition(
+                            target: Point(
+                                latitude: double.parse(currentCity.lat),
+                                longitude: double.parse(currentCity.lon)),
+                            zoom: 17)),
+                        animation: animation);
                   }
                 }
                 setState(() {
@@ -238,24 +275,28 @@ class _DeliveryModalState extends State<DeliveryModal> {
                 });
               },
               onMapTap: (point) async {
-                if (_placemark != null) {
-                  await controller.removePlacemark(_placemark!);
-                }
-
-                _placemark = Placemark(
+                var _placemark = PlacemarkMapObject(
+                  mapId: placemarkId,
                   point: point,
                   // onTap: (Placemark self, Point point) =>
                   //     setCurrentTerminal(element),
-                  style: PlacemarkStyle(
+                  icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                      image: BitmapDescriptor.fromAssetImage(
+                          'assets/images/chosen_point.png'),
+                      rotationType: RotationType.noRotation,
                       scale: 2,
-                      opacity: 0.95,
-                      iconName: 'assets/images/chosen_point.png'),
+                      anchor: Offset.fromDirection(1.1, 1))),
                 );
-                await controller.addPlacemark(_placemark!);
-                await controller.move(
-                    point: point,
-                    animation: MapAnimation(smooth: true, duration: 1.5),
-                    zoom: 17);
+                List<MapObject> mapsLists = <MapObject>[];
+                mapsLists.add(_placemark);
+                setState(() {
+                  mapObjects = mapsLists;
+                });
+
+                await controller.moveCamera(
+                    CameraUpdate.newCameraPosition(
+                        CameraPosition(target: point, zoom: 17)),
+                    animation: animation);
                 showBottomSheet(point);
               },
             )) /*)*/,
