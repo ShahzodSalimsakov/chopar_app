@@ -23,6 +23,14 @@ class TerminalsModal extends StatefulWidget {
 class _TerminalModalState extends State<TerminalsModal> {
   Terminals? _currentTerminal;
   late YandexMapController controller;
+  final MapObjectId mapObjectCollectionId =
+      const MapObjectId('map_object_collection');
+  final animation =
+      const MapAnimation(type: MapAnimationType.smooth, duration: 1.5);
+
+  List<MapObject> mapObjects = [];
+
+  bool zoomGesturesEnabled = true;
 
   showBottomSheet(Terminals terminal) {
     showMaterialModalBottomSheet(
@@ -30,8 +38,7 @@ class _TerminalModalState extends State<TerminalsModal> {
       context: context,
       backgroundColor: Colors.white,
       builder: (context) => Container(
-          padding:
-          EdgeInsets.symmetric(horizontal: 15, vertical: 33),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 33),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -52,21 +59,17 @@ class _TerminalModalState extends State<TerminalsModal> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        terminal.name ??
-                            '',
+                        terminal.name ?? '',
                         style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
+                            fontSize: 16, fontWeight: FontWeight.w400),
                       ),
                       SizedBox(
                         height: 5,
                       ),
                       Text(
-                        terminal.desc ??
-                            '',
+                        terminal.desc ?? '',
                         style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400),
+                            fontSize: 12, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -82,13 +85,18 @@ class _TerminalModalState extends State<TerminalsModal> {
               SizedBox(
                 height: 15,
               ),
-              DefaultStyledButton(width: MediaQuery.of(context).size.width, onPressed: () {
-                Box<Terminals> transaction =
-                Hive.box<Terminals>('currentTerminal');
-                transaction.put(
-                    'currentTerminal', terminal);
-                Navigator.of(context)..pop()..pop()..pop();
-              }, text: 'Забрать здесь')
+              DefaultStyledButton(
+                  width: MediaQuery.of(context).size.width,
+                  onPressed: () {
+                    Box<Terminals> transaction =
+                        Hive.box<Terminals>('currentTerminal');
+                    transaction.put('currentTerminal', terminal);
+                    Navigator.of(context)
+                      ..pop()
+                      ..pop()
+                      ..pop();
+                  },
+                  text: 'Забрать здесь')
             ],
           )),
     );
@@ -101,35 +109,40 @@ class _TerminalModalState extends State<TerminalsModal> {
       });
       showBottomSheet(terminal);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данный терминал сейчас не работает')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Данный терминал сейчас не работает')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Terminals? currentTerminal =
-    Hive.box<Terminals>('currentTerminal').get('currentTerminal');
+        Hive.box<Terminals>('currentTerminal').get('currentTerminal');
     return Scaffold(
         body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       child: Stack(fit: StackFit.loose, children: [
         /*Expanded(
-            child: */Container(
-                padding: EdgeInsets.all(8),
-                child: YandexMap(onMapCreated:
-                    (YandexMapController yandexMapController) async {
+            child: */
+        Container(
+            padding: EdgeInsets.all(8),
+            child: YandexMap(
+                mapObjects: mapObjects,
+                zoomGesturesEnabled: zoomGesturesEnabled,
+                onMapCreated: (YandexMapController yandexMapController) async {
                   controller = yandexMapController;
                   Box<City> box = Hive.box<City>('currentCity');
                   City? currentCity = box.get('currentCity');
-                  await controller.toggleZoomGestures(enabled: true);
+                  await controller.moveCamera(
+                      CameraUpdate.newCameraPosition(CameraPosition(
+                          target: Point(
+                              latitude: double.parse(currentCity!.lat),
+                              longitude: double.parse(currentCity.lon)),
+                          zoom: 12)),
+                      animation: animation);
 
-                  await controller.move(
-                      point: Point(
-                          latitude: double.parse(currentCity!.lat!),
-                          longitude: double.parse(currentCity!.lon!)),
-                      animation: MapAnimation(smooth: true, duration: 1.5),
-                      zoom: double.parse(currentCity.mapZoom));
+                  List<PlacemarkMapObject> mapsList = <PlacemarkMapObject>[];
 
                   widget.terminals.forEach((element) async {
                     if (element.latitude != null) {
@@ -138,24 +151,33 @@ class _TerminalModalState extends State<TerminalsModal> {
                           _currentTerminal?.id! == element.id) {
                         scale = 4;
                       }
-                      if (currentTerminal != null && currentTerminal.id == element.id) {
+                      if (currentTerminal != null &&
+                          currentTerminal.id == element.id) {
                         scale = 4;
                       }
-                      var placemark = Placemark(
-                        point: Point(
-                            latitude: double.parse(element!.latitude!),
-                            longitude: double.parse(element!.longitude!)),
-                        onTap: (Placemark self, Point point) => setCurrentTerminal(element),
-                        style: PlacemarkStyle(
-                            scale: scale,
-                            opacity: 0.95,
-                            iconName: element.isWorking! ? 'assets/images/place.png' : 'assets/images/place_disabled.png'),
-                      );
-                      await controller.addPlacemark(placemark);
+
+                      var _placemark = PlacemarkMapObject(
+                          mapId: MapObjectId(element.id!),
+                          point: Point(
+                              latitude: double.parse(element.latitude!),
+                              longitude: double.parse(element.longitude!)),
+                          onTap: (PlacemarkMapObject self, Point point) =>
+                              setCurrentTerminal(element),
+                          opacity: 0.7,
+                          direction: 90,
+                          icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                              image: BitmapDescriptor.fromAssetImage(
+                                  element.isWorking!
+                                      ? 'assets/images/place.png'
+                                      : 'assets/images/place_disabled.png'),
+                              rotationType: RotationType.noRotation,
+                              scale: scale,
+                              anchor: Offset.fromDirection(1.1, 1))));
+
+                      mapsList.add(_placemark);
                     }
                   });
-                }))
-        /*)*/,
+                })) /*)*/,
         Positioned(
             top: 50,
             child: RawMaterialButton(
@@ -176,13 +198,13 @@ class _TerminalModalState extends State<TerminalsModal> {
                 bool isLocationSet = true;
 
                 final Box<DeliveryLocationData> deliveryLocationBox =
-                Hive.box<DeliveryLocationData>('deliveryLocationData');
-                DeliveryLocationData? deliveryData = deliveryLocationBox.get('deliveryLocationData');
-
+                    Hive.box<DeliveryLocationData>('deliveryLocationData');
+                DeliveryLocationData? deliveryData =
+                    deliveryLocationBox.get('deliveryLocationData');
                 if (deliveryData == null) {
-                isLocationSet = false;
+                  isLocationSet = false;
                 } else if (deliveryData.lat == null) {
-                isLocationSet = false;
+                  isLocationSet = false;
                 }
                 var currentPosition;
                 if (!isLocationSet) {
@@ -193,7 +215,8 @@ class _TerminalModalState extends State<TerminalsModal> {
                   serviceEnabled = await Geolocator.isLocationServiceEnabled();
                   if (!serviceEnabled) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Недостаточно прав для получения локации')));
+                        content:
+                            Text('Недостаточно прав для получения локации')));
                     return;
                   }
 
@@ -202,33 +225,48 @@ class _TerminalModalState extends State<TerminalsModal> {
                     permission = await Geolocator.requestPermission();
                     if (permission == LocationPermission.denied) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Недостаточно прав для получения локации')));
+                          content:
+                              Text('Недостаточно прав для получения локации')));
                       return;
                     }
                   }
 
                   if (permission == LocationPermission.deniedForever) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Недостаточно прав для получения локации')));
+                        content:
+                            Text('Недостаточно прав для получения локации')));
                     return;
                   }
 
                   currentPosition = await Geolocator.getCurrentPosition();
                 } else {
-                  currentPosition = new Position(longitude: deliveryData!.lon!, latitude: deliveryData!.lat!, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+                  currentPosition = new Position(
+                      longitude: deliveryData!.lon!,
+                      latitude: deliveryData!.lat!,
+                      timestamp: DateTime.now(),
+                      accuracy: 0,
+                      altitude: 0,
+                      heading: 0,
+                      speed: 0,
+                      speedAccuracy: 0);
                 }
 
                 Map<String, String> requestHeaders = {
                   'Content-type': 'application/json',
                   'Accept': 'application/json'
                 };
-                var url = Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest',
-                    {'lat': currentPosition.latitude.toString(), 'lon': currentPosition.longitude.toString()});
+                var url = Uri.https(
+                    'api.choparpizza.uz', 'api/terminals/find_nearest', {
+                  'lat': currentPosition.latitude.toString(),
+                  'lon': currentPosition.longitude.toString()
+                });
                 var response = await http.get(url, headers: requestHeaders);
                 if (response.statusCode == 200) {
                   var json = jsonDecode(response.body);
-                  List<Terminals> terminal = List<Terminals>.from(
-                      json['data']['items'].map((m) => new Terminals.fromJson(m)).toList());
+                  List<Terminals> terminal = List<Terminals>.from(json['data']
+                          ['items']
+                      .map((m) => new Terminals.fromJson(m))
+                      .toList());
                   showBottomSheet(terminal[0]);
                 }
               },

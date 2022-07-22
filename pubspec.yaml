@@ -68,7 +68,7 @@ dependencies:
   user_repository:
     path: packages/user_repository
   extended_tabs: ^2.3.0
-  yandex_mapkit: ^1.1.1
+  yandex_mapkit: ^3.0.1
   font_awesome_flutter: ^9.1.0
   carousel_slider: ^4.0.0
   url_launcher: ^6.0.12
@@ -96,7 +96,7 @@ dependencies:
   otp_autofill: ^2.1.0
 
 dependency_overrides:
-  firebase_messaging_platform_interface: 3.1.6
+  firebase_messaging_platform_interface: 3.5.2
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +106,7 @@ dev_dependencies:
   mobx_codegen:
   hive_generator: ^1.1.1
   auto_route_generator: ^3.2.3
+  analyzer: ^3.4.1
 
 flutter_native_splash:
   background_image: "assets/images/launch.png"

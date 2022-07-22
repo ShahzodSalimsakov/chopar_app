@@ -374,7 +374,7 @@ class AuthModal extends HookWidget {
                                   ? DateTime.parse(currentUser!.birth!)
                                   : null,
                               validator: (val) {
-                                if(val == null) {
+                                if (val == null) {
                                   return 'Укажите день рождения';
                                 }
                               },
@@ -478,10 +478,18 @@ class AuthModal extends HookWidget {
                                   if (json['error'] ==
                                       'name_field_is_required') {
                                     _isShowNameField.value = true;
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(
+                                          'Мы Вас не нашли в нашей системе. Просьба указать своё имя, день рождения и пол.'),
+                                      duration: Duration(seconds: 3),
+                                    ));
+                                  }
+                                  if (json['error'] == 'user_is_blocked') {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content: Text(
-                                                'Мы Вас не нашли в нашей системе. Просьба указать своё имя, день рождения и пол.'), duration: Duration(seconds: 3),));
+                                                'Вы удаляли свой аккаунт. Просьба связаться с нами.')));
                                   }
                                 } else if (json['success'] != null) {
                                   Codec<String, String> stringToBase64 =
