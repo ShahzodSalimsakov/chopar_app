@@ -44,7 +44,7 @@ class OrderDetail extends HookWidget {
                         'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                         height: 50,
                       ),
-                      width: MediaQuery.of(context).size.width - 30,
+                      // width: MediaQuery.of(context).size.width - 30,
                     ))
               ],
             )),
@@ -54,7 +54,7 @@ class OrderDetail extends HookWidget {
                 Positioned(
                     right: 0,
                     child: Container(
-                      width: MediaQuery.of(context).size.width - 30,
+                      // width: MediaQuery.of(context).size.width - 30,
                       child: Image.network(
                         'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
                         height: 50,
@@ -237,13 +237,17 @@ class OrderDetail extends HookWidget {
                             itemBuilder: (context, index) {
                               Lines lineItem =
                                   order.value!.basket!.lines![index];
+                              double totalPrice = double.parse(order.value!.basket!.lines![index].total);
+                              if (order.value!.basket!.lines![index].child != null && order.value!.basket!.lines![index].child!.isNotEmpty) {
+                                totalPrice = double.parse(order.value!.basket!.lines![index].total) + double.parse(order.value!.basket!.lines![index].child![0].total);
+                              }
                               return ListTile(
                                 title: Text(
                                     "${lineItem.child != null && lineItem.child!.length > 1 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant?.product?.customName}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
                                 leading: renderProductImage(context, lineItem),
                                 trailing: Text(
                                     '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} '
-                                    '${formatCurrency.format(double.parse(order.value!.basket!.lines![index].child != null ? '${double.parse(order.value!.basket!.lines![index].total) + double.parse(order.value!.basket!.lines![index].child![0].total)}' : order.value!.basket!.lines![index].total))}'),
+                                    '${formatCurrency.format(totalPrice)}'),
                               );
                             },
                             separatorBuilder: (context, index) {
