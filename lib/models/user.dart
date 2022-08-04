@@ -68,7 +68,7 @@ class User {
   @HiveField(11)
   late String? birth;
   @HiveField(11)
-  late String? gender;
+  late int? gender;
 
   User({required this.id, this.languageId, required this.name, required this.phone, this.verificationCode, this.phoneVerifiedAt, required this.createdAt, required this.updatedAt, this.mobile, required this.userToken, this.email, this.birth, this.gender});
 
