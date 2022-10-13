@@ -15,6 +15,7 @@ import 'package:simple_html_css/simple_html_css.dart';
 
 import '../../models/basket.dart';
 import '../../models/basket_data.dart';
+import '../../models/city.dart';
 import '../../models/delivery_location_data.dart';
 import '../../models/delivery_type.dart';
 import '../../models/product_section.dart';
@@ -95,12 +96,26 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
   }
 
   Future<void> getProducts() async {
+    City? currentCity = Hive.box<City>('currentCity').get('currentCity');
+    String citySlug = 'tashkent';
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json'
     };
-    var url = Uri.https(
-        'api.choparpizza.uz', '/api/products/public', {'perSection': '1'});
+
+    var urlCities = Uri.https('api.choparpizza.uz', '/api/cities/public');
+    var responseCity = await http.get(urlCities, headers: requestHeaders);
+    if (responseCity.statusCode == 200) {
+      var json = jsonDecode(responseCity.body);
+      json['data'].forEach((element) {
+        if (element['id'] == currentCity!.id) {
+          citySlug = element['slug'];
+        }
+      });
+    }
+
+    var url = Uri.https('api.choparpizza.uz', '/api/products/public',
+        {'perSection': '1', 'city_slug': citySlug});
     var response = await http.get(url, headers: requestHeaders);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -418,11 +433,17 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
     if (stock != null) {
       if (stock.prodIds.length > 0) {
         if (product.variants != null) {
-          product.variants!.forEach((element) {
-            if (stock.prodIds.indexOf(element.id) >= 0) {
+          if (product.variants!.isNotEmpty) {
+            product.variants!.forEach((element) {
+              if (stock.prodIds.indexOf(element.id) >= 0) {
+                isInStock = true;
+              }
+            });
+          } else {
+            if (stock.prodIds.indexOf(product.id) >= 0) {
               isInStock = true;
             }
-          });
+          }
         } else {
           if (stock.prodIds.indexOf(product.id) >= 0) {
             isInStock = true;
