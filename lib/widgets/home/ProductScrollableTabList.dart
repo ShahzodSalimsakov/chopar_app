@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:chopar_app/widgets/home/ThreePizza.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -115,7 +115,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
     }
 
     var url = Uri.https('api.choparpizza.uz', '/api/products/public',
-        {'perSection': '1', 'city_slug': citySlug});
+        {'perSection': '1', 'city_slug': citySlug, 'isDev': '1'});
     var response = await http.get(url, headers: requestHeaders);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -342,6 +342,81 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
                                       backgroundColor: Colors.transparent,
                                       builder: (context) =>
                                           CreateOwnPizza(items));
+                                },
+                              )
+                            ])))
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget renderThreePizza(BuildContext context, List<Items>? items) {
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: InkWell(
+                  child: Image.asset(
+                    'assets/images/threepizza.jpg',
+                    width: 170.0,
+                    height: 170.0,
+                  ),
+                  onTap: () {
+                    showMaterialModalBottomSheet(
+                        expand: false,
+                        context: context,
+                        isDismissible: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => ThreePizzaWidget(items));
+                  },
+                )),
+                Expanded(
+                    child: Container(
+                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Три за 105000 сум',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w700),
+                                textAlign: TextAlign.center,
+                              ),
+                              OutlinedButton(
+                                child: Text(
+                                  'Собрать пиццу',
+                                  style:
+                                      TextStyle(color: Colors.yellow.shade600),
+                                ),
+                                style: ButtonStyle(
+                                    side: MaterialStateProperty.all(BorderSide(
+                                        width: 1.0,
+                                        color: Colors.yellow.shade600)),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25.0)))),
+                                onPressed: () {
+                                  showMaterialModalBottomSheet(
+                                      expand: false,
+                                      context: context,
+                                      isDismissible: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) =>
+                                          ThreePizzaWidget(items));
                                 },
                               )
                             ])))
@@ -729,6 +804,15 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
           itemCount: 1,
           itemBuilder: (_, index) =>
               renderCreatePizza(tabContext!, section.items),
+        ));
+      }
+      if (section.threeSale == 1) {
+        sections.add(ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: 1,
+          itemBuilder: (_, index) =>
+              renderThreePizza(tabContext!, section.items),
         ));
       } else {
         sections.add(ListView.builder(

@@ -12,6 +12,7 @@ class ProductSection {
   Null draftParentId;
   late int active;
   late int halfMode;
+  late int threeSale;
   List<Items>? items;
 
   ProductSection(
@@ -28,6 +29,7 @@ class ProductSection {
       this.draftParentId,
       required this.active,
       required this.halfMode,
+      required this.threeSale,
       this.items});
 
   ProductSection.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class ProductSection {
     draftParentId = json['draft_parent_id'];
     active = json['active'];
     halfMode = json['half_mode'];
+    threeSale = json['three_sale'];
     if (json['items'] != null) {
       items = json['items'].map<Items>((m) => new Items.fromJson(m)).toList();
       // json['items'].forEach((v) {
@@ -71,6 +74,7 @@ class ProductSection {
     data['draft_parent_id'] = this.draftParentId;
     data['active'] = this.active;
     data['half_mode'] = this.halfMode;
+    data['three_sale'] = this.threeSale;
     if (this.items != null) {
       data['items'] = this.items?.map((v) => v.toJson()).toList();
     }
