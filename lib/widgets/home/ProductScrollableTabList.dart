@@ -361,66 +361,17 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                    child: InkWell(
-                  child: Image.asset(
-                    'assets/images/threepizza.jpg',
-                    width: 170.0,
-                    height: 170.0,
-                  ),
-                  onTap: () {
-                    showMaterialModalBottomSheet(
-                        expand: false,
-                        context: context,
-                        isDismissible: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => ThreePizzaWidget(items));
-                  },
-                )),
-                Expanded(
-                    child: Container(
-                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Три за 105000 сум',
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w700),
-                                textAlign: TextAlign.center,
-                              ),
-                              OutlinedButton(
-                                child: Text(
-                                  'Собрать пиццу',
-                                  style:
-                                      TextStyle(color: Colors.yellow.shade600),
-                                ),
-                                style: ButtonStyle(
-                                    side: MaterialStateProperty.all(BorderSide(
-                                        width: 1.0,
-                                        color: Colors.yellow.shade600)),
-                                    shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0)))),
-                                onPressed: () {
-                                  showMaterialModalBottomSheet(
-                                      expand: false,
-                                      context: context,
-                                      isDismissible: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) =>
-                                          ThreePizzaWidget(items));
-                                },
-                              )
-                            ])))
-              ],
+            // padding: EdgeInsets.all(10),
+            child: InkWell(
+              child: Image.asset('assets/images/threepizza.jpg'),
+              onTap: () {
+                showMaterialModalBottomSheet(
+                    expand: false,
+                    context: context,
+                    isDismissible: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => ThreePizzaWidget(items));
+              },
             ),
           )
         ],
@@ -805,8 +756,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
           itemBuilder: (_, index) =>
               renderCreatePizza(tabContext!, section.items),
         ));
-      }
-      if (section.threeSale == 1) {
+      } else if (section.threeSale == 1) {
         sections.add(ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),

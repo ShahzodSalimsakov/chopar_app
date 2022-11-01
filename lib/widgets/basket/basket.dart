@@ -198,44 +198,84 @@ class BasketWidget extends HookWidget {
           lineItem.child!.length > 0 &&
           lineItem.child![0].variant?.product?.id !=
               lineItem.variant?.product?.boxId) {
-        return Container(
-          height: 50.0,
-          width: 50,
-          // margin: EdgeInsets.all(15),
-          child: Row(
-            children: [
-              Expanded(
-                  child: Stack(
-                clipBehavior: Clip.hardEdge,
-                children: [
-                  Positioned(
-                      left: 0,
-                      child: Container(
-                        child: Image.network(
-                          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                          height: 50,
-                        ),
-                        width: 50,
-                      ))
-                ],
-              )),
-              Expanded(
-                  child: Stack(
-                children: [
-                  Positioned(
-                      right: 0,
-                      child: Container(
-                        width: 50,
-                        child: Image.network(
-                          'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
-                          height: 50,
-                        ),
-                      ))
-                ],
-              ))
-            ],
-          ),
-        );
+        if (lineItem.child!.length > 1) {
+          return Container(
+            height: 50.0,
+            width: 70,
+            // margin: EdgeInsets.all(15),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Stack(
+                  children: [
+                    Positioned(
+                        left: 0,
+                        child: Container(
+                          child: Image.network(
+                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                            height: 50,
+                          ),
+                          width: 50,
+                        )),
+                    ...lineItem.child!.asMap().entries.map((entry) {
+                      int idx = entry.key;
+                      var e = entry.value;
+                      print(((idx + 1) * 15).toDouble());
+                      return Positioned(
+                          left: ((idx + 1) * 10).toDouble(),
+                          child: Container(
+                            child: Image.network(
+                              'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
+                              height: 50,
+                            ),
+                            width: 50,
+                          ));
+                    }).toList()
+                  ],
+                )),
+              ],
+            ),
+          );
+        } else {
+          return Container(
+            height: 50.0,
+            width: 50,
+            // margin: EdgeInsets.all(15),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Stack(
+                  clipBehavior: Clip.hardEdge,
+                  children: [
+                    Positioned(
+                        left: 0,
+                        child: Container(
+                          child: Image.network(
+                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                            height: 50,
+                          ),
+                          width: 50,
+                        ))
+                  ],
+                )),
+                Expanded(
+                    child: Stack(
+                  children: [
+                    Positioned(
+                        right: 0,
+                        child: Container(
+                          width: 50,
+                          child: Image.network(
+                            'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                            height: 50,
+                          ),
+                        ))
+                  ],
+                ))
+              ],
+            ),
+          );
+        }
       } else if (lineItem.variant?.product?.assets != null &&
           lineItem.variant!.product!.assets!.isNotEmpty) {
         return Image.network(

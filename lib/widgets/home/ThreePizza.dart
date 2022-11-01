@@ -55,7 +55,8 @@ class ThreePizzaWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rightSelectedProduct = useState<Items?>(null);
+    final rightSelectedProduct = useState<List<int>>([]);
+    final newRender = useState<bool>(false);
     final isBasketLoading = useState<bool>(false);
     final configData = useState<Map<String, dynamic>?>(null);
 
@@ -121,15 +122,27 @@ class ThreePizzaWidget extends HookWidget {
       }).toList();
     }, [items, activeCustomName.value, configData.value]);
 
-    // final modifiers = useMemoized(() {
-    //   Variants? activeVariant;
-    //   Variants? rightActiveVariant;
-    //   rightSelectedProduct.value?.variants!.forEach((Variants vars) {
-    //     if (vars.customName == activeCustomName.value) {
-    //       rightActiveVariant = vars;
-    //     }
-    //   });
-    // }, [rightSelectedProduct.value, activeCustomName.value]);
+    void selectProduct(int productId) {
+      // if productId exists in rightSelectedProduct.value
+      // then remove it
+      // else add it
+      List<int> currentSelected = rightSelectedProduct.value;
+
+      if (rightSelectedProduct.value.contains(productId)) {
+        currentSelected.remove(productId);
+      } else {
+        if (rightSelectedProduct.value.length < 3) {
+          currentSelected.add(productId);
+        } else {
+          currentSelected.removeAt(2);
+          currentSelected.add(productId);
+        }
+      }
+
+      rightSelectedProduct.value = currentSelected;
+
+      newRender.value = !newRender.value;
+    }
 
     Future<void> fetchConfig() async {
       Map<String, String> requestHeaders = {
@@ -152,12 +165,19 @@ class ThreePizzaWidget extends HookWidget {
 
     Future<void> addToBasket() async {
       isBasketLoading.value = true;
+      List<int> selectedProductIds = rightSelectedProduct.value;
+
+      if (selectedProductIds.length < 3) {
+        return;
+      }
 
       Box userBox = Hive.box<User>('user');
       User? user = userBox.get('user');
       Box basketBox = Hive.box<Basket>('basket');
       Basket? basket = basketBox.get('basket');
 
+      int firstProductId = selectedProductIds[0];
+      selectedProductIds.removeAt(0);
       if (basket != null) {
         Map<String, String> requestHeaders = {
           'Content-type': 'application/json',
@@ -169,7 +189,18 @@ class ThreePizzaWidget extends HookWidget {
         }
 
         var url = Uri.https('api.choparpizza.uz', '/api/baskets-lines');
-        var formData = {'basket_id': basket.encodedId, 'sourceType': "app"};
+        var formData = {
+          'basket_id': basket.encodedId,
+          'sourceType': "app",
+          'variants': [
+            {
+              'id': firstProductId,
+              'quantity': 1,
+              'modifiers': null,
+              'three': selectedProductIds
+            }
+          ],
+        };
         var response = await http.post(url,
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
@@ -191,7 +222,16 @@ class ThreePizzaWidget extends HookWidget {
         }
 
         var url = Uri.https('api.choparpizza.uz', '/api/baskets');
-        var formData = {};
+        var formData = {
+          'variants': [
+            {
+              'id': firstProductId,
+              'quantity': 1,
+              'modifiers': null,
+              'three': selectedProductIds
+            }
+          ],
+        };
         var response = await http.post(url,
             headers: requestHeaders, body: jsonEncode(formData));
         if (response.statusCode == 200 || response.statusCode == 201) {
@@ -206,161 +246,6 @@ class ThreePizzaWidget extends HookWidget {
       isBasketLoading.value = false;
       Navigator.of(context).pop();
     }
-
-    final totalSummary = useMemoized(() {
-      int res = 0;
-
-      if (rightSelectedProduct.value != null) {
-        res += int.parse(double.parse(
-                rightSelectedProduct.value?.price.toString() ?? '0.0000')
-            .toStringAsFixed(0));
-      }
-
-      return res;
-    }, [
-      rightSelectedProduct.value,
-      activeCustomName.value,
-    ]);
-
-    // Widget renderPage(BuildContext context) {
-    //   Box<Stock> stockBox = Hive.box<Stock>('stock');
-    //   Stock? stock = stockBox.get('stock');
-    //   return Column(
-    //     children: [
-    //       // SizedBox(
-    //       //   height: 5.0,
-    //       // ),
-    //       Expanded(
-    //           child: Container(
-    //         child: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: [
-    //             Expanded(
-    //                 child: ListView.builder(
-    //               shrinkWrap: true,
-    //               scrollDirection: Axis.vertical,
-    //               itemCount: readyProductList?.length ?? 0,
-    //               itemBuilder: (context, index) {
-    //                 bool isInStock = false;
-    //                 if (stock != null) {
-    //                   if (stock.prodIds.length > 0) {
-    //                     if (readyProductList?[index].variants != null) {
-    //                       readyProductList?[index].variants!.forEach((element) {
-    //                         if (stock.prodIds.indexOf(element.id) >= 0) {
-    //                           isInStock = true;
-    //                         }
-    //                       });
-    //                     } else {
-    //                       if (stock.prodIds
-    //                               .indexOf(readyProductList![index].id) >=
-    //                           0) {
-    //                         isInStock = true;
-    //                       }
-    //                     }
-    //                   }
-    //                 }
-    //                 return InkWell(
-    //                   child: Stack(
-    //                     children: [
-    //                       Opacity(
-    //                         opacity: isInStock ? 0.25 : 1,
-    //                         child: Container(
-    //                           margin: EdgeInsets.all(10.0),
-    //                           padding: EdgeInsets.all(5.0),
-    //                           decoration: BoxDecoration(
-    //                               borderRadius: BorderRadius.circular(23.0),
-    //                               border: Border.all(
-    //                                   color: rightSelectedProduct.value?.id ==
-    //                                           readyProductList?[index].id
-    //                                       ? Colors.yellow.shade600
-    //                                       : Colors.transparent,
-    //                                   width: 2.0),
-    //                               boxShadow: [
-    //                                 BoxShadow(
-    //                                   color: Colors.grey.withOpacity(0.5),
-    //                                   spreadRadius: 2,
-    //                                   blurRadius: 7,
-    //                                   offset: Offset(
-    //                                       0, 3), // changes position of shadow
-    //                                 ),
-    //                               ],
-    //                               color: Colors.white),
-    //                           height: 200,
-    //                           width: double.infinity,
-    //                           child: Column(
-    //                             children: [
-    //                               Column(
-    //                                 children: [
-    //                                   Image.network(
-    //                                     readyProductList?[index].image ?? '',
-    //                                     width: 110,
-    //                                     height: 110,
-    //                                   ),
-    //                                   SizedBox(
-    //                                     height: 5,
-    //                                   ),
-    //                                   Text(
-    //                                     readyProductList?[index]
-    //                                             .attributeData
-    //                                             ?.name
-    //                                             ?.chopar
-    //                                             ?.ru
-    //                                             ?.toUpperCase() ??
-    //                                         '',
-    //                                     style: TextStyle(fontSize: 20.0),
-    //                                     textAlign: TextAlign.center,
-    //                                   ),
-    //                                 ],
-    //                               )
-    //                               // Text(formatCurrency.format(int.parse(
-    //                               //     double.parse(
-    //                               //             readyProductList?[index].price ??
-    //                               //                 '0.0000')
-    //                               //         .toStringAsFixed(0))))
-    //                             ],
-    //                           ),
-    //                         ),
-    //                       ),
-    //                       Positioned(
-    //                         child: rightSelectedProduct.value?.id ==
-    //                                 readyProductList?[index].id
-    //                             ? Icon(Icons.check_circle_outline,
-    //                                 color: Colors.yellow.shade600)
-    //                             : SizedBox(width: 0.0),
-    //                         width: 10.0,
-    //                         height: 10.0,
-    //                         top: 20.0,
-    //                         right: 50.0,
-    //                       )
-    //                     ],
-    //                   ),
-    //                   onTap: () {
-    //                     if (isInStock) {
-    //                       return;
-    //                     }
-    //                     rightSelectedProduct.value = readyProductList?[index];
-    //                   },
-    //                 );
-    //               },
-    //             ))
-    //           ],
-    //         ),
-    //       )),
-    //       Container(
-    //         decoration: BoxDecoration(color: Colors.white),
-    //         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
-    //         child: DefaultStyledButton(
-    //           text: 'В корзину',
-    //           onPressed: () {},
-    //           width: MediaQuery.of(context).size.width,
-    //           color: rightSelectedProduct.value == null
-    //               ? [Colors.grey.shade300, Colors.grey.shade300]
-    //               : null,
-    //         ),
-    //       )
-    //     ],
-    //   );
-    // }
 
     Widget renderPage(BuildContext context) {
       Box<Stock> stockBox = Hive.box<Stock>('stock');
@@ -399,7 +284,7 @@ class ThreePizzaWidget extends HookWidget {
                     if (isInStock) {
                       return;
                     } else {
-                      rightSelectedProduct.value = readyProductList?[index];
+                      selectProduct(readyProductList?[index].id ?? 0);
                     }
                   },
                   child: Opacity(
@@ -408,8 +293,8 @@ class ThreePizzaWidget extends HookWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(23.0),
                           border: Border.all(
-                              color: rightSelectedProduct.value?.id ==
-                                      readyProductList?[index].id
+                              color: rightSelectedProduct.value.contains(
+                                      readyProductList?[index].id ?? 0)
                                   ? Colors.yellow.shade600
                                   : Colors.transparent,
                               width: 2.0),
@@ -423,10 +308,10 @@ class ThreePizzaWidget extends HookWidget {
                             ),
                           ],
                           color: Colors.white),
-                      child: Center(
-                        child: Stack(
-                          children: [
-                            Column(
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Image.network(
@@ -450,19 +335,19 @@ class ThreePizzaWidget extends HookWidget {
                                 ),
                               ],
                             ),
-                            Positioned(
-                              child: rightSelectedProduct.value?.id ==
-                                      readyProductList?[index].id
-                                  ? Icon(Icons.check_circle_outline,
-                                      color: Colors.yellow.shade600)
-                                  : SizedBox(width: 0.0),
-                              width: 10.0,
-                              height: 10.0,
-                              top: 10.0,
-                              right: 15.0,
-                            )
-                          ],
-                        ),
+                          ),
+                          Positioned(
+                            child: rightSelectedProduct.value
+                                    .contains(readyProductList![index].id)
+                                ? Icon(Icons.check_circle_outline,
+                                    color: Colors.yellow.shade600)
+                                : SizedBox(width: 0.0),
+                            width: 10.0,
+                            height: 10.0,
+                            top: 10.0,
+                            right: 25.0,
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -492,6 +377,8 @@ class ThreePizzaWidget extends HookWidget {
       Navigator.of(context).pop();
       return Future.value(false);
     }
+
+    print(rightSelectedProduct.value);
 
     return WillPopScope(
         onWillPop: _onBackPressed,

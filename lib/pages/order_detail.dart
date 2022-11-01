@@ -27,44 +27,84 @@ class OrderDetail extends HookWidget {
         lineItem.child!.length > 0 &&
         lineItem.child![0].variant?.product?.id !=
             lineItem.variant?.product?.boxId) {
-      return Container(
-        height: 50.0,
-        width: 50,
-        // margin: EdgeInsets.all(15),
-        child: Row(
-          children: [
-            Expanded(
-                child: Stack(
-              clipBehavior: Clip.hardEdge,
-              children: [
-                Positioned(
-                    left: 0,
-                    child: Container(
-                      child: Image.network(
-                        'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                        height: 50,
-                      ),
-                      // width: MediaQuery.of(context).size.width - 30,
-                    ))
-              ],
-            )),
-            Expanded(
-                child: Stack(
-              children: [
-                Positioned(
-                    right: 0,
-                    child: Container(
-                      // width: MediaQuery.of(context).size.width - 30,
-                      child: Image.network(
-                        'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
-                        height: 50,
-                      ),
-                    ))
-              ],
-            ))
-          ],
-        ),
-      );
+      if (lineItem.child!.length > 1) {
+        return Container(
+          height: 50.0,
+          width: 70,
+          // margin: EdgeInsets.all(15),
+          child: Row(
+            children: [
+              Expanded(
+                  child: Stack(
+                children: [
+                  Positioned(
+                      left: 0,
+                      child: Container(
+                        child: Image.network(
+                          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          height: 50,
+                        ),
+                        width: 50,
+                      )),
+                  ...lineItem.child!.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    var e = entry.value;
+                    print(((idx + 1) * 15).toDouble());
+                    return Positioned(
+                        left: ((idx + 1) * 10).toDouble(),
+                        child: Container(
+                          child: Image.network(
+                            'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
+                            height: 50,
+                          ),
+                          width: 50,
+                        ));
+                  }).toList()
+                ],
+              )),
+            ],
+          ),
+        );
+      } else {
+        return Container(
+          height: 50.0,
+          width: 50,
+          // margin: EdgeInsets.all(15),
+          child: Row(
+            children: [
+              Expanded(
+                  child: Stack(
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Positioned(
+                      left: 0,
+                      child: Container(
+                        child: Image.network(
+                          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          height: 50,
+                        ),
+                        // width: MediaQuery.of(context).size.width - 30,
+                      ))
+                ],
+              )),
+              Expanded(
+                  child: Stack(
+                children: [
+                  Positioned(
+                      right: 0,
+                      child: Container(
+                        // width: MediaQuery.of(context).size.width - 30,
+                        child: Image.network(
+                          'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                          height: 50,
+                        ),
+                      ))
+                ],
+              ))
+            ],
+          ),
+        );
+      }
     } else if (lineItem.variant?.product?.assets != null) {
       return Image.network(
         'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
@@ -237,13 +277,31 @@ class OrderDetail extends HookWidget {
                             itemBuilder: (context, index) {
                               Lines lineItem =
                                   order.value!.basket!.lines![index];
-                              double totalPrice = double.parse(order.value!.basket!.lines![index].total);
-                              if (order.value!.basket!.lines![index].child != null && order.value!.basket!.lines![index].child!.isNotEmpty) {
-                                totalPrice = double.parse(order.value!.basket!.lines![index].total) + double.parse(order.value!.basket!.lines![index].child![0].total);
+                              double totalPrice = double.parse(
+                                  order.value!.basket!.lines![index].total);
+                              if (order.value!.basket!.lines![index].child !=
+                                      null &&
+                                  order.value!.basket!.lines![index].child!
+                                      .isNotEmpty) {
+                                if (order.value!.basket!.lines![index].child!
+                                        .length ==
+                                    1) {
+                                  totalPrice = double.parse(order
+                                          .value!.basket!.lines![index].total) +
+                                      double.parse(order.value!.basket!
+                                          .lines![index].child![0].total);
+                                } else {
+                                  totalPrice = double.parse(order
+                                          .value!.basket!.lines![index].total) +
+                                      double.parse(order.value!.basket!
+                                          .lines![index].child![0].total) +
+                                      double.parse(order.value!.basket!
+                                          .lines![index].child![1].total);
+                                }
                               }
                               return ListTile(
                                 title: Text(
-                                    "${lineItem.child != null && lineItem.child!.length > 1 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant?.product?.customName}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
+                                    "${lineItem.child != null && lineItem.child!.length > 1 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant?.product?.customName} + ${lineItem.child![1].variant!.product!.customName}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
                                 leading: renderProductImage(context, lineItem),
                                 trailing: Text(
                                     '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} '
