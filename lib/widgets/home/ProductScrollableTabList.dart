@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/widgets/home/ThreePizza.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -108,14 +109,14 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
     if (responseCity.statusCode == 200) {
       var json = jsonDecode(responseCity.body);
       json['data'].forEach((element) {
-        if (element['id'] == currentCity!.id) {
+        if (element['id'] == currentCity?.id) {
           citySlug = element['slug'];
         }
       });
     }
 
     var url = Uri.https('api.choparpizza.uz', '/api/products/public',
-        {'perSection': '1', 'city_slug': citySlug, 'isDev': '1'});
+        {'perSection': '1', 'city_slug': citySlug});
     var response = await http.get(url, headers: requestHeaders);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -261,8 +262,10 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
 
   Widget productImage(String? image) {
     if (image != null) {
-      return Image.network(
-        image!,
+      return CachedNetworkImage(
+        imageUrl: image!,
+        placeholder: (context, url) =>
+            CircularProgressIndicator(color: Colors.yellow.shade600),
         width: 170.0,
         height: 170.0,
         // width: MediaQuery.of(context).size.width / 2.5,
