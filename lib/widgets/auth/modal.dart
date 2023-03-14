@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hex/hex.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
 import 'package:otp_autofill/otp_autofill.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+
+import '../../utils/random.dart';
 
 class AuthModal extends HookWidget {
   final GlobalKey<FormBuilderState> formKey = GlobalKey<FormBuilderState>();
@@ -72,11 +75,18 @@ class AuthModal extends HookWidget {
     }
 
     Future<void> tryResendCode() async {
+      final buff = utf8.encode('Xa65vmthH15j');
+      final base64data = base64.encode(buff);
+      final randomString = randomAlphaNumeric(6);
+      final hexBuffer = utf8.encode('$randomString$base64data');
+      final hexString = HEX.encode(hexBuffer);
+
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $hexString'
       };
-      var url = Uri.https('api.choparpizza.uz', '/api/send_otp');
+      var url = Uri.https('api.choparpizza.uz', '/api/ss_zz');
       var formData = {'phone': phoneNumber.value};
       if (_isShowNameField.value) {
         formData['name'] = nameFieldController.text;
@@ -451,12 +461,20 @@ class AuthModal extends HookWidget {
                               String decoded =
                                   stringToBase64.decode(json['result']);
 
+                              final buff = utf8.encode('Xa65vmthH15j');
+                              final base64data = base64.encode(buff);
+                              final randomString = randomAlphaNumeric(6);
+                              final hexBuffer =
+                                  utf8.encode('$randomString$base64data');
+                              final hexString = HEX.encode(hexBuffer);
+
                               Map<String, String> requestHeaders = {
                                 'Content-type': 'application/json',
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'Authorization': 'Bearer $hexString'
                               };
-                              url = Uri.https(
-                                  'api.choparpizza.uz', '/api/send_otp');
+                              url =
+                                  Uri.https('api.choparpizza.uz', '/api/ss_zz');
                               var formData = {'phone': phoneNumber.value};
                               if (_isShowNameField.value) {
                                 formData['name'] = nameFieldController.text;

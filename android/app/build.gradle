@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,8 +41,7 @@ android {
 
     defaultConfig {
         applicationId "havoqand.chopar"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

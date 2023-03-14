@@ -42,6 +42,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  StreamSubscription<LocationData>? _locationSubscription;
+  bool _inBackground = false;
 
   // showAlertOnChangeLocation(LocationData currentLocation,
   //     DeliveryLocationData deliveryData, String house, String location) async {
@@ -204,35 +206,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
-    () async {
-      Location location = new Location();
-
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
-      LocationData _locationData;
 
-      _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          return;
-        }
-      }
-
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          return;
-        }
-      }
-
-      // location.enableBackgroundMode(enable: true);
-      location.changeSettings(
-          distanceFilter: 100,
-          interval: 60000,
-          accuracy: LocationAccuracy.balanced);
-      _locationData = await location.getLocation();
+      final _locationData = await getLocation();
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json'
@@ -262,7 +240,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
         setLocation(_locationData, deliveryData, house, geoData.addressItems);
       }
-      location.onLocationChanged.listen((LocationData currentLocation) async {
+      _locationSubscription = onLocationChanged(inBackground: _inBackground)
+          .listen((LocationData currentLocation) async {
         DeliveryLocationData? deliveryLocationData =
             Hive.box<DeliveryLocationData>('deliveryLocationData')
                 .get('deliveryLocationData');
@@ -302,7 +281,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           }
         }
       });
-    }();
+    });
+    () async {}();
   }
 
   @override
