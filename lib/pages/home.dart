@@ -25,6 +25,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'dart:developer' as developer;
+import 'package:geolocator/geolocator.dart';
 
 import '../models/city.dart';
 
@@ -85,11 +86,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //   );
   // }
 
-  Future<void> setLocation(
-      LocationData location,
-      DeliveryLocationData deliveryData,
-      String house,
-      List<AddressItems>? addressItems) async {
+  Future<void> setLocation(Position location, DeliveryLocationData deliveryData,
+      String house, List<AddressItems>? addressItems) async {
     final Box<DeliveryLocationData> deliveryLocationBox =
         Hive.box<DeliveryLocationData>('deliveryLocationData');
     deliveryLocationBox.put('deliveryLocationData', deliveryData);
@@ -207,80 +205,114 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool _serviceEnabled;
-      PermissionStatus _permissionGranted;
+      // bool _serviceEnabled;
+      //PermissionStatus _permissionGranted;
+      //final _locationData = await getLocation();
+      bool serviceEnabled;
+      bool hasPermission = true;
+      LocationPermission permission;
 
-      final _locationData = await getLocation();
-      Map<String, String> requestHeaders = {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      };
-      var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-        'lat': _locationData.latitude.toString(),
-        'lon': _locationData.longitude.toString()
-      });
-      var response = await http.get(url, headers: requestHeaders);
-      if (response.statusCode == 200) {
-        var json = jsonDecode(response.body);
-        var geoData = YandexGeoData.fromJson(json['data']);
-        var house = '';
-        geoData.addressItems?.forEach((element) {
-          if (element.kind == 'house') {
-            house = element.name;
-          }
-        });
-        DeliveryLocationData deliveryData = DeliveryLocationData(
-            house: house ?? '',
-            flat: '',
-            entrance: '',
-            doorCode: '',
-            lat: _locationData.latitude,
-            lon: _locationData.longitude,
-            address: geoData.formatted ?? '');
-
-        setLocation(_locationData, deliveryData, house, geoData.addressItems);
+      // Test if location services are enabled.
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Location services are not enabled don't continue
+        // accessing the position and request users of the
+        // App to enable the location services.
+        hasPermission = true;
       }
-      _locationSubscription = onLocationChanged(inBackground: _inBackground)
-          .listen((LocationData currentLocation) async {
-        DeliveryLocationData? deliveryLocationData =
-            Hive.box<DeliveryLocationData>('deliveryLocationData')
-                .get('deliveryLocationData');
-        if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
-            "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
-          Map<String, String> requestHeaders = {
-            'Content-type': 'application/json',
-            'Accept': 'application/json'
-          };
-          var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-            'lat': _locationData.latitude.toString(),
-            'lon': _locationData.longitude.toString()
-          });
-          var response = await http.get(url, headers: requestHeaders);
-          if (response.statusCode == 200) {
-            var json = jsonDecode(response.body);
-            var geoData = YandexGeoData.fromJson(json['data']);
-            var house = '';
-            geoData.addressItems?.forEach((element) {
-              if (element.kind == 'house') {
-                house = element.name;
-              }
-            });
-            DeliveryLocationData deliveryData = DeliveryLocationData(
-                house: house ?? '',
-                flat: '',
-                entrance: '',
-                doorCode: '',
-                lat: _locationData.latitude,
-                lon: _locationData.longitude,
-                address: geoData.formatted ?? '');
 
-            // showAlertOnChangeLocation(currentLocation, deliveryData, house,
-            //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-            setLocation(
-                currentLocation, deliveryData, house, geoData.addressItems);
-          }
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied, next time you could try
+          // requesting permissions again (this is also where
+          // Android's shouldShowRequestPermissionRationale
+          // returned true. According to Android guidelines
+          // your App should show an explanatory UI now.
+          hasPermission = false;
         }
-      });
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Permissions are denied forever, handle appropriately.
+        hasPermission = false;
+      }
+
+      if (hasPermission) {
+        Position _locationData = await Geolocator.getCurrentPosition();
+
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
+        var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
+          'lat': _locationData.latitude.toString(),
+          'lon': _locationData.longitude.toString()
+        });
+        var response = await http.get(url, headers: requestHeaders);
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          var geoData = YandexGeoData.fromJson(json['data']);
+          var house = '';
+          geoData.addressItems?.forEach((element) {
+            if (element.kind == 'house') {
+              house = element.name;
+            }
+          });
+          DeliveryLocationData deliveryData = DeliveryLocationData(
+              house: house ?? '',
+              flat: '',
+              entrance: '',
+              doorCode: '',
+              lat: _locationData.latitude,
+              lon: _locationData.longitude,
+              address: geoData.formatted ?? '');
+
+          setLocation(_locationData, deliveryData, house, geoData.addressItems);
+        }
+      }
+      // _locationSubscription = onLocationChanged(inBackground: _inBackground)
+      //     .listen((LocationData currentLocation) async {
+      //   DeliveryLocationData? deliveryLocationData =
+      //       Hive.box<DeliveryLocationData>('deliveryLocationData')
+      //           .get('deliveryLocationData');
+      //   if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
+      //       "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
+      //     Map<String, String> requestHeaders = {
+      //       'Content-type': 'application/json',
+      //       'Accept': 'application/json'
+      //     };
+      //     var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
+      //       'lat': _locationData.latitude.toString(),
+      //       'lon': _locationData.longitude.toString()
+      //     });
+      //     var response = await http.get(url, headers: requestHeaders);
+      //     if (response.statusCode == 200) {
+      //       var json = jsonDecode(response.body);
+      //       var geoData = YandexGeoData.fromJson(json['data']);
+      //       var house = '';
+      //       geoData.addressItems?.forEach((element) {
+      //         if (element.kind == 'house') {
+      //           house = element.name;
+      //         }
+      //       });
+      //       DeliveryLocationData deliveryData = DeliveryLocationData(
+      //           house: house ?? '',
+      //           flat: '',
+      //           entrance: '',
+      //           doorCode: '',
+      //           lat: _locationData.latitude,
+      //           lon: _locationData.longitude,
+      //           address: geoData.formatted ?? '');
+
+      //       // showAlertOnChangeLocation(currentLocation, deliveryData, house,
+      //       //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
+      //       setLocation(
+      //           currentLocation, deliveryData, house, geoData.addressItems);
+      //     }
+      //   }
+      // });
     });
     () async {}();
   }
