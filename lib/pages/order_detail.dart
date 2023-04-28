@@ -14,8 +14,10 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../models/registered_review.dart';
+import '../widgets/orders/track.dart';
 
 class OrderDetail extends HookWidget {
   final String orderId;
@@ -342,7 +344,26 @@ class OrderDetail extends HookWidget {
                     ),
                     Divider(
                       color: Colors.grey,
-                    )
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    order.value?.deliveryType == 'deliver'
+                        ? DefaultStyledButton(
+                            width: double.infinity,
+                            onPressed: () {
+                              showMaterialModalBottomSheet(
+                                  context: context,
+                                  enableDrag: false,
+                                  bounce: true,
+                                  builder: (context) =>
+                                      TrackOrder(orderId: order.value!.id));
+                            },
+                            text: 'Отследить заказ'.toUpperCase(),
+                          )
+                        : const SizedBox(
+                            width: double.infinity,
+                          ),
                   ],
                 ),
               ),
