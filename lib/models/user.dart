@@ -12,7 +12,15 @@ class UserData {
   late int status;
   User? user;
 
-  UserData({required this.id, required this.userId, required this.userIdentify, required this.userContact, required this.userToken, required this.verifiedAt, required this.status, this.user});
+  UserData(
+      {required this.id,
+      required this.userId,
+      required this.userIdentify,
+      required this.userContact,
+      required this.userToken,
+      required this.verifiedAt,
+      required this.status,
+      this.user});
 
   UserData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -67,10 +75,23 @@ class User {
   late String? email;
   @HiveField(11)
   late String? birth;
-  @HiveField(11)
+  @HiveField(12)
   late int? gender;
 
-  User({required this.id, this.languageId, required this.name, required this.phone, this.verificationCode, this.phoneVerifiedAt, required this.createdAt, required this.updatedAt, this.mobile, required this.userToken, this.email, this.birth, this.gender});
+  User(
+      {required this.id,
+      this.languageId,
+      required this.name,
+      required this.phone,
+      this.verificationCode,
+      this.phoneVerifiedAt,
+      required this.createdAt,
+      required this.updatedAt,
+      this.mobile,
+      required this.userToken,
+      this.email,
+      this.birth,
+      this.gender});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -115,7 +136,13 @@ class Roles {
   late String updatedAt;
   Pivot? pivot;
 
-  Roles({required this.id, required this.name, required this.guardName, required this.createdAt, required this.updatedAt, this.pivot});
+  Roles(
+      {required this.id,
+      required this.name,
+      required this.guardName,
+      required this.createdAt,
+      required this.updatedAt,
+      this.pivot});
 
   Roles.fromJson(Map<String, dynamic> json) {
     id = json['id'];

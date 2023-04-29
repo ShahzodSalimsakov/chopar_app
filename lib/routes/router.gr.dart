@@ -10,6 +10,7 @@
 //
 // ignore_for_file: type=lint
 
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i2;
 import 'package:flutter/material.dart' as _i7;
 
@@ -27,19 +28,27 @@ class AppRouter extends _i2.RootStackRouter {
   final Map<String, _i2.PageFactory> pagesMap = {
     HomePage.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i1.MessageHandler());
+        routeData: routeData,
+        child: const _i1.MessageHandler(),
+      );
     },
     NotificationsPage.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i2.EmptyRouterPage());
+        routeData: routeData,
+        child: const _i2.EmptyRouterPage(),
+      );
     },
     OrdersPage.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i2.EmptyRouterPage());
+        routeData: routeData,
+        child: const _i2.EmptyRouterPage(),
+      );
     },
     NotificationsRoute.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i3.NotificationsPage());
+        routeData: routeData,
+        child: const _i3.NotificationsPage(),
+      );
     },
     NotificationDetailRoute.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
@@ -47,13 +56,19 @@ class AppRouter extends _i2.RootStackRouter {
           orElse: () =>
               NotificationDetailRouteArgs(id: pathParams.getString('id')));
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData,
-          child: _i4.NotificationDetailPage(
-              key: args.key, id: args.id, notification: args.notification));
+        routeData: routeData,
+        child: _i4.NotificationDetailPage(
+          key: args.key,
+          id: args.id,
+          notification: args.notification,
+        ),
+      );
     },
     OrdersList.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: _i5.Orders());
+        routeData: routeData,
+        child: _i5.Orders(),
+      );
     },
     OrderDetailPage.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
@@ -61,34 +76,64 @@ class AppRouter extends _i2.RootStackRouter {
           orElse: () =>
               OrderDetailPageArgs(orderId: pathParams.getString('orderId')));
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData,
-          child: _i6.OrderDetail(key: args.key, orderId: args.orderId));
-    }
+        routeData: routeData,
+        child: _i6.OrderDetail(
+          key: args.key,
+          orderId: args.orderId,
+        ),
+      );
+    },
   };
 
   @override
   List<_i2.RouteConfig> get routes => [
-        _i2.RouteConfig(HomePage.name, path: '/'),
-        _i2.RouteConfig(NotificationsPage.name,
-            path: 'notifications',
-            children: [
-              _i2.RouteConfig(NotificationsRoute.name,
-                  path: '', parent: NotificationsPage.name),
-              _i2.RouteConfig(NotificationDetailRoute.name,
-                  path: ':id', parent: NotificationsPage.name)
-            ]),
-        _i2.RouteConfig(OrdersPage.name, path: 'order', children: [
-          _i2.RouteConfig(OrdersList.name, path: '', parent: OrdersPage.name),
-          _i2.RouteConfig(OrderDetailPage.name,
-              path: ':orderId', parent: OrdersPage.name)
-        ])
+        _i2.RouteConfig(
+          HomePage.name,
+          path: '/',
+        ),
+        _i2.RouteConfig(
+          NotificationsPage.name,
+          path: 'notifications',
+          children: [
+            _i2.RouteConfig(
+              NotificationsRoute.name,
+              path: '',
+              parent: NotificationsPage.name,
+            ),
+            _i2.RouteConfig(
+              NotificationDetailRoute.name,
+              path: ':id',
+              parent: NotificationsPage.name,
+            ),
+          ],
+        ),
+        _i2.RouteConfig(
+          OrdersPage.name,
+          path: 'order',
+          children: [
+            _i2.RouteConfig(
+              OrdersList.name,
+              path: '',
+              parent: OrdersPage.name,
+            ),
+            _i2.RouteConfig(
+              OrderDetailPage.name,
+              path: ':orderId',
+              parent: OrdersPage.name,
+            ),
+          ],
+        ),
       ];
 }
 
 /// generated route for
 /// [_i1.MessageHandler]
 class HomePage extends _i2.PageRouteInfo<void> {
-  const HomePage() : super(HomePage.name, path: '/');
+  const HomePage()
+      : super(
+          HomePage.name,
+          path: '/',
+        );
 
   static const String name = 'HomePage';
 }
@@ -97,8 +142,11 @@ class HomePage extends _i2.PageRouteInfo<void> {
 /// [_i2.EmptyRouterPage]
 class NotificationsPage extends _i2.PageRouteInfo<void> {
   const NotificationsPage({List<_i2.PageRouteInfo>? children})
-      : super(NotificationsPage.name,
-            path: 'notifications', initialChildren: children);
+      : super(
+          NotificationsPage.name,
+          path: 'notifications',
+          initialChildren: children,
+        );
 
   static const String name = 'NotificationsPage';
 }
@@ -107,7 +155,11 @@ class NotificationsPage extends _i2.PageRouteInfo<void> {
 /// [_i2.EmptyRouterPage]
 class OrdersPage extends _i2.PageRouteInfo<void> {
   const OrdersPage({List<_i2.PageRouteInfo>? children})
-      : super(OrdersPage.name, path: 'order', initialChildren: children);
+      : super(
+          OrdersPage.name,
+          path: 'order',
+          initialChildren: children,
+        );
 
   static const String name = 'OrdersPage';
 }
@@ -115,7 +167,11 @@ class OrdersPage extends _i2.PageRouteInfo<void> {
 /// generated route for
 /// [_i3.NotificationsPage]
 class NotificationsRoute extends _i2.PageRouteInfo<void> {
-  const NotificationsRoute() : super(NotificationsRoute.name, path: '');
+  const NotificationsRoute()
+      : super(
+          NotificationsRoute.name,
+          path: '',
+        );
 
   static const String name = 'NotificationsRoute';
 }
@@ -124,20 +180,30 @@ class NotificationsRoute extends _i2.PageRouteInfo<void> {
 /// [_i4.NotificationDetailPage]
 class NotificationDetailRoute
     extends _i2.PageRouteInfo<NotificationDetailRouteArgs> {
-  NotificationDetailRoute(
-      {_i7.Key? key, required String id, Map<String, dynamic>? notification})
-      : super(NotificationDetailRoute.name,
-            path: ':id',
-            args: NotificationDetailRouteArgs(
-                key: key, id: id, notification: notification),
-            rawPathParams: {'id': id});
+  NotificationDetailRoute({
+    _i7.Key? key,
+    required String id,
+    Map<String, dynamic>? notification,
+  }) : super(
+          NotificationDetailRoute.name,
+          path: ':id',
+          args: NotificationDetailRouteArgs(
+            key: key,
+            id: id,
+            notification: notification,
+          ),
+          rawPathParams: {'id': id},
+        );
 
   static const String name = 'NotificationDetailRoute';
 }
 
 class NotificationDetailRouteArgs {
-  const NotificationDetailRouteArgs(
-      {this.key, required this.id, this.notification});
+  const NotificationDetailRouteArgs({
+    this.key,
+    required this.id,
+    this.notification,
+  });
 
   final _i7.Key? key;
 
@@ -154,7 +220,11 @@ class NotificationDetailRouteArgs {
 /// generated route for
 /// [_i5.Orders]
 class OrdersList extends _i2.PageRouteInfo<void> {
-  const OrdersList() : super(OrdersList.name, path: '');
+  const OrdersList()
+      : super(
+          OrdersList.name,
+          path: '',
+        );
 
   static const String name = 'OrdersList';
 }
@@ -162,17 +232,27 @@ class OrdersList extends _i2.PageRouteInfo<void> {
 /// generated route for
 /// [_i6.OrderDetail]
 class OrderDetailPage extends _i2.PageRouteInfo<OrderDetailPageArgs> {
-  OrderDetailPage({_i7.Key? key, required String orderId})
-      : super(OrderDetailPage.name,
-            path: ':orderId',
-            args: OrderDetailPageArgs(key: key, orderId: orderId),
-            rawPathParams: {'orderId': orderId});
+  OrderDetailPage({
+    _i7.Key? key,
+    required String orderId,
+  }) : super(
+          OrderDetailPage.name,
+          path: ':orderId',
+          args: OrderDetailPageArgs(
+            key: key,
+            orderId: orderId,
+          ),
+          rawPathParams: {'orderId': orderId},
+        );
 
   static const String name = 'OrderDetailPage';
 }
 
 class OrderDetailPageArgs {
-  const OrderDetailPageArgs({this.key, required this.orderId});
+  const OrderDetailPageArgs({
+    this.key,
+    required this.orderId,
+  });
 
   final _i7.Key? key;
 

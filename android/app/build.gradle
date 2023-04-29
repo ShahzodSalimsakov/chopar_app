@@ -41,7 +41,8 @@ android {
 
     defaultConfig {
         applicationId "havoqand.chopar"
-        minSdkVersion 31
+        minSdkVersion 29
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

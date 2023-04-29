@@ -268,7 +268,7 @@ class _PersonalDataState extends State<PersonalData> {
                                       isLoading: deleteIsLoading == true
                                           ? deleteIsLoading
                                           : null,
-                                      text: 'Удалит аккаунт',
+                                      text: 'Удалить аккаунт',
                                       onPressed: () async {
                                         setState(() {
                                           deleteIsLoading = true;
@@ -313,14 +313,14 @@ class _PersonalDataState extends State<PersonalData> {
                                     };
                                     var url = Uri.https(
                                         'api.choparpizza.uz', '/api/me');
-                                    var values = Map.of(_formKey.currentState!.value);
+                                    var values =
+                                        Map.of(_formKey.currentState!.value);
                                     if (values['email'] == null) {
                                       values['email'] = '';
                                     }
                                     if (values['birth'] != null) {
-                                     values['birth'] =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(values['birth']);
+                                      values['birth'] = DateFormat('yyyy-MM-dd')
+                                          .format(values['birth']);
                                     }
                                     var response = await http.post(url,
                                         headers: requestHeaders,

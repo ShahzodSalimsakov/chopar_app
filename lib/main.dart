@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/app.dart';
 import 'package:chopar_app/message_handler.dart';
+import 'package:chopar_app/models/basket_item_quantity.dart';
 import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
@@ -102,6 +103,7 @@ void main() async {
   Hive.registerAdapter(HomeIsScrolledAdapter());
   Hive.registerAdapter(HomeScrollPositionAdapter());
   Hive.registerAdapter(RegisteredReviewAdapter());
+  Hive.registerAdapter(BasketItemQuantityAdapter());
   await Hive.openBox<City>('currentCity');
   await Hive.openBox<User>('user');
   await Hive.openBox<Basket>('basket');
@@ -118,6 +120,7 @@ void main() async {
   await Hive.openBox<HomeIsScrolled>('homeIsScrolled');
   await Hive.openBox<HomeScrollPosition>('homeScrollPosition');
   await Hive.openBox<RegisteredReview>('registeredReview');
+  await Hive.openBox<BasketItemQuantity>('basketItemQuantity');
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],
