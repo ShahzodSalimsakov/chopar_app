@@ -21,9 +21,9 @@ class Terminals {
   @HiveField(7)
   String? descUz;
   @HiveField(8)
-  Null nameEn;
+  String? nameEn;
   @HiveField(9)
-  Null descEn;
+  String? descEn;
   @HiveField(10)
   String? deliveryTime;
   @HiveField(11)

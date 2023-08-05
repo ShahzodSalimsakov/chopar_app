@@ -293,10 +293,11 @@ class CreateOwnPizza extends HookWidget {
               name: 'Сосисочный борт',
               xmlId: '',
               price: (int.parse(double.parse(
-                  leftProduct.modifierProduct?.price ?? '0.0000')
-                  .toStringAsFixed(0)) -
-                  int.parse(double.parse(leftProduct.modifierProduct?.price ?? '0.00')
-                      .toStringAsFixed(0))) *
+                              leftProduct.modifierProduct?.price ?? '0.0000')
+                          .toStringAsFixed(0)) -
+                      int.parse(double.parse(
+                              leftProduct.modifierProduct?.price ?? '0.00')
+                          .toStringAsFixed(0))) *
                   2,
               weight: 0,
               groupId: '',
@@ -306,18 +307,11 @@ class CreateOwnPizza extends HookWidget {
         }
       });
       List<Modifiers> allModifiers = [...leftModifiers!];
-      Modifiers freeModifiers =
-          allModifiers.firstWhere((mod) => mod.price == 0);
-      if (selectedIntModifiers.length == 0) {
-        selectedIntModifiers.add(freeModifiers.id);
-      }
 
       selectedModifiers = allModifiers
           .where((m) => selectedIntModifiers.contains(m.id))
           .map((m) => ({'id': m.id}))
           .toList();
-
-
 
       ModifierProduct? leftModifierProduct;
       if (leftProduct.modifierProduct != null) {
@@ -347,9 +341,7 @@ class CreateOwnPizza extends HookWidget {
                 .map((m) => ({'id': m.id}))
                 .toList();
           } else {
-            selectedModifiers = [
-              {'id': freeModifiers.id}
-            ];
+            selectedModifiers = [];
           }
         }
       }
@@ -374,8 +366,9 @@ class CreateOwnPizza extends HookWidget {
           'basket_id': basket.encodedId,
           'variants': [
             {
-              'id':
-                  leftModifierProduct != null ? leftModifierProduct.id : leftProduct.id,
+              'id': leftModifierProduct != null
+                  ? leftModifierProduct.id
+                  : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
@@ -383,9 +376,7 @@ class CreateOwnPizza extends HookWidget {
                     ? rightModifierProduct.id
                     : rightProduct!.id,
                 'quantity': 1,
-                'modifiers': [
-                  {'id': freeModifiers.id}
-                ]
+                'modifiers': []
               }
             }
           ],
@@ -415,8 +406,9 @@ class CreateOwnPizza extends HookWidget {
         var formData = {
           'variants': [
             {
-              'id':
-              leftModifierProduct != null ? leftModifierProduct.id : leftProduct.id,
+              'id': leftModifierProduct != null
+                  ? leftModifierProduct.id
+                  : leftProduct.id,
               'quantity': 1,
               'modifiers': selectedModifiers,
               'child': {
@@ -424,9 +416,7 @@ class CreateOwnPizza extends HookWidget {
                     ? rightModifierProduct.id
                     : rightProduct!.id,
                 'quantity': 1,
-                'modifiers': [
-                  {'id': freeModifiers.id}
-                ]
+                'modifiers': []
               }
             }
           ]

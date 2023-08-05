@@ -184,6 +184,7 @@ class ProductDetail extends HookWidget {
 
     useEffect(() {
       Future.delayed(Duration(seconds: 1), () {
+        if (_scrollController.hasClients) {
         _scrollController
             .animateTo(
           _scrollController.position.maxScrollExtent,
@@ -197,6 +198,8 @@ class ProductDetail extends HookWidget {
             curve: Curves.fastOutSlowIn,
           );
         });
+
+        }
         // _scrollController.dispose();
       });
       fetchConfig();

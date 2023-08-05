@@ -54,10 +54,6 @@ class _MainPageState extends State<MainPage>
       child: Scaffold(
           backgroundColor: Colors.white,
           body: UpgradeAlert(
-            shouldPopScope: () => true,
-            debugLogging: false,
-            showIgnore: false,
-            showLater: false,
             child: SingleChildScrollView(
               controller: _parentScrollController,
               scrollDirection: Axis.vertical,

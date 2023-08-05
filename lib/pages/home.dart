@@ -23,7 +23,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
 
@@ -43,7 +42,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-  StreamSubscription<LocationData>? _locationSubscription;
   bool _inBackground = false;
 
   // showAlertOnChangeLocation(LocationData currentLocation,
@@ -272,47 +270,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           setLocation(_locationData, deliveryData, house, geoData.addressItems);
         }
       }
-      // _locationSubscription = onLocationChanged(inBackground: _inBackground)
-      //     .listen((LocationData currentLocation) async {
-      //   DeliveryLocationData? deliveryLocationData =
-      //       Hive.box<DeliveryLocationData>('deliveryLocationData')
-      //           .get('deliveryLocationData');
-      //   if ("${currentLocation.latitude.toString()}${currentLocation.longitude.toString()}" !=
-      //       "${deliveryLocationData?.lat?.toString()}${deliveryLocationData?.lon?.toString()}") {
-      //     Map<String, String> requestHeaders = {
-      //       'Content-type': 'application/json',
-      //       'Accept': 'application/json'
-      //     };
-      //     var url = Uri.https('api.choparpizza.uz', 'api/geocode', {
-      //       'lat': _locationData.latitude.toString(),
-      //       'lon': _locationData.longitude.toString()
-      //     });
-      //     var response = await http.get(url, headers: requestHeaders);
-      //     if (response.statusCode == 200) {
-      //       var json = jsonDecode(response.body);
-      //       var geoData = YandexGeoData.fromJson(json['data']);
-      //       var house = '';
-      //       geoData.addressItems?.forEach((element) {
-      //         if (element.kind == 'house') {
-      //           house = element.name;
-      //         }
-      //       });
-      //       DeliveryLocationData deliveryData = DeliveryLocationData(
-      //           house: house ?? '',
-      //           flat: '',
-      //           entrance: '',
-      //           doorCode: '',
-      //           lat: _locationData.latitude,
-      //           lon: _locationData.longitude,
-      //           address: geoData.formatted ?? '');
-
-      //       // showAlertOnChangeLocation(currentLocation, deliveryData, house,
-      //       //     "${currentLocation.latitude.toString()},${currentLocation.longitude.toString()} ${deliveryLocationData?.lat?.toString()},${deliveryLocationData?.lon?.toString()}");
-      //       setLocation(
-      //           currentLocation, deliveryData, house, geoData.addressItems);
-      //     }
-      //   }
-      // });
     });
     () async {}();
   }

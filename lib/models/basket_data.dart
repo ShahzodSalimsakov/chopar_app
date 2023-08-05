@@ -21,7 +21,19 @@ class BasketData {
   late int discount_value;
 
   BasketData(
-      {required this.id, this.userId, this.mergedId, this.completedAt, required this.currency, required this.createdAt, required this.updatedAt, this.otp, this.order, this.lines, required this.total, required this.subTotal, this.encodedId});
+      {required this.id,
+      this.userId,
+      this.mergedId,
+      this.completedAt,
+      required this.currency,
+      required this.createdAt,
+      required this.updatedAt,
+      this.otp,
+      this.order,
+      this.lines,
+      required this.total,
+      required this.subTotal,
+      this.encodedId});
 
   BasketData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -82,7 +94,19 @@ class Lines {
   List<Child>? child;
 
   Lines(
-      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.bonusId, this.modifiers, this.parentId, this.variant, this.child,  this.discountValue});
+      {required this.id,
+      required this.basketId,
+      required this.productVariantId,
+      required this.quantity,
+      required this.total,
+      required this.createdAt,
+      required this.updatedAt,
+      this.bonusId,
+      this.modifiers,
+      this.parentId,
+      this.variant,
+      this.child,
+      this.discountValue});
 
   Lines.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -96,12 +120,14 @@ class Lines {
     bonusId = json['bonus_id'];
     if (json['modifiers'] != null) {
       if (json['modifiers'] is String) {
-        modifiers = jsonDecode(json['modifiers']).map<BasketModifiers>((m) => new BasketModifiers.fromJson(m)).toList();
+        modifiers = jsonDecode(json['modifiers'])
+            .map<BasketModifiers>((m) => new BasketModifiers.fromJson(m))
+            .toList();
       } else {
-        modifiers = json['modifiers'].map<BasketModifiers>((m) => new BasketModifiers.fromJson(m)).toList();
+        modifiers = json['modifiers']
+            .map<BasketModifiers>((m) => new BasketModifiers.fromJson(m))
+            .toList();
       }
-
-
     }
     parentId = json['parent_id'];
     if (json['variant'] != null) {
@@ -149,7 +175,15 @@ class BasketModifiers {
   late String nameUz;
 
   BasketModifiers(
-      {required this.id, required this.createdAt, required this.updatedAt, required this.name, required this.xmlId, required this.price, required this.weight, required this.groupId, required this.nameUz});
+      {required this.id,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.name,
+      required this.xmlId,
+      required this.price,
+      required this.weight,
+      required this.groupId,
+      required this.nameUz});
 
   BasketModifiers.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -218,7 +252,43 @@ class Variant {
   Product? product;
 
   Variant(
-      {required this.id, required this.productId, required this.sku, required this.price, required this.unitQty, required this.minQty, required this.minBatch, required this.maxQty, required this.stock, required this.incoming, required this.backorder, required this.requiresShipping, required this.weightValue, required this.weightUnit, required this.heightValue, required this.heightUnit, required this.widthValue, required this.widthUnit, required this.depthValue, required this.depthUnit, required this.volumeValue, required this.volumeUnit, required this.createdAt, required this.updatedAt, this.assetId, required this.taxId, required this.groupPricing, required this.qty, required this.factorTax, required this.unitTax, required this.unitCost, required this.totalTax, required this.baseCost, required this.totalPrice, required this.origialPrice, this.unitPrice, this.product});
+      {required this.id,
+      required this.productId,
+      required this.sku,
+      required this.price,
+      required this.unitQty,
+      required this.minQty,
+      required this.minBatch,
+      required this.maxQty,
+      required this.stock,
+      required this.incoming,
+      required this.backorder,
+      required this.requiresShipping,
+      required this.weightValue,
+      required this.weightUnit,
+      required this.heightValue,
+      required this.heightUnit,
+      required this.widthValue,
+      required this.widthUnit,
+      required this.depthValue,
+      required this.depthUnit,
+      required this.volumeValue,
+      required this.volumeUnit,
+      required this.createdAt,
+      required this.updatedAt,
+      this.assetId,
+      required this.taxId,
+      required this.groupPricing,
+      required this.qty,
+      required this.factorTax,
+      required this.unitTax,
+      required this.unitCost,
+      required this.totalTax,
+      required this.baseCost,
+      required this.totalPrice,
+      required this.origialPrice,
+      this.unitPrice,
+      this.product});
 
   Variant.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -257,7 +327,8 @@ class Variant {
     totalPrice = json['total_price'];
     origialPrice = json['origial_price'];
     unitPrice = json['unit_price'] != null ? json['unit_price'] : 0;
-    product = json['product'] != null ? Product.fromJson(json['product']) : null;
+    product =
+        json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -321,23 +392,40 @@ class Product {
   List<Assets>? assets;
 
   Product(
-      {required this.id, this.attributeData, required this.createdAt, required this.updatedAt, required this.productFamilyId, required this.groupPricing, this.customName, this.productId, this.customNameUz, required this.active, this.modifierProdId, this.boxId, this.assets});
+      {required this.id,
+      this.attributeData,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.productFamilyId,
+      required this.groupPricing,
+      this.customName,
+      this.productId,
+      this.customNameUz,
+      required this.active,
+      this.modifierProdId,
+      this.boxId,
+      this.assets});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    attributeData = json['attribute_data'] != null ? AttributeData.fromJson(json['attribute_data']) : null;
+    attributeData = json['attribute_data'] != null
+        ? AttributeData.fromJson(json['attribute_data'])
+        : null;
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     productFamilyId = json['product_family_id'];
     groupPricing = json['group_pricing'];
     customName = json['custom_name'] != null ? json['custom_name'] : null;
     productId = json['product_id'] != null ? json['product_id'] : null;
-    customNameUz = json['custom_name_uz'] != null ? json['custom_name_uz'] : null;
+    customNameUz =
+        json['custom_name_uz'] != null ? json['custom_name_uz'] : null;
     active = json['active'];
-    modifierProdId = json['modifier_prod_id'] != null ? json['modifier_prod_id'] : null;
+    modifierProdId =
+        json['modifier_prod_id'] != null ? json['modifier_prod_id'] : null;
     boxId = json['box_id'] != null ? json['box_id'] : null;
     if (json['assets'] != null) {
-      assets = json['assets'].map<Assets>((m) => new Assets.fromJson(m)).toList();
+      assets =
+          json['assets'].map<Assets>((m) => new Assets.fromJson(m)).toList();
     }
   }
 
@@ -377,7 +465,16 @@ class Child {
   Variant? variant;
 
   Child(
-      {required this.id, required this.basketId, required this.productVariantId, required this.quantity, required this.total, required this.createdAt, required this.updatedAt, this.modifiers, required this.parentId, this.variant});
+      {required this.id,
+      required this.basketId,
+      required this.productVariantId,
+      required this.quantity,
+      required this.total,
+      required this.createdAt,
+      required this.updatedAt,
+      this.modifiers,
+      required this.parentId,
+      this.variant});
 
   Child.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -388,11 +485,18 @@ class Child {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     if (json['modifiers'] != null) {
-      modifiers = json['modifiers'].map<BasketModifiers>((m) => new BasketModifiers.fromJson(m)).toList();
+      // check if json['modifiers'] type is string or list
+      if (json['modifiers'] is String) {
+        modifiers = [];
+      } else {
+        modifiers = json['modifiers']
+            .map<BasketModifiers>((m) => new BasketModifiers.fromJson(m))
+            .toList();
+      }
     }
     parentId = json['parent_id'];
     variant =
-    json['variant'] != null ? Variant.fromJson(json['variant']) : null;
+        json['variant'] != null ? Variant.fromJson(json['variant']) : null;
   }
 
   Map<String, dynamic> toJson() {
