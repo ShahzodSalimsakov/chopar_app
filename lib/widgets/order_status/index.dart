@@ -74,7 +74,7 @@ class OrderStatus extends HookWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => OrderDetail(
+                                  builder: (context) => OrderDetailPage(
                                       orderId: hashids.encode(order.id)),
                                 ),
                               );
@@ -96,7 +96,9 @@ class OrderStatus extends HookWidget {
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 16,
-                                          color: order.status == 'cancelled' ? Colors.red : Colors.green))
+                                          color: order.status == 'cancelled'
+                                              ? Colors.red
+                                              : Colors.green))
                                 ],
                               ),
                             ));

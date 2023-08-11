@@ -101,15 +101,17 @@ class ChooseCity extends HookWidget {
           City? currentCity = box.get('currentCity');
           return ListTile(
               contentPadding: EdgeInsets.only(left: 2),
-              title: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    currentCity != null ? currentCity.name : 'Ваш город',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  Icon(Icons.keyboard_arrow_down),
-                ],
+              title: Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      currentCity != null ? currentCity.name : 'Ваш город',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    Icon(Icons.keyboard_arrow_down),
+                  ],
+                ),
               ),
               onTap: () => showMaterialModalBottomSheet(
                     expand: false,

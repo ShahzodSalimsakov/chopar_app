@@ -430,7 +430,7 @@ class OrderRegistration extends HookWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OrderDetail(
+                                                    OrderDetailPage(
                                                         orderId: hashids
                                                             .encode(order.id)),
                                               ),

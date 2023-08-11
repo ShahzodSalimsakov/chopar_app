@@ -40,7 +40,7 @@ class PagesList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Orders(),
+                builder: (context) => OrdersPage(),
               ),
             );
           },
@@ -60,7 +60,7 @@ class PagesList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PersonalData(),
+                builder: (context) => PersonalDataPage(),
               ),
             );
           },

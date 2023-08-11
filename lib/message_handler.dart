@@ -1,19 +1,21 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:chopar_app/pages/home.dart';
-import 'package:chopar_app/routes/router.gr.dart';
+import 'package:chopar_app/routes/router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt getIt = GetIt.instance;
 
-class MessageHandler extends StatefulWidget {
-  const MessageHandler({Key? key}) : super(key: key);
+@RoutePage()
+class MessageHandlerPage extends StatefulWidget {
+  const MessageHandlerPage({Key? key}) : super(key: key);
 
   @override
-  State<MessageHandler> createState() => MessageHandlerState();
+  State<MessageHandlerPage> createState() => MessageHandlerPageState();
 }
 
-class MessageHandlerState extends State<MessageHandler> {
+class MessageHandlerPageState extends State<MessageHandlerPage> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   void checkNotificationRouter(RemoteMessage message) {

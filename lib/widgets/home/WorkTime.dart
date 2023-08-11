@@ -14,7 +14,6 @@ class _WorkTimeWidgetState extends State<WorkTimeWidget> {
   var workTimeModalOpened = false;
   late Flushbar _closeWorkModal;
 
-
   workTimeDialog() async {
     var startTime = DateTime.now();
     DateTime dateC = DateTime.now();

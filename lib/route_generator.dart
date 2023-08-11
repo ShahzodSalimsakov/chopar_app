@@ -11,10 +11,10 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
       case '/order':
-      // Validation of correct data type
+        // Validation of correct data type
         if (args is String) {
           return MaterialPageRoute(
-            builder: (_) => OrderDetail(
+            builder: (_) => OrderDetailPage(
               orderId: args,
             ),
           );
@@ -23,7 +23,7 @@ class RouteGenerator {
         // You can also throw an exception while in development.
         return _errorRoute();
       default:
-      // If there is no such named route in the switch statement, e.g. /third
+        // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
     }
   }

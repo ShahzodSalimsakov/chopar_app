@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:chopar_app/app.dart';
-import 'package:chopar_app/message_handler.dart';
 import 'package:chopar_app/models/basket_item_quantity.dart';
 import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
@@ -15,31 +12,21 @@ import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/registered_review.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
-import 'package:chopar_app/pages/order_detail.dart';
-import 'package:chopar_app/route_generator.dart';
-import 'package:chopar_app/store/city.dart';
-import 'package:chopar_app/widgets/delivery/delivery_modal.dart';
+import 'package:chopar_app/routes/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:chopar_app/pages/home.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'authentication_repository.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'models/additional_phone_number.dart';
 import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/home_scroll_position.dart';
 import 'models/stock.dart';
-import 'models/yandex_geo_data.dart';
-import 'routes/router.gr.dart';
 import 'utils/http_locale_loader.dart';
-import 'package:http/http.dart' as http;
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -69,7 +56,7 @@ void main() async {
       ],
       channelGroups: [
         NotificationChannelGroup(
-            channelGroupkey: 'basic_channel_group',
+            channelGroupKey: 'basic_channel_group',
             channelGroupName: 'Basic group')
       ],
       debug: true);

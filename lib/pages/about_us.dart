@@ -7,21 +7,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AboutUs extends StatelessWidget {
   const AboutUs({Key? key}) : super(key: key);
-  final instagramLink = 'https://www.instagram.com/choparpizza/';
-  final facebookLink = 'https://www.facebook.com/choparpizza';
-  final telegramLink = 'https://telegram.me/Chopar_bot';
 
   @override
   Widget build(BuildContext context) {
-    void _launchURLInstagram() async => await canLaunch(instagramLink)
-        ? await launch(instagramLink)
-        : throw 'Could not launch $instagramLink';
-    void _launchURLFacebook() async => await canLaunch(facebookLink)
-        ? await launch(facebookLink)
-        : throw 'Could not launch $facebookLink';
-    void _launchURLTelegram() async => await canLaunch(telegramLink)
-        ? await launch(telegramLink)
-        : throw 'Could not launch $telegramLink';
+    final Uri instagramLink =
+        Uri.parse('https://www.instagram.com/choparpizza/');
+    final Uri facebookLink = Uri.parse('https://www.facebook.com/choparpizza');
+    final Uri telegramLink = Uri.parse('https://telegram.me/Chopar_bot');
+
     return Scaffold(
         body: SafeArea(
             child: Column(
@@ -66,7 +59,7 @@ class AboutUs extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () {
-                _launchURLInstagram();
+                launchUrl(instagramLink, mode: LaunchMode.externalApplication);
               },
               child: FaIcon(FontAwesomeIcons.instagram),
               style: ElevatedButton.styleFrom(
@@ -78,7 +71,7 @@ class AboutUs extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                _launchURLFacebook();
+                launchUrl(facebookLink, mode: LaunchMode.externalApplication);
               },
               child: FaIcon(FontAwesomeIcons.facebook),
               style: ElevatedButton.styleFrom(
@@ -90,7 +83,7 @@ class AboutUs extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                _launchURLTelegram();
+                launchUrl(telegramLink, mode: LaunchMode.externalApplication);
               },
               child: FaIcon(FontAwesomeIcons.telegram),
               style: ElevatedButton.styleFrom(
@@ -192,12 +185,12 @@ class AboutUs extends StatelessWidget {
                           ),
                           body: SafeArea(child: LayoutBuilder(builder:
                               (BuildContext context,
-                              BoxConstraints viewportConstraints) {
+                                  BoxConstraints viewportConstraints) {
                             return SingleChildScrollView(
                                 child: ConstrainedBox(
                                     constraints: BoxConstraints(
                                         minHeight:
-                                        viewportConstraints.maxHeight),
+                                            viewportConstraints.maxHeight),
                                     child: Column(children: [
                                       Container(
                                         padding: EdgeInsets.all(10),

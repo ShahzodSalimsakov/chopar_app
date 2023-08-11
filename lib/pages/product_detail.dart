@@ -185,20 +185,19 @@ class ProductDetail extends HookWidget {
     useEffect(() {
       Future.delayed(Duration(seconds: 1), () {
         if (_scrollController.hasClients) {
-        _scrollController
-            .animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(seconds: 2),
-          curve: Curves.fastOutSlowIn,
-        )
-            .then((value) {
-          _scrollController.animateTo(
-            _scrollController.position.minScrollExtent,
-            duration: Duration(seconds: 1),
+          _scrollController
+              .animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(seconds: 2),
             curve: Curves.fastOutSlowIn,
-          );
-        });
-
+          )
+              .then((value) {
+            _scrollController.animateTo(
+              _scrollController.position.minScrollExtent,
+              duration: Duration(seconds: 1),
+              curve: Curves.fastOutSlowIn,
+            );
+          });
         }
         // _scrollController.dispose();
       });
@@ -498,7 +497,7 @@ class ProductDetail extends HookWidget {
         }
       }
       _isBasketLoading.value = true;
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
 
       showPlatformDialog(
           context: context,

@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage>
                         SizedBox(width: 100, child: ChooseCity()),
                         GestureDetector(
                             onTap: () {
-                              context.router.pushNamed("notifications");
+                              context.router.pushNamed("/notifications");
                             },
                             child: Icon(Icons.notifications_none_rounded,
                                 size: 30)),

@@ -13,7 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class Orders extends HookWidget {
+@RoutePage()
+class OrdersPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final orders = useState<List<Order>>(List<Order>.empty());
@@ -213,7 +214,7 @@ class Orders extends HookWidget {
                               child: ElevatedButton(
                                   onPressed: () {
                                     context.router.pushNamed(
-                                        'order/${hashids.encode(order.id)}');
+                                        '/order/${hashids.encode(order.id)}');
                                     // Navigator.push(
                                     //   context,
                                     //   MaterialPageRoute(

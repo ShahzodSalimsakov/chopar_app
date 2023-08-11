@@ -8,21 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../models/registered_review.dart';
 import '../widgets/orders/track.dart';
 
-class OrderDetail extends HookWidget {
+@RoutePage()
+class OrderDetailPage extends HookWidget {
   final String orderId;
 
-  OrderDetail({Key? key, @PathParam() required this.orderId}) : super(key: key);
+  OrderDetailPage({@PathParam() required this.orderId});
 
   Widget renderProductImage(BuildContext context, Lines lineItem) {
     if (lineItem.child != null &&
@@ -545,18 +542,7 @@ class OrderDetail extends HookWidget {
           child: DefaultStyledButton(
               width: double.infinity,
               onPressed: () {
-                // context.router.popUntil((route) => route.name == 'HomeRoute');
-                // context.router.popUntilRouteWithName('HomePage');
-                // context.router.popUntilRoot();
-                // context.navigateNamedTo('HomePage');
-
-                // Navigator.pushNamed(context, '/');
-                Navigator.of(
-                  context,
-                  rootNavigator: true,
-                ).pop(
-                  '/',
-                );
+                context.router.pushNamed('/');
               },
               text: "Главная"),
         ),

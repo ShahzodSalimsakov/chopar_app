@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:http/http.dart' as http;
-import 'package:niku/niku.dart' as n;
 
+@RoutePage()
 class NotificationDetailPage extends StatefulWidget {
   final String id;
   late Map<String, dynamic>? notification;
-  NotificationDetailPage(
-      {Key? key, @PathParam() required this.id, this.notification})
-      : super(key: key);
+  NotificationDetailPage({@PathParam() required this.id, this.notification});
 
   @override
   State<NotificationDetailPage> createState() => _NotificationDetailPageState();
@@ -45,7 +43,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                 style: const TextStyle(color: Colors.black),
               ),
               backgroundColor: Colors.white,
-              leading: const AutoBackButton(color: Colors.black),
+              leading: const BackButton(color: Colors.black),
             ),
             body: Container(
               padding: const EdgeInsets.all(16),

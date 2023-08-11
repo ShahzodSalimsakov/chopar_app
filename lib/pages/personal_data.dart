@@ -1,12 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_phone_field/form_builder_phone_field.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -14,14 +13,15 @@ import 'package:http/http.dart' as http;
 import '../models/basket.dart';
 import '../models/basket_item_quantity.dart';
 
-class PersonalData extends StatefulWidget {
-  const PersonalData({Key? key}) : super(key: key);
+@RoutePage()
+class PersonalDataPage extends StatefulWidget {
+  const PersonalDataPage({Key? key}) : super(key: key);
 
   @override
-  State<PersonalData> createState() => _PersonalDataState();
+  State<PersonalDataPage> createState() => _PersonalDataPageState();
 }
 
-class _PersonalDataState extends State<PersonalData> {
+class _PersonalDataPageState extends State<PersonalDataPage> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
@@ -117,7 +117,7 @@ class _PersonalDataState extends State<PersonalData> {
                                     initialValue: currentUser?.name ?? '',
                                     // validator: (value) => value?.length == 0 ? 'Поле обязательно для заполнения' : '',
                                     validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(context,
+                                      FormBuilderValidators.required(
                                           errorText:
                                               'Поле обязательно для заполнения')
                                     ]),
@@ -152,11 +152,10 @@ class _PersonalDataState extends State<PersonalData> {
                                     name: 'phone',
                                     initialValue: currentUser?.phone ?? '',
                                     validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(context,
+                                      FormBuilderValidators.required(
                                           errorText:
                                               'Поле обязательно для заполнения'),
-                                      FormBuilderValidators.minLength(
-                                          context, 13,
+                                      FormBuilderValidators.minLength(13,
                                           errorText: 'Заполнено неверно')
                                     ]),
                                     decoration: InputDecoration(
