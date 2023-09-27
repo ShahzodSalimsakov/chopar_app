@@ -88,8 +88,6 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                         notification?['text'] != null
                             ? Text(
                                 notification?['text'],
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,

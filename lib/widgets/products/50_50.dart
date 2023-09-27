@@ -214,7 +214,7 @@ class CreateOwnPizza extends HookWidget {
       Variants? activeVariant;
 
       leftSelectedProduct.value?.variants?.forEach((Variants vars) {
-        if (vars.customName == activeCustomName) {
+        if (vars.customName == activeCustomName.value) {
           activeVariant = vars;
         }
       });
@@ -250,12 +250,12 @@ class CreateOwnPizza extends HookWidget {
             Modifiers sausage =
                 modifiers!.firstWhere((mod) => mod.id == modifierProduct?.id);
             if (selectedModifiers.contains(modifierProduct.id) &&
-                sausage!.price < currentModifier!.price) {
+                sausage.price < currentModifier!.price) {
               selectedModifiers = [
                 ...selectedModifiers.where((modId) => modId != sausage.id),
               ];
             } else if (currentModifier?.id == sausage.id) {
-              List<int> richerModifier = modifiers!
+              List<int> richerModifier = modifiers
                   .where((mod) => mod.price > sausage.price)
                   .map((mod) => mod.id)
                   .toList();

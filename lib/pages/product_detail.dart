@@ -7,7 +7,6 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -411,7 +410,9 @@ class ProductDetail extends HookWidget {
             selectedProdId = modifierProduct.id;
             List<int> currentProductModifiersPrices = [
               ...modifiers
-                  .where((mod) => mod.id != modifierProduct!.id)
+                  .where((mod) =>
+                      mod.id != modifierProduct!.id &&
+                      selectedModifiers!.any((map) => map['id'] == mod.id))
                   .map((mod) => mod.price)
                   .toList(),
             ];
@@ -496,8 +497,9 @@ class ProductDetail extends HookWidget {
           basketBox.put('basket', newBasket);
         }
       }
-      _isBasketLoading.value = true;
-      // Navigator.of(context).pop();
+      _isBasketLoading.value = false;
+
+      Navigator.of(context).pop();
 
       showPlatformDialog(
           context: context,
@@ -535,6 +537,7 @@ class ProductDetail extends HookWidget {
                   ],
                 ));
           });
+
       return;
     }
 

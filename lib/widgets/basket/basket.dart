@@ -287,8 +287,8 @@ class BasketWidget extends HookWidget {
       } else {
         return SvgPicture.network(
           'https://choparpizza.uz/no_photo.svg',
-          width: 100.0,
-          height: 73.0,
+          width: 50.0,
+          height: 50.0,
         );
       }
     }
@@ -297,6 +297,7 @@ class BasketWidget extends HookWidget {
       final formatCurrency = new NumberFormat.currency(
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       String? productName = '';
+      List? modifier = [];
       var productTotalPrice = 0;
       if (lines.child != null && lines.child!.length > 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
@@ -317,8 +318,15 @@ class BasketWidget extends HookWidget {
         }
       } else {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
-        productTotalPrice =
-            int.parse((lines.total ?? 0.0000).toStringAsFixed(0));
+
+        if (lines.modifiers != null && lines.modifiers!.length > 1) {
+          lines.modifiers!.forEach((element) {
+            modifier.add(element.name);
+          });
+        } else {
+          modifier.add(lines.modifiers?[0].name ?? '');
+        }
+        productTotalPrice = int.parse((lines.total).toStringAsFixed(0));
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 10),
@@ -337,9 +345,19 @@ class BasketWidget extends HookWidget {
                     children: [
                       Container(
                         width: 120,
-                        child: Text(
-                          productName ?? '',
-                          style: TextStyle(fontSize: 18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              productName!.toUpperCase(),
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              modifier.join(', ').toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.yellow.shade600),
+                            ),
+                          ],
                         ),
                       ),
                       lines.bonusId != null
@@ -415,20 +433,7 @@ class BasketWidget extends HookWidget {
                         )
                       : SizedBox(),
                 ],
-              ),
-              lines.quantity == 1
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.close_outlined,
-                        color: Colors.red,
-                      ),
-                      onPressed: () {
-                        destroyLine(lines.id);
-                      },
-                    )
-                  : SizedBox(
-                      width: 0,
-                    )
+              )
             ],
           ));
     }
@@ -493,7 +498,11 @@ class BasketWidget extends HookWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Text("Проведите пальцем влево, чтобы удалить продукт"),
+                        Center(
+                            child: Text(
+                          "Проведите пальцем влево, чтобы удалить продукт",
+                          style: TextStyle(color: Colors.red),
+                        )),
                         ListView.separated(
                             shrinkWrap: true,
                             scrollDirection: Axis.vertical,
