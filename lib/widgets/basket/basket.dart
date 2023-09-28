@@ -299,7 +299,7 @@ class BasketWidget extends HookWidget {
       String? productName = '';
       List? modifier = [];
       var productTotalPrice = 0;
-      if (lines.child != null && lines.child!.length > 1) {
+      if (lines.child != null && lines.child!.length == 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
         productTotalPrice =
             (int.parse((lines.total ?? 0.0000).toStringAsFixed(0)) +
