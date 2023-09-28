@@ -106,8 +106,35 @@ class _WorkTimeWidgetState extends State<WorkTimeWidget> {
       await Future.delayed(Duration(milliseconds: 50));
       if (!workTimeModalOpened) {
         _closeWorkModal = Flushbar(
-            // ... [rest of your code]
-            );
+            message: "Откроемся в 10:00",
+            flushbarPosition: FlushbarPosition.TOP,
+            flushbarStyle: FlushbarStyle.FLOATING,
+            reverseAnimationCurve: Curves.decelerate,
+            forwardAnimationCurve: Curves.elasticOut,
+            backgroundColor: Colors.black87,
+            isDismissible: false,
+            duration: Duration(days: 4),
+            icon: Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.lock_clock,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+            messageText: Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                "Откроемся в 10:00",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                    fontFamily: "ShadowsIntoLightTwo"),
+              ),
+            ),
+            margin: EdgeInsets.all(10),
+            borderRadius: BorderRadius.circular(10));
         if (mounted) {
           setState(() {
             workTimeModalOpened = true;
