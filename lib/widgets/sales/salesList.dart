@@ -51,8 +51,8 @@ class SalesList extends HookWidget {
         'Accept': 'application/json'
       };
       City? currentUser = Hive.box<City>('currentCity').get('currentCity');
-      var url = Uri.https(
-          'api.choparpizza.uz', '/api/sales/public', {'city_id': currentUser!.id.toString(), 'locale': 'ru'});
+      var url = Uri.https('api.choparpizza.uz', '/api/sales/public',
+          {'city_id': currentUser!.id.toString(), 'locale': 'ru'});
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -64,13 +64,14 @@ class SalesList extends HookWidget {
 
     useEffect(() {
       getSales();
+      return null;
     }, []);
 
     return /*Expanded(
-        child: */ListView.separated(
+        child: */
+        ListView.separated(
       itemCount: sales.value.length,
       itemBuilder: (BuildContext context, index) {
-
         return GestureDetector(
             onTap: () {
               showMaterialModalBottomSheet(
@@ -140,6 +141,6 @@ class SalesList extends HookWidget {
       separatorBuilder: (context, index) {
         return Divider();
       },
-    )/*)*/;
+    ) /*)*/;
   }
 }

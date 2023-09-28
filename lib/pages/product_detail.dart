@@ -201,7 +201,7 @@ class ProductDetail extends HookWidget {
         // _scrollController.dispose();
       });
       fetchConfig();
-    });
+    }, []);
 
     final formatCurrency = new NumberFormat.currency(
         locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
