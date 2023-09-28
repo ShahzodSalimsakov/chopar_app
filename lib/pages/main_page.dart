@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(width: 100, child: ChooseCity()),
+                        SizedBox(width: 150, height: 60, child: ChooseCity()),
                         GestureDetector(
                             onTap: () {
                               context.router.pushNamed("/notifications");
