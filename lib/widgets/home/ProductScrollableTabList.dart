@@ -69,30 +69,67 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
   );
   BasketData? basketData;
 
+  // Future<void> getBasket() async {
+  //   Box<Basket> basketBox = Hive.box<Basket>('basket');
+  //   Basket? basket = basketBox.get('basket');
+  //   if (basket != null) {
+  //     Map<String, String> requestHeaders = {
+  //       'Content-type': 'application/json',
+  //       'Accept': 'application/json'
+  //     };
+
+  //     var url =
+  //         Uri.https('api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+  //     var response = await http.get(url, headers: requestHeaders);
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       var json = jsonDecode(response.body);
+  //       BasketData basketLocalData = BasketData.fromJson(json['data']);
+  //       if (basketLocalData.lines != null) {
+  //         basket.lineCount = basketLocalData.lines!.length;
+  //         basketBox.put('basket', basket);
+  //       }
+
+  //       setState(() {
+  //         basketData = basketLocalData;
+  //       });
+  //     }
+  //   }
+  // }
+
   Future<void> getBasket() async {
-    Box<Basket> basketBox = Hive.box<Basket>('basket');
-    Basket? basket = basketBox.get('basket');
-    if (basket != null) {
-      Map<String, String> requestHeaders = {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      };
+    try {
+      Box<Basket> basketBox = Hive.box<Basket>('basket');
+      Basket? basket = basketBox.get('basket');
+      if (basket != null) {
+        Map<String, String> requestHeaders = {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        };
 
-      var url =
-          Uri.https('api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
-      var response = await http.get(url, headers: requestHeaders);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        var json = jsonDecode(response.body);
-        BasketData basketLocalData = BasketData.fromJson(json['data']);
-        if (basketLocalData.lines != null) {
-          basket.lineCount = basketLocalData.lines!.length;
-          basketBox.put('basket', basket);
+        var url =
+            Uri.https('api.choparpizza.uz', '/api/baskets/${basket.encodedId}');
+        var response = await http.get(url, headers: requestHeaders);
+
+        if ((response.statusCode == 200 || response.statusCode == 201) &&
+            response.body.isNotEmpty) {
+          var jsonResponse = jsonDecode(response.body);
+
+          if (jsonResponse != null && jsonResponse['data'] != null) {
+            BasketData basketLocalData =
+                BasketData.fromJson(jsonResponse['data']);
+            if (basketLocalData.lines != null) {
+              basket.lineCount = basketLocalData.lines!.length;
+              basketBox.put('basket', basket);
+            }
+
+            setState(() {
+              basketData = basketLocalData;
+            });
+          }
         }
-
-        setState(() {
-          basketData = basketLocalData;
-        });
       }
+    } catch (e) {
+      throw Exception('addToBasket: ' + e.toString());
     }
   }
 

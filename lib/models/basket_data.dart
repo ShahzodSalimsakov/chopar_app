@@ -13,7 +13,7 @@ class BasketData {
   late String createdAt;
   late String updatedAt;
   Null otp;
-  Null order;
+  dynamic order;
   List<Lines>? lines;
   late int total;
   late int subTotal;

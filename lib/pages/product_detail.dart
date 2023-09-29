@@ -435,66 +435,74 @@ class ProductDetail extends HookWidget {
       // const otpToken = Cookies.get('opt_token')
 
       if (basket != null) {
-        Map<String, String> requestHeaders = {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        };
+        try {
+          Map<String, String> requestHeaders = {
+            'Content-type': 'application/json',
+            'Accept': 'application/json'
+          };
 
-        if (user != null) {
-          requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
-        }
+          if (user != null) {
+            requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+          }
 
-        var url = Uri.https('api.choparpizza.uz', '/api/baskets-lines');
-        var formData = {
-          'basket_id': basket.encodedId,
-          'variants': [
-            {
-              'id': selectedProdId,
-              'quantity': 1,
-              'modifiers': selectedModifiers
-            }
-          ],
-          'sourceType': "app"
-        };
-        var response = await http.post(url,
-            headers: requestHeaders, body: jsonEncode(formData));
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          var json = jsonDecode(response.body);
-          BasketData basketData = new BasketData.fromJson(json['data']);
-          Basket newBasket = new Basket(
-              encodedId: basketData.encodedId ?? '',
-              lineCount: basketData.lines?.length ?? 0);
-          basketBox.put('basket', newBasket);
+          var url = Uri.https('api.choparpizza.uz', '/api/baskets-lines');
+          var formData = {
+            'basket_id': basket.encodedId,
+            'variants': [
+              {
+                'id': selectedProdId,
+                'quantity': 1,
+                'modifiers': selectedModifiers
+              }
+            ],
+            'sourceType': "app"
+          };
+          var response = await http.post(url,
+              headers: requestHeaders, body: jsonEncode(formData));
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            var json = jsonDecode(response.body);
+            BasketData basketData = new BasketData.fromJson(json['data']);
+            Basket newBasket = new Basket(
+                encodedId: basketData.encodedId ?? '',
+                lineCount: basketData.lines?.length ?? 0);
+            basketBox.put('basket', newBasket);
+          }
+        } catch (e) {
+          throw Exception('addToBasket: ' + e.toString());
         }
       } else {
-        Map<String, String> requestHeaders = {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        };
+        try {
+          Map<String, String> requestHeaders = {
+            'Content-type': 'application/json',
+            'Accept': 'application/json'
+          };
 
-        if (user != null) {
-          requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
-        }
+          if (user != null) {
+            requestHeaders['Authorization'] = 'Bearer ${user.userToken}';
+          }
 
-        var url = Uri.https('api.choparpizza.uz', '/api/baskets');
-        var formData = {
-          'variants': [
-            {
-              'id': selectedProdId,
-              'quantity': 1,
-              'modifiers': selectedModifiers
-            }
-          ]
-        };
-        var response = await http.post(url,
-            headers: requestHeaders, body: jsonEncode(formData));
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          var json = jsonDecode(response.body);
-          BasketData basketData = new BasketData.fromJson(json['data']);
-          Basket newBasket = new Basket(
-              encodedId: basketData.encodedId ?? '',
-              lineCount: basketData.lines?.length ?? 0);
-          basketBox.put('basket', newBasket);
+          var url = Uri.https('api.choparpizza.uz', '/api/baskets');
+          var formData = {
+            'variants': [
+              {
+                'id': selectedProdId,
+                'quantity': 1,
+                'modifiers': selectedModifiers
+              }
+            ]
+          };
+          var response = await http.post(url,
+              headers: requestHeaders, body: jsonEncode(formData));
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            var json = jsonDecode(response.body);
+            BasketData basketData = new BasketData.fromJson(json['data']);
+            Basket newBasket = new Basket(
+                encodedId: basketData.encodedId ?? '',
+                lineCount: basketData.lines?.length ?? 0);
+            basketBox.put('basket', newBasket);
+          }
+        } catch (e) {
+          throw Exception('addToBasket: ' + e.toString());
         }
       }
       _isBasketLoading.value = false;
