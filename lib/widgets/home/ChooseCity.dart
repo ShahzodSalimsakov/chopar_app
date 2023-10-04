@@ -65,6 +65,7 @@ class ChooseCity extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final cities = useState<List<City>>(List<City>.empty());
+    final isMounted = useValueNotifier<bool>(true);
 
     Future<void> loadCities() async {
       Map<String, String> requestHeaders = {
@@ -75,18 +76,23 @@ class ChooseCity extends HookWidget {
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        List<City> cityList = List<City>.from(
-            json['data'].map((m) => new City.fromJson(m)).toList());
-        cities.value = cityList;
-        City? currentCity = Hive.box<City>('currentCity').get('currentCity');
-        if (currentCity == null) {
-          Hive.box<City>('currentCity').put('currentCity', cityList[0]);
+        if (isMounted.value) {
+          List<City> cityList = List<City>.from(
+              json['data'].map((m) => new City.fromJson(m)).toList());
+          cities.value = cityList;
+          City? currentCity = Hive.box<City>('currentCity').get('currentCity');
+          if (currentCity == null) {
+            Hive.box<City>('currentCity').put('currentCity', cityList[0]);
+          }
         }
       }
     }
 
     useEffect(() {
       loadCities();
+      return () {
+        isMounted.value = false;
+      };
     }, []);
 
     return ValueListenableBuilder<Box<City>>(

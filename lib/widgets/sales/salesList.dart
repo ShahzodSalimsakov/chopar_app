@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/sales.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,8 @@ class SalesList extends HookWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             image: DecorationImage(
-              image: NetworkImage(s.asset![0].link),
+              image: CachedNetworkImageProvider(s.asset![0].link),
+              // NetworkImage(s.asset![0].link),
               fit: BoxFit.fitHeight,
             )),
       );
@@ -31,12 +33,18 @@ class SalesList extends HookWidget {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: SvgPicture.network(
-              'https://choparpizza.uz/no_photo.svg',
+            child: CachedNetworkImage(
+              imageUrl: 'https://choparpizza.uz/no_photo.svg',
               fit: BoxFit.cover,
               width: 150.0,
               height: 73.0,
             ),
+            // SvgPicture.network(
+            //   'https://choparpizza.uz/no_photo.svg',
+            //   fit: BoxFit.cover,
+            //   width: 150.0,
+            //   height: 73.0,
+            // ),
           ));
     }
   }
@@ -44,6 +52,7 @@ class SalesList extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final sales = useState<List<Sales>>(List<Sales>.empty());
+    final isMounted = useValueNotifier<bool>(true);
 
     Future<void> getSales() async {
       Map<String, String> requestHeaders = {
@@ -56,15 +65,19 @@ class SalesList extends HookWidget {
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        List<Sales> salesList = List<Sales>.from(
-            json['data'].map((s) => new Sales.fromJson(s)).toList());
-        sales.value = salesList;
+        if (isMounted.value) {
+          List<Sales> salesList = List<Sales>.from(
+              json['data'].map((s) => new Sales.fromJson(s)).toList());
+          sales.value = salesList;
+        }
       }
     }
 
     useEffect(() {
       getSales();
-      return null;
+      return () {
+        isMounted.value = false; // Set to false when widget is disposed
+      };
     }, []);
 
     return /*Expanded(

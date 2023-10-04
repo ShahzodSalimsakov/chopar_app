@@ -8,6 +8,7 @@ class DiscountWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final configData = useState<Map<String, dynamic>?>(null);
+    final isMounted = useValueNotifier<bool>(true);
 
     Future<void> fetchConfig() async {
       Map<String, String> requestHeaders = {
@@ -16,10 +17,15 @@ class DiscountWidget extends HookWidget {
       };
       var url = Uri.https('api.choparpizza.uz', 'api/configs/public');
       var response = await http.get(url, headers: requestHeaders);
-
-      var json = jsonDecode(response.body);
-      Codec<String, String> stringToBase64 = utf8.fuse(base64);
-      configData.value = jsonDecode(stringToBase64.decode(json['data']));
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        Codec<String, String> stringToBase64 = utf8.fuse(base64);
+        if (isMounted.value) {
+          configData.value = jsonDecode(stringToBase64.decode(json['data']));
+        }
+      } else {
+        print('Error fetching config: ${response.statusCode}');
+      }
     }
 
     var discountValue = useMemoized(() {
@@ -43,13 +49,14 @@ class DiscountWidget extends HookWidget {
 
     useEffect(() {
       fetchConfig();
-      return null;
+      return () {
+        isMounted.value = false; // Set to false when widget is disposed
+      };
     }, []);
 
     return Container(
         child: discountValue > 0
-            ? Image.asset('assets/images/sale.png',
-            height: 35, width: 30)
+            ? Image.asset('assets/images/sale.png', height: 35, width: 30)
             : SizedBox());
   }
 }

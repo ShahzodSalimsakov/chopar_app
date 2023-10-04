@@ -204,7 +204,7 @@ class TrackPoint {
 
   factory TrackPoint.fromMap(Map<String, dynamic> map) {
     return TrackPoint(
-      success: map['success'] as bool,
+      success: map['success'] != null && map['success'] as bool,
       message: map['message'] != null ? map['message'] as String : null,
       data: map['data'] != null
           ? TrackPointLocationData.fromMap(map['data'] as Map<String, dynamic>)

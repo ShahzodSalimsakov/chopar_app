@@ -13,6 +13,7 @@ class BannerWidget extends HookWidget {
   Widget build(BuildContext context) {
     final banner = useState<List<SalesBanner>>(List<SalesBanner>.empty());
     final _current = useState<int>(0);
+    final isMounted = useValueNotifier<bool>(true);
 
     Future<void> getSalesBanner() async {
       Map<String, String> requestHeaders = {
@@ -24,20 +25,24 @@ class BannerWidget extends HookWidget {
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
-        List<SalesBanner> bannerList = List<SalesBanner>.from(
-            json['data'].map((b) => new SalesBanner.fromJson(b)).toList());
-        banner.value = bannerList;
+        if (isMounted.value) {
+          List<SalesBanner> bannerList = List<SalesBanner>.from(
+              json['data'].map((b) => new SalesBanner.fromJson(b)).toList());
+          banner.value = bannerList;
+        }
       }
     }
 
     useEffect(() {
       getSalesBanner();
+      return () {
+        isMounted.value = false; // Set to false when widget is disposed
+      };
     }, []);
 
     return Container(
       width: MediaQuery.of(context).size.width,
-      child:
-      Column(children: [
+      child: Column(children: [
         CarouselSlider(
           carouselController: _controller,
           options: CarouselOptions(

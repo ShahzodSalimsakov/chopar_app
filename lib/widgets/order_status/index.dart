@@ -8,12 +8,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OrderStatus extends HookWidget {
   Widget build(BuildContext context) {
     final orders = useState<List<Order>>(List<Order>.empty());
-    var t = AppLocalizations.of(context);
+    final isMounted = useValueNotifier<bool>(true);
 
     Future<void> getMyOrders() async {
       Box box = Hive.box<User>('user');
@@ -28,15 +27,21 @@ class OrderStatus extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
-          List<Order> orderList = List<Order>.from(
-              json['data'].map((m) => new Order.fromJson(m)).toList());
-          orders.value = orderList.where((s) => s.status == 'cooking').toList();
+          if (isMounted.value) {
+            List<Order> orderList = List<Order>.from(
+                json['data'].map((m) => new Order.fromJson(m)).toList());
+            orders.value =
+                orderList.where((s) => s.status == 'cooking').toList();
+          }
         }
       }
     }
 
     useEffect(() {
       getMyOrders();
+      return () {
+        isMounted.value = false; // Set to false when widget is disposed;
+      };
     }, []);
 
     return orders.value.length > 0

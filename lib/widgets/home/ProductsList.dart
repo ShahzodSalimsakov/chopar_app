@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
@@ -118,25 +119,22 @@ class ProductsList extends HookWidget {
           min = verticalPositionsListener.itemPositions.value
               .where((ItemPosition position) => position.itemTrailingEdge > 0)
               .reduce((ItemPosition min, ItemPosition position) =>
-          position.itemTrailingEdge < min.itemTrailingEdge
-              ? position
-              : min)
+                  position.itemTrailingEdge < min.itemTrailingEdge
+                      ? position
+                      : min)
               .index;
         }
       });
     }
-
 
     useEffect(() {
       getBasket();
       getProducts();
       fetchConfig();
       itemScrollController = ItemScrollController();
-      itemPositionsListener =
-      ItemPositionsListener.create();
+      itemPositionsListener = ItemPositionsListener.create();
       verticalScrollController = ItemScrollController();
-      verticalPositionsListener =
-      ItemPositionsListener.create();
+      verticalPositionsListener = ItemPositionsListener.create();
       scrollListening();
       return null;
     }, []);
@@ -223,12 +221,13 @@ class ProductsList extends HookWidget {
 
     Widget productImage(String? image) {
       if (image != null) {
-        return Image.network(
-          image!,
-          width: 170.0,
-          height: 170.0,
-          // width: MediaQuery.of(context).size.width / 2.5,
-        );
+        return CachedNetworkImage(imageUrl: image, width: 170.0, height: 170.0);
+        // Image.network(
+        //   image,
+        //   width: 170.0,
+        //   height: 170.0,
+        //   // width: MediaQuery.of(context).size.width / 2.5,
+        // );
       } else {
         return ClipOval(
           child: SvgPicture.network(
@@ -254,11 +253,17 @@ class ProductsList extends HookWidget {
                 children: [
                   Expanded(
                       child: InkWell(
-                    child: Image.network(
-                      'https://choparpizza.uz/createYourPizza.png',
+                    child: CachedNetworkImage(
+                      imageUrl: 'https://choparpizza.uz/createYourPizza.png',
                       width: 170.0,
                       height: 170.0,
                     ),
+
+                    // Image.network(
+                    //   'https://choparpizza.uz/createYourPizza.png',
+                    //   width: 170.0,
+                    //   height: 170.0,
+                    // ),
                     onTap: () {
                       showMaterialModalBottomSheet(
                           expand: false,

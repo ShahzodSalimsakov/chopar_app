@@ -121,10 +121,11 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
               basket.lineCount = basketLocalData.lines!.length;
               basketBox.put('basket', basket);
             }
-
-            setState(() {
-              basketData = basketLocalData;
-            });
+            if (mounted) {
+              setState(() {
+                basketData = basketLocalData;
+              });
+            }
           }
         }
       }
@@ -163,11 +164,13 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
       for (var i = 0; i < productSections.length; i++) {
         localCategories.add(GlobalKey());
       }
-      setState(() {
-        products = productSections;
-        categories = localCategories;
-        scrollCont.addListener(changeTabs);
-      });
+      if (mounted) {
+        setState(() {
+          products = productSections;
+          categories = localCategories;
+          scrollCont.addListener(changeTabs);
+        });
+      }
     }
   }
 
@@ -179,11 +182,13 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
     var url = Uri.https('api.choparpizza.uz', 'api/configs/public');
     var response = await http.get(url, headers: requestHeaders);
 
-    var json = jsonDecode(response.body);
-    Codec<String, String> stringToBase64 = utf8.fuse(base64);
-    setState(() {
-      configData = jsonDecode(stringToBase64.decode(json['data']));
-    });
+    if (mounted) {
+      var json = jsonDecode(response.body);
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      setState(() {
+        configData = jsonDecode(stringToBase64.decode(json['data']));
+      });
+    }
   }
 
   // scrollListening() {
@@ -332,11 +337,18 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
               children: [
                 Expanded(
                     child: InkWell(
-                  child: Image.network(
-                    'https://choparpizza.uz/createYourPizza.png',
+                  child: CachedNetworkImage(
+                    imageUrl: 'https://choparpizza.uz/createYourPizza.png',
+                    placeholder: (context, url) => CircularProgressIndicator(
+                        color: Colors.yellow.shade600),
                     width: 170.0,
                     height: 170.0,
                   ),
+                  // Image.network(
+                  //   'https://choparpizza.uz/createYourPizza.png',
+                  //   width: 170.0,
+                  //   height: 170.0,
+                  // ),
                   onTap: () {
                     showMaterialModalBottomSheet(
                         expand: false,

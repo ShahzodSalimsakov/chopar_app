@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/product_section.dart';
@@ -28,12 +29,17 @@ class CreateOwnPizza extends HookWidget {
   Widget modifierImage(Modifiers mod) {
     if (mod.assets != null && mod.assets!.isNotEmpty) {
       // print('https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}');
-      return Image.network(
-        'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
-        width: 100.0,
-        height: 73.0,
-        // width: MediaQuery.of(context).size.width / 2.5,
-      );
+      return CachedNetworkImage(
+          imageUrl:
+              'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+          width: 100.0,
+          height: 73.0);
+      // Image.network(
+      //   'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+      //   width: 100.0,
+      //   height: 73.0,
+      //   // width: MediaQuery.of(context).size.width / 2.5,
+      // );
     } else {
       if (mod.xmlId.isNotEmpty) {
         return ClipOval(
@@ -44,12 +50,16 @@ class CreateOwnPizza extends HookWidget {
           ),
         );
       } else {
-        return Image.network(
-          'https://choparpizza.uz/sausage_modifier.png',
-          width: 100.0,
-          height: 73.0,
-          // width: MediaQuery.of(context).size.width / 2.5,
-        );
+        return CachedNetworkImage(
+            imageUrl: 'https://choparpizza.uz/sausage_modifier.png',
+            width: 100.0,
+            height: 73.0);
+        // Image.network(
+        //   'https://choparpizza.uz/sausage_modifier.png',
+        //   width: 100.0,
+        //   height: 73.0,
+        //   // width: MediaQuery.of(context).size.width / 2.5,
+        // );
       }
     }
   }
@@ -495,11 +505,17 @@ class CreateOwnPizza extends HookWidget {
                                     Positioned(
                                         left: 0,
                                         child: Container(
-                                          child: Image.network(
-                                            leftSelectedProduct.value?.image ??
+                                          child: CachedNetworkImage(
+                                            imageUrl: leftSelectedProduct
+                                                    .value?.image ??
                                                 '',
                                             height: 300,
                                           ),
+                                          // Image.network(
+                                          //   leftSelectedProduct.value?.image ??
+                                          //       '',
+                                          //   height: 300,
+                                          // ),
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width -
@@ -517,11 +533,17 @@ class CreateOwnPizza extends HookWidget {
                                                   .size
                                                   .width -
                                               30,
-                                          child: Image.network(
-                                            rightSelectedProduct.value?.image ??
+                                          child: CachedNetworkImage(
+                                            imageUrl: rightSelectedProduct
+                                                    .value?.image ??
                                                 '',
                                             height: 300,
                                           ),
+                                          // Image.network(
+                                          //   rightSelectedProduct.value?.image ??
+                                          //       '',
+                                          //   height: 300,
+                                          // ),
                                         ))
                                   ],
                                 ))
@@ -825,11 +847,18 @@ class CreateOwnPizza extends HookWidget {
                                   width: 150,
                                   child: Column(
                                     children: [
-                                      Image.network(
-                                        readyProductList?[index].image ?? '',
+                                      CachedNetworkImage(
+                                        imageUrl:
+                                            readyProductList?[index].image ??
+                                                '',
                                         width: 110,
                                         height: 110,
                                       ),
+                                      // Image.network(
+                                      //   readyProductList?[index].image ?? '',
+                                      //   width: 110,
+                                      //   height: 110,
+                                      // ),
                                       SizedBox(
                                         height: 5,
                                       ),
@@ -950,11 +979,17 @@ class CreateOwnPizza extends HookWidget {
                                 width: 150,
                                 child: Column(
                                   children: [
-                                    Image.network(
-                                      readyProductList?[index].image ?? '',
+                                    CachedNetworkImage(
+                                      imageUrl:
+                                          readyProductList?[index].image ?? '',
                                       width: 110,
                                       height: 110,
                                     ),
+                                    // Image.network(
+                                    //   readyProductList?[index].image ?? '',
+                                    //   width: 110,
+                                    //   height: 110,
+                                    // ),
                                     SizedBox(
                                       height: 5,
                                     ),

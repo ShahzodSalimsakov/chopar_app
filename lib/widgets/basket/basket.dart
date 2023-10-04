@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/related_product.dart';
@@ -24,6 +25,7 @@ class BasketWidget extends HookWidget {
     Box<Basket> basketBox = Hive.box<Basket>('basket');
     Basket? basket = basketBox.get('basket');
     final basketData = useState<BasketData?>(null);
+    final isMounted = useValueNotifier<bool>(true);
     final relatedData =
         useState<List<RelatedProduct>>(List<RelatedProduct>.empty());
     final relatedBiData =
@@ -37,40 +39,40 @@ class BasketWidget extends HookWidget {
     );
     final _isBasketLoading = useState<bool>(false);
 
-    Future<void> checkBonusBasket() async {
-      Box userBox = Hive.box<User>('user');
-      User? user = userBox.get('user');
-      if (basket != null && user != null) {
-        Map<String, String> requestHeaders = {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${user.userToken}'
-        };
+    // Future<void> checkBonusBasket() async {
+    //   Box userBox = Hive.box<User>('user');
+    //   User? user = userBox.get('user');
+    //   if (basket != null && user != null) {
+    //     Map<String, String> requestHeaders = {
+    //       'Content-type': 'application/json',
+    //       'Accept': 'application/json',
+    //       'Authorization': 'Bearer ${user.userToken}'
+    //     };
 
-        Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
-        DeliveryType? deliveryType = box.get('deliveryType');
-        Map<String, dynamic> queryParameters = {
-          'basketId': basket!.encodedId,
-          'sourceType': 'app'
-        };
-        if (deliveryType?.value == DeliveryTypeEnum.pickup) {
-          queryParameters["delivery_type"] = "pickup";
-        }
+    //     Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
+    //     DeliveryType? deliveryType = box.get('deliveryType');
+    //     Map<String, dynamic> queryParameters = {
+    //       'basketId': basket!.encodedId,
+    //       'sourceType': 'app'
+    //     };
+    //     if (deliveryType?.value == DeliveryTypeEnum.pickup) {
+    //       queryParameters["delivery_type"] = "pickup";
+    //     }
 
-        var url = Uri.https('api.choparpizza.uz',
-            '/api/baskets/check-bonus-for-source/', queryParameters);
-        var response = await http.get(url, headers: requestHeaders);
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          var json = jsonDecode(response.body);
-          BasketData basketLocalData = BasketData.fromJson(json['data']);
-          if (basketLocalData.lines != null) {
-            basket.lineCount = basketLocalData.lines!.length;
-            basketBox.put('basket', basket);
-          }
-          basketData.value = basketLocalData;
-        }
-      }
-    }
+    //     var url = Uri.https('api.choparpizza.uz',
+    //         '/api/baskets/check-bonus-for-source/', queryParameters);
+    //     var response = await http.get(url, headers: requestHeaders);
+    //     if (response.statusCode == 200 || response.statusCode == 201) {
+    //       var json = jsonDecode(response.body);
+    //       BasketData basketLocalData = BasketData.fromJson(json['data']);
+    //       if (basketLocalData.lines != null) {
+    //         basket.lineCount = basketLocalData.lines!.length;
+    //         basketBox.put('basket', basket);
+    //       }
+    //       basketData.value = basketLocalData;
+    //     }
+    //   }
+    // }
 
     Future<void> destroyLine(int lineId) async {
       Map<String, String> requestHeaders = {
@@ -96,7 +98,7 @@ class BasketWidget extends HookWidget {
           'Accept': 'application/json'
         };
 
-        await checkBonusBasket();
+        // await checkBonusBasket();
 
         url = Uri.https('api.choparpizza.uz',
             '/api/baskets/${basket!.encodedId}', queryParameters);
@@ -145,7 +147,7 @@ class BasketWidget extends HookWidget {
           'Content-type': 'application/json',
           'Accept': 'application/json'
         };
-        await checkBonusBasket();
+        // await checkBonusBasket();
 
         url = Uri.https('api.choparpizza.uz',
             '/api/baskets/${basket!.encodedId}', queryParameters);
@@ -181,7 +183,7 @@ class BasketWidget extends HookWidget {
           'Content-type': 'application/json',
           'Accept': 'application/json'
         };
-        await checkBonusBasket();
+        // await checkBonusBasket();
 
         url = Uri.https('api.choparpizza.uz',
             '/api/baskets/${basket!.encodedId}', queryParameters);
@@ -211,10 +213,15 @@ class BasketWidget extends HookWidget {
                     Positioned(
                         left: 0,
                         child: Container(
-                          child: Image.network(
-                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
+                          // Image.network(
+                          //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          //   height: 50,
+                          // ),
                           width: 50,
                         )),
                     ...lineItem.child!.asMap().entries.map((entry) {
@@ -224,10 +231,15 @@ class BasketWidget extends HookWidget {
                       return Positioned(
                           left: ((idx + 1) * 10).toDouble(),
                           child: Container(
-                            child: Image.network(
-                              'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
                               height: 50,
                             ),
+                            // Image.network(
+                            //   'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
+                            //   height: 50,
+                            // ),
                             width: 50,
                           ));
                     }).toList()
@@ -250,10 +262,15 @@ class BasketWidget extends HookWidget {
                     Positioned(
                         left: 0,
                         child: Container(
-                          child: Image.network(
-                            'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
+                          // Image.network(
+                          //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                          //   height: 50,
+                          // ),
                           width: 50,
                         ))
                   ],
@@ -265,10 +282,15 @@ class BasketWidget extends HookWidget {
                         right: 0,
                         child: Container(
                           width: 50,
-                          child: Image.network(
-                            'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
                             height: 50,
                           ),
+                          // Image.network(
+                          //   'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
+                          //   height: 50,
+                          // ),
                         ))
                   ],
                 ))
@@ -278,12 +300,17 @@ class BasketWidget extends HookWidget {
         }
       } else if (lineItem.variant?.product?.assets != null &&
           lineItem.variant!.product!.assets!.isNotEmpty) {
-        return Image.network(
-          'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-          width: 50.0,
-          height: 50.0,
-          // width: MediaQuery.of(context).size.width / 2.5,
-        );
+        return CachedNetworkImage(
+            imageUrl:
+                'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+            width: 50.0,
+            height: 50.0);
+        // Image.network(
+        //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+        //   width: 50.0,
+        //   height: 50.0,
+        //   // width: MediaQuery.of(context).size.width / 2.5,
+        // );
       } else {
         return SvgPicture.network(
           'https://choparpizza.uz/no_photo.svg',
@@ -298,14 +325,8 @@ class BasketWidget extends HookWidget {
           locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
       String? productName = '';
       List? modifier = [];
-      var productTotalPrice = 0;
       if (lines.child != null && lines.child!.length == 1) {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
-        productTotalPrice =
-            (int.parse((lines.total ?? 0.0000).toStringAsFixed(0)) +
-                    int.parse(double.parse(lines.child![0].total ?? '0.0000')
-                        .toStringAsFixed(0))) *
-                lines.quantity;
         String childsName = lines.child!
             .where((Child child) =>
                 lines.variant!.product!.boxId != child.variant!.product!.id)
@@ -315,6 +336,13 @@ class BasketWidget extends HookWidget {
             .toString();
         if (childsName.length > 0) {
           productName = '$productName + $childsName';
+        }
+        if (lines.modifiers != null && lines.modifiers!.length > 1) {
+          lines.modifiers!.forEach((element) {
+            modifier.add(element.name);
+          });
+        } else {
+          modifier.add(lines.modifiers?[0].name ?? '');
         }
       } else {
         productName = lines.variant!.product!.attributeData!.name!.chopar!.ru;
@@ -326,7 +354,6 @@ class BasketWidget extends HookWidget {
         } else {
           modifier.add(lines.modifiers?[0].name ?? '');
         }
-        productTotalPrice = int.parse((lines.total).toStringAsFixed(0));
       }
       return Container(
           margin: EdgeInsets.symmetric(vertical: 10),
@@ -600,12 +627,18 @@ class BasketWidget extends HookWidget {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    Image.network(
-                                                      relatedBiData
+                                                    CachedNetworkImage(
+                                                      imageUrl: relatedBiData
                                                           .value[index].image,
                                                       height: 100,
                                                       width: 100,
                                                     ),
+                                                    // Image.network(
+                                                    //   relatedBiData
+                                                    //       .value[index].image,
+                                                    //   height: 100,
+                                                    //   width: 100,
+                                                    // ),
                                                     const Spacer(
                                                       flex: 1,
                                                     ),
@@ -769,9 +802,6 @@ class BasketWidget extends HookWidget {
                                                                 deliveryType =
                                                                 box.get(
                                                                     'deliveryType');
-                                                            Map<String, dynamic>
-                                                                queryParameters =
-                                                                {};
                                                             var formData = {
                                                               'variants': [
                                                                 {
@@ -918,12 +948,18 @@ class BasketWidget extends HookWidget {
                                                         CrossAxisAlignment
                                                             .center,
                                                     children: [
-                                                      Image.network(
-                                                        topProducts
+                                                      CachedNetworkImage(
+                                                        imageUrl: topProducts
                                                             .value[index].image,
                                                         height: 100,
                                                         width: 100,
                                                       ),
+                                                      // Image.network(
+                                                      //   topProducts
+                                                      //       .value[index].image,
+                                                      //   height: 100,
+                                                      //   width: 100,
+                                                      // ),
                                                       const Spacer(
                                                         flex: 1,
                                                       ),
@@ -1314,17 +1350,19 @@ class BasketWidget extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          if (json['data'] != null) {
-            List<RelatedProduct> localBiRelatedProduct =
-                List<RelatedProduct>.from(json['data']['relatedItems']
-                    .map((m) => RelatedProduct.fromJson(m))
-                    .toList());
-            relatedBiData.value = localBiRelatedProduct;
-            List<RelatedProduct> topProduct = List<RelatedProduct>.from(
-                json['data']['topItems']
-                    .map((m) => RelatedProduct.fromJson(m))
-                    .toList());
-            topProducts.value = topProduct;
+          if (isMounted.value) {
+            if (json['data'] != null) {
+              List<RelatedProduct> localBiRelatedProduct =
+                  List<RelatedProduct>.from(json['data']['relatedItems']
+                      .map((m) => RelatedProduct.fromJson(m))
+                      .toList());
+              relatedBiData.value = localBiRelatedProduct;
+              List<RelatedProduct> topProduct = List<RelatedProduct>.from(
+                  json['data']['topItems']
+                      .map((m) => RelatedProduct.fromJson(m))
+                      .toList());
+              topProducts.value = topProduct;
+            }
           }
         }
       }
@@ -1349,13 +1387,15 @@ class BasketWidget extends HookWidget {
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
-          BasketData basketLocalData = BasketData.fromJson(json['data']);
-          if (basketLocalData.lines != null) {
-            basket.lineCount = basketLocalData.lines!.length;
-            basketBox.put('basket', basket);
+          if (isMounted.value) {
+            BasketData basketLocalData = BasketData.fromJson(json['data']);
+            if (basketLocalData.lines != null) {
+              basket.lineCount = basketLocalData.lines!.length;
+              basketBox.put('basket', basket);
+            }
+            basketData.value = basketLocalData;
+            fetchBiRecomendedItems(basketLocalData);
           }
-          basketData.value = basketLocalData;
-          fetchBiRecomendedItems(basketLocalData);
         }
       }
     }
@@ -1383,8 +1423,10 @@ class BasketWidget extends HookWidget {
     useEffect(() {
       getBasket();
       // fetchRecomendedItems();
-      checkBonusBasket();
-      return null;
+      // checkBonusBasket();
+      return () {
+        isMounted.value = false;
+      };
     }, []);
 
     return ValueListenableBuilder<Box<User>>(

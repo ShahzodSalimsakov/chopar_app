@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -133,7 +134,8 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
               widget.parentScrollController.position.maxScrollExtent,
               duration: Duration(milliseconds: 200),
               curve: Curves.easeIn);
-        } else if (min.itemLeadingEdge == 0 && min.index == 0 &&
+        } else if (min.itemLeadingEdge == 0 &&
+            min.index == 0 &&
             widget.parentScrollController.position.pixels != 0.0) {
           widget.parentScrollController.animateTo(0.0,
               duration: Duration(milliseconds: 200), curve: Curves.easeIn);
@@ -226,12 +228,13 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
 
   Widget productImage(String? image) {
     if (image != null) {
-      return Image.network(
-        image!,
-        width: 170.0,
-        height: 170.0,
-        // width: MediaQuery.of(context).size.width / 2.5,
-      );
+      return CachedNetworkImage(imageUrl: image, width: 170.0, height: 170.0);
+      // Image.network(
+      //   image,
+      //   width: 170.0,
+      //   height: 170.0,
+      //   // width: MediaQuery.of(context).size.width / 2.5,
+      // );
     } else {
       return ClipOval(
         child: SvgPicture.network(
@@ -257,11 +260,16 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
               children: [
                 Expanded(
                     child: InkWell(
-                  child: Image.network(
-                    'https://choparpizza.uz/createYourPizza.png',
+                  child: CachedNetworkImage(
+                    imageUrl: 'https://choparpizza.uz/createYourPizza.png',
                     width: 170.0,
                     height: 170.0,
                   ),
+                  // Image.network(
+                  //   'https://choparpizza.uz/createYourPizza.png',
+                  //   width: 170.0,
+                  //   height: 170.0,
+                  // ),
                   onTap: () {
                     showMaterialModalBottomSheet(
                         expand: false,
@@ -647,7 +655,6 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     );
   }
 
-
   double getProductHeight(ProductSection section) {
     double height = 200;
 
@@ -722,24 +729,38 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                           child: GestureDetector(
                             onTap: () {
                               verticalScrollController.scrollTo(
-                              index: index,
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOutCubic,
-                              alignment: 0.0005);
+                                  index: index,
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOutCubic,
+                                  alignment: 0.0005);
                               // verticalScrollController.jumpTo(index: index);
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 3, horizontal: 10),
                               margin: EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                border: Border.all(color: scrolledIndex == index ? Colors.white : Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(20),
-                                color: scrolledIndex == index ? Colors.yellow.shade600 : Colors.white
-                              ),
+                                  border: Border.all(
+                                      color: scrolledIndex == index
+                                          ? Colors.white
+                                          : Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: scrolledIndex == index
+                                      ? Colors.yellow.shade600
+                                      : Colors.white),
                               child: Center(
                                 child: Text(
-                                    products[index].attributeData?.name?.chopar?.ru ??
-                                        '', style: TextStyle(color: scrolledIndex == index ? Colors.white : Colors.grey.shade300),),
+                                  products[index]
+                                          .attributeData
+                                          ?.name
+                                          ?.chopar
+                                          ?.ru ??
+                                      '',
+                                  style: TextStyle(
+                                      color: scrolledIndex == index
+                                          ? Colors.white
+                                          : Colors.grey.shade300),
+                                ),
                               ),
                             ),
                           ),
@@ -750,7 +771,9 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                       ),
                       height: 30,
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Expanded(
                         child: ScrollablePositionedList.builder(
                       shrinkWrap: true,
@@ -761,26 +784,29 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(products[index]
-                                    .attributeData
-                                    ?.name
-                                    ?.chopar
-                                    ?.ru ??
-                                '', style: TextStyle(fontSize: 20),),
-                            products[index].halfMode == 1 ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 1,
-                              itemBuilder: (_, index) =>
-                                  renderCreatePizza(
-                                      context, products[index].items),
-                            ) : ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: products[index].items?.length ?? 1,
-                              itemBuilder: (_, prodIndex) => renderProduct(
-                                  context, products[index].items?[prodIndex]),
-                            )
+                            Text(
+                              products[index].attributeData?.name?.chopar?.ru ??
+                                  '',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            products[index].halfMode == 1
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: 1,
+                                    itemBuilder: (_, index) =>
+                                        renderCreatePizza(
+                                            context, products[index].items),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount:
+                                        products[index].items?.length ?? 1,
+                                    itemBuilder: (_, prodIndex) =>
+                                        renderProduct(context,
+                                            products[index].items?[prodIndex]),
+                                  )
                           ],
                         ),
                       ),

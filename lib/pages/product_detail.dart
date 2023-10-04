@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/product_section.dart';
@@ -34,12 +35,17 @@ class ProductDetail extends HookWidget {
 
   Widget modifierImage(Modifiers mod) {
     if (mod.assets != null && mod.assets!.isNotEmpty) {
-      return Image.network(
-        'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
-        width: 100.0,
-        height: 73.0,
-        // width: MediaQuery.of(context).size.width / 2.5,
-      );
+      return CachedNetworkImage(
+          imageUrl:
+              'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+          width: 100.0,
+          height: 73.0);
+      // Image.network(
+      //   'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+      //   width: 100.0,
+      //   height: 73.0,
+      //   // width: MediaQuery.of(context).size.width / 2.5,
+      // );
     } else {
       if (mod.xmlId.isNotEmpty) {
         return ClipOval(
@@ -50,12 +56,16 @@ class ProductDetail extends HookWidget {
           ),
         );
       } else {
-        return Image.network(
-          'https://choparpizza.uz/sausage_modifier.png',
-          width: 100.0,
-          height: 73.0,
-          // width: MediaQuery.of(context).size.width / 2.5,
-        );
+        return CachedNetworkImage(
+            imageUrl: 'https://choparpizza.uz/sausage_modifier.png',
+            width: 100.0,
+            height: 73.0);
+        // Image.network(
+        //   'https://choparpizza.uz/sausage_modifier.png',
+        //   width: 100.0,
+        //   height: 73.0,
+        //   // width: MediaQuery.of(context).size.width / 2.5,
+        // );
       }
     }
   }

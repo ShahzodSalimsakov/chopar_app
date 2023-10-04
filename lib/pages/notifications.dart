@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/pages/notifications_detail.dart';
 import 'package:chopar_app/routes/router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -104,10 +105,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                         alignment: Alignment.topCenter,
                                         children: [
                                           Ink.image(
-                                            image: NetworkImage(
-                                              _notifications[index]['asset'][0]
-                                                  ['link'],
-                                            ),
+                                            image: CachedNetworkImageProvider(
+                                                _notifications[index]['asset']
+                                                    [0]['link']),
+                                            // NetworkImage(
+                                            //   _notifications[index]['asset'][0]
+                                            //       ['link'],
+                                            // ),
                                             height: 200,
                                             fit: BoxFit.cover,
                                           ),
