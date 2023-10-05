@@ -26,7 +26,7 @@ class ProductDetail extends HookWidget {
 
   final detail;
 
-  Widget makeDismisible(
+  Widget makeDismissible(
           {required BuildContext context, required Widget child}) =>
       GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -87,7 +87,7 @@ class ProductDetail extends HookWidget {
           child: GridView.count(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             children: List.generate(modifiers.length, (index) {
               var m = modifiers[index];
               return LimitedBox(
@@ -96,71 +96,50 @@ class ProductDetail extends HookWidget {
                     onTap: () {
                       addModifier(m.id);
                     },
-                    child: Container(
-                        height: 75,
-                        padding: EdgeInsets.all(10),
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 5.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                          border: Border.all(
-                              color: activeModifiers.value.contains(m.id)
-                                  ? Colors.yellow.shade600
-                                  : Colors.grey),
-                          // boxShadow: [
-                          //   BoxShadow(
-                          //     color: Colors.grey.withOpacity(0.3),
-                          //     spreadRadius: 2,
-                          //     blurRadius: 3, // changes position of shadow
-                          //   ),
-                          // ],
-                        ),
-                        child: Stack(
-                          fit: StackFit.loose,
+                    child: Stack(
+                      fit: StackFit.loose,
+                      children: [
+                        /*Expanded(
+                              child: */
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            /*Expanded(
-                                  child: */
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(children: [
-                                  modifierImage(m),
-                                  SizedBox(height: 10),
-                                  SafeArea(
-                                      child: Center(
-                                    widthFactor: 0.5,
-                                    child: Text(
-                                      m.name,
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  )),
-                                  SizedBox(height: 10),
-                                  DecoratedBox(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.shade300,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(12))),
-                                      child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 3, horizontal: 10),
-                                          child: Text(
-                                              formatCurrency.format(m.price)))),
-                                ]),
-                              ],
-                            ) /*)*/,
-                            Positioned(
-                              child: activeModifiers.value.contains(m.id)
-                                  ? Icon(Icons.check_circle_outline,
-                                      color: Colors.yellow.shade600)
-                                  : SizedBox(width: 0.0),
-                              width: 10.0,
-                              height: 10.0,
-                              top: 0,
-                              right: 10.0,
-                            )
+                            Column(children: [
+                              modifierImage(m),
+                              SafeArea(
+                                  child: Center(
+                                widthFactor: 0.5,
+                                child: Text(
+                                  m.name,
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              )),
+                              SizedBox(height: 10),
+                              DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12))),
+                                  child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2, horizontal: 5),
+                                      child: Text(
+                                          formatCurrency.format(m.price)))),
+                            ]),
                           ],
-                        ))),
+                        ) /*)*/,
+                        Positioned(
+                          child: activeModifiers.value.contains(m.id)
+                              ? Icon(Icons.check_circle_outline,
+                                  color: Colors.yellow.shade600)
+                              : SizedBox(width: 0.0),
+                          width: 10.0,
+                          height: 10.0,
+                          top: 0,
+                          right: 20.0,
+                        )
+                      ],
+                    )),
               );
             }),
           ),
@@ -178,6 +157,7 @@ class ProductDetail extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final configData = useState<Map<String, dynamic>?>(null);
+    final isMounted = useValueNotifier<bool>(true);
     Future<void> fetchConfig() async {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -187,8 +167,10 @@ class ProductDetail extends HookWidget {
       var response = await http.get(url, headers: requestHeaders);
 
       var json = jsonDecode(response.body);
-      Codec<String, String> stringToBase64 = utf8.fuse(base64);
-      configData.value = jsonDecode(stringToBase64.decode(json['data']));
+      if (isMounted.value) {
+        Codec<String, String> stringToBase64 = utf8.fuse(base64);
+        configData.value = jsonDecode(stringToBase64.decode(json['data']));
+      }
     }
 
     useEffect(() {
@@ -211,6 +193,9 @@ class ProductDetail extends HookWidget {
         // _scrollController.dispose();
       });
       fetchConfig();
+      return () {
+        isMounted.value = false;
+      };
     }, []);
 
     final formatCurrency = new NumberFormat.currency(
@@ -519,47 +504,47 @@ class ProductDetail extends HookWidget {
 
       Navigator.of(context).pop();
 
-      showPlatformDialog(
-          context: context,
-          builder: (context) {
-            // Future.delayed(Duration(seconds: 1), () {
-            //   Navigator.of(context).pop(true);
-            // });
-            return AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.cartPlus,
-                      size: 80,
-                      color: Colors.yellow.shade700,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "Добавлено",
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      detail.attributeData?.name?.chopar?.ru,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ));
-          });
+      // showPlatformDialog(
+      //     context: context,
+      //     builder: (context) {
+      //       // Future.delayed(Duration(seconds: 1), () {
+      //       //   Navigator.of(context).pop(true);
+      //       // });
+      //       return AlertDialog(
+      //           shape: RoundedRectangleBorder(
+      //               borderRadius: BorderRadius.all(Radius.circular(10))),
+      //           content: Column(
+      //             mainAxisSize: MainAxisSize.min,
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: [
+      //               FaIcon(
+      //                 FontAwesomeIcons.cartPlus,
+      //                 size: 80,
+      //                 color: Colors.yellow.shade700,
+      //               ),
+      //               SizedBox(
+      //                 height: 10,
+      //               ),
+      //               Text(
+      //                 "Добавлено",
+      //                 textAlign: TextAlign.center,
+      //               ),
+      //               SizedBox(
+      //                 height: 10,
+      //               ),
+      //               Text(
+      //                 detail.attributeData?.name?.chopar?.ru,
+      //                 textAlign: TextAlign.center,
+      //                 style: TextStyle(fontSize: 18),
+      //               ),
+      //             ],
+      //           ));
+      //     });
 
       return;
     }
 
-    return makeDismisible(
+    return makeDismissible(
         context: context,
         child: DraggableScrollableSheet(
             initialChildSize: 0.9,

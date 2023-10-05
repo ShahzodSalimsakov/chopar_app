@@ -99,22 +99,24 @@ class BasketWidget extends HookWidget {
         };
 
         // await checkBonusBasket();
+        if (!isMounted.value) return;
+        if (isMounted.value) {
+          url = Uri.https('api.choparpizza.uz',
+              '/api/baskets/${basket!.encodedId}', queryParameters);
+          response = await http.get(url, headers: requestHeaders);
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            var json = jsonDecode(response.body);
+            BasketData newBasket = BasketData.fromJson(json['data']);
+            if (newBasket!.lines == null) {
+              basket.lineCount = 0;
+            } else {
+              basket.lineCount = newBasket!.lines!.length ?? 0;
+            }
 
-        url = Uri.https('api.choparpizza.uz',
-            '/api/baskets/${basket!.encodedId}', queryParameters);
-        response = await http.get(url, headers: requestHeaders);
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          var json = jsonDecode(response.body);
-          BasketData newBasket = BasketData.fromJson(json['data']);
-          if (newBasket!.lines == null) {
-            basket.lineCount = 0;
-          } else {
-            basket.lineCount = newBasket!.lines!.length ?? 0;
+            basketBox.put('basket', basket);
+            // await Future.delayed(Duration(milliseconds: 50));
+            basketData.value = newBasket;
           }
-
-          basketBox.put('basket', basket);
-          // await Future.delayed(Duration(milliseconds: 50));
-          basketData.value = newBasket;
         }
       }
     }

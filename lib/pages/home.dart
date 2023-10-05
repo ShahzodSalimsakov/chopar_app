@@ -349,32 +349,47 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           BottomNavigationBarItem(
                             icon: Padding(
                               padding: EdgeInsets.only(bottom: 6, top: 10),
-                              child: SvgPicture.asset('assets/images/menu.svg',
+                              child: FaIcon(FontAwesomeIcons.pizzaSlice,
+                                  size: 25,
                                   color: selectedIndex != 0
                                       ? Colors.grey
                                       : Colors.yellow.shade700),
+                              // SvgPicture.asset('assets/images/menu.svg',
+                              //     color: selectedIndex != 0
+                              //         ? Colors.grey
+                              //         : Colors.yellow.shade700),
                             ),
                             label: 'Меню',
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
                               padding: EdgeInsets.only(bottom: 6, top: 10),
-                              child: SvgPicture.asset(
-                                  'assets/images/discount.svg',
+                              child: FaIcon(FontAwesomeIcons.percent,
+                                  size: 25,
                                   color: selectedIndex != 1
                                       ? Colors.grey
                                       : Colors.yellow.shade700),
+                              // SvgPicture.asset(
+                              //     'assets/images/discount.svg',
+                              //     color: selectedIndex != 1
+                              //         ? Colors.grey
+                              //         : Colors.yellow.shade700),
                             ),
                             label: 'Акции',
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
                               padding: EdgeInsets.only(bottom: 6, top: 10),
-                              child: SvgPicture.asset(
-                                  'assets/images/profile.svg',
+                              child: FaIcon(FontAwesomeIcons.user,
+                                  size: 25,
                                   color: selectedIndex != 2
                                       ? Colors.grey
                                       : Colors.yellow.shade700),
+                              // SvgPicture.asset(
+                              //     'assets/images/profile.svg',
+                              //     color: selectedIndex != 2
+                              //         ? Colors.grey
+                              //         : Colors.yellow.shade700),
                             ),
                             label: 'Профиль',
                           ),
@@ -383,11 +398,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               children: <Widget>[
                                 Padding(
                                   padding: EdgeInsets.only(bottom: 6, top: 10),
-                                  child: SvgPicture.asset(
-                                      'assets/images/bag.svg',
+                                  child: FaIcon(FontAwesomeIcons.cartPlus,
+                                      size: 25,
                                       color: selectedIndex != 3
                                           ? Colors.grey
                                           : Colors.yellow.shade700),
+                                  // SvgPicture.asset(
+                                  //     'assets/images/bag.svg',
+                                  //     color: selectedIndex != 3
+                                  //         ? Colors.grey
+                                  //         : Colors.yellow.shade700),
                                 ),
                                 Positioned(
                                     top: 0,
@@ -396,8 +416,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                             basket.lineCount > 0
                                         ? Container(
                                             // color: Colors.yellow.shade600,
-                                            width: 15,
-                                            height: 15,
+                                            width: 20,
+                                            height: 20,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(20),

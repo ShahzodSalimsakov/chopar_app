@@ -555,53 +555,53 @@ class CreateOwnPizza extends HookWidget {
                             width: MediaQuery.of(context).size.width,
                             child: Text(
                               '${leftSelectedProduct.value?.attributeData?.name?.chopar?.ru?.toUpperCase()} + ${rightSelectedProduct.value?.attributeData?.name?.chopar?.ru?.toUpperCase()}',
-                              textAlign: TextAlign.left,
+                              textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 24),
                             ),
                           ),
                           Divider(),
-                          Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                leftSelectedProduct
-                                        .value?.attributeData?.name?.chopar?.ru
-                                        ?.toUpperCase() ??
-                                    '',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 24.0),
-                              )),
-                          Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              width: MediaQuery.of(context).size.width,
-                              child: Html(
-                                data: leftSelectedProduct.value?.attributeData
-                                        ?.description?.chopar?.ru ??
-                                    '',
-                                // style: TextStyle(
-                                //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                              )),
-                          Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                rightSelectedProduct
-                                        .value?.attributeData?.name?.chopar?.ru
-                                        ?.toUpperCase() ??
-                                    '',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 24.0),
-                              )),
-                          Container(
-                              margin: EdgeInsets.symmetric(horizontal: 15.0),
-                              width: MediaQuery.of(context).size.width,
-                              child: Html(
-                                data: rightSelectedProduct.value?.attributeData
-                                        ?.description?.chopar?.ru ??
-                                    '',
-                                // style: TextStyle(
-                                //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
-                              )),
+                          // Container(
+                          //     margin: EdgeInsets.symmetric(horizontal: 15.0),
+                          //     width: MediaQuery.of(context).size.width,
+                          //     child: Text(
+                          //       leftSelectedProduct
+                          //               .value?.attributeData?.name?.chopar?.ru
+                          //               ?.toUpperCase() ??
+                          //           '',
+                          //       textAlign: TextAlign.left,
+                          //       style: TextStyle(fontSize: 24.0),
+                          //     )),
+                          // Container(
+                          //     margin: EdgeInsets.symmetric(horizontal: 15.0),
+                          //     width: MediaQuery.of(context).size.width,
+                          //     child: Html(
+                          //       data: leftSelectedProduct.value?.attributeData
+                          //               ?.description?.chopar?.ru ??
+                          //           '',
+                          //       // style: TextStyle(
+                          //       //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                          //     )),
+                          // Container(
+                          //     margin: EdgeInsets.symmetric(horizontal: 15.0),
+                          //     width: MediaQuery.of(context).size.width,
+                          //     child: Text(
+                          //       rightSelectedProduct
+                          //               .value?.attributeData?.name?.chopar?.ru
+                          //               ?.toUpperCase() ??
+                          //           '',
+                          //       textAlign: TextAlign.left,
+                          //       style: TextStyle(fontSize: 24.0),
+                          //     )),
+                          // Container(
+                          //     margin: EdgeInsets.symmetric(horizontal: 15.0),
+                          //     width: MediaQuery.of(context).size.width,
+                          //     child: Html(
+                          //       data: rightSelectedProduct.value?.attributeData
+                          //               ?.description?.chopar?.ru ??
+                          //           '',
+                          //       // style: TextStyle(
+                          //       //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
+                          //     )),
                           SizedBox(height: 20.0),
                           Text(
                             'Добавить в пиццу',
@@ -611,100 +611,75 @@ class CreateOwnPizza extends HookWidget {
                           SizedBox(height: 10.0),
                           Container(
                             height: 500,
-                            margin: EdgeInsets.symmetric(horizontal: 15),
                             child: GridView.count(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              crossAxisCount: 2,
+                              crossAxisCount: 3,
                               children:
                                   List.generate(modifiers!.length, (index) {
-                                var m = modifiers![index];
+                                var m = modifiers[index];
                                 return LimitedBox(
                                   maxHeight: 100,
                                   child: InkWell(
                                       onTap: () {
                                         addModifier(m.id);
                                       },
-                                      child: Container(
-                                          height: 75,
-                                          padding: EdgeInsets.all(10),
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 5, vertical: 5.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(15)),
-                                            border: Border.all(
-                                                color: activeModifiers.value
-                                                        .contains(m.id)
-                                                    ? Colors.yellow.shade600
-                                                    : Colors.grey),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                spreadRadius: 2,
-                                                blurRadius:
-                                                    3, // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                          child: Stack(
-                                            fit: StackFit.loose,
+                                      child: Stack(
+                                        fit: StackFit.loose,
+                                        children: [
+                                          /*Expanded(
+                              child: */
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
-                                              /*Expanded(
-                                  child: */
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Column(children: [
-                                                    modifierImage(m),
-                                                    SizedBox(height: 10),
-                                                    Text(
-                                                      m.name,
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    DecoratedBox(
-                                                        decoration: BoxDecoration(
-                                                            color: Colors
-                                                                .grey.shade300,
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        12))),
-                                                        child: Container(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical: 3,
-                                                                    horizontal:
-                                                                        10),
-                                                            child: Text(
-                                                                formatCurrency
-                                                                    .format(m
-                                                                        .price)))),
-                                                  ]),
-                                                ],
-                                              ) /*)*/,
-                                              Positioned(
-                                                child: activeModifiers.value
-                                                        .contains(m.id)
-                                                    ? Icon(
-                                                        Icons
-                                                            .check_circle_outline,
+                                              Column(children: [
+                                                modifierImage(m),
+                                                SafeArea(
+                                                    child: Center(
+                                                  widthFactor: 0.5,
+                                                  child: Text(
+                                                    m.name,
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                  ),
+                                                )),
+                                                SizedBox(height: 10),
+                                                DecoratedBox(
+                                                    decoration: BoxDecoration(
                                                         color: Colors
-                                                            .yellow.shade600)
-                                                    : SizedBox(width: 0.0),
-                                                width: 10.0,
-                                                height: 10.0,
-                                                top: 0,
-                                                right: 10.0,
-                                              )
+                                                            .grey.shade300,
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    12))),
+                                                    child: Container(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                vertical: 2,
+                                                                horizontal: 5),
+                                                        child: Text(
+                                                            formatCurrency
+                                                                .format(
+                                                                    m.price)))),
+                                              ]),
                                             ],
-                                          ))),
+                                          ) /*)*/,
+                                          Positioned(
+                                            child: activeModifiers.value
+                                                    .contains(m.id)
+                                                ? Icon(
+                                                    Icons.check_circle_outline,
+                                                    color:
+                                                        Colors.yellow.shade600)
+                                                : SizedBox(width: 0.0),
+                                            width: 10.0,
+                                            height: 10.0,
+                                            top: 0,
+                                            right: 20.0,
+                                          )
+                                        ],
+                                      )),
                                 );
                               }),
                             ),
