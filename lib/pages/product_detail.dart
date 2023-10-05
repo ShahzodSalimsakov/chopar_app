@@ -522,9 +522,9 @@ class ProductDetail extends HookWidget {
       showPlatformDialog(
           context: context,
           builder: (context) {
-            Future.delayed(Duration(seconds: 1), () {
-              Navigator.of(context).pop(true);
-            });
+            // Future.delayed(Duration(seconds: 1), () {
+            //   Navigator.of(context).pop(true);
+            // });
             return AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10))),
