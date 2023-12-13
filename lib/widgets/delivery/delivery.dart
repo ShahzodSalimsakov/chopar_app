@@ -32,7 +32,7 @@ class DeliveryWidget extends HookWidget {
     final loading = useState(false);
     Future<void> getMyAddresses() async {
       Box box = Hive.box<User>('user');
-      User currentUser = box.get('user');
+      User? currentUser = box.get('user');
       if (currentUser != null) {
         Map<String, String> requestHeaders = {
           'Content-type': 'application/json',

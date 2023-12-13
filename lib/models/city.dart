@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 part 'city.g.dart';
 
@@ -23,19 +22,19 @@ class City extends HiveObject {
   @HiveField(8)
   late int sort;
   @HiveField(9)
-  late String phone;
+  late String? phone;
 
   City(
       {required this.id,
-        required this.xmlId,
-        required this.name,
-        required this.nameUz,
-        required this.mapZoom,
-        required this.lat,
-        required this.lon,
-        required this.active,
-        required this.sort,
-        required this.phone});
+      required this.xmlId,
+      required this.name,
+      required this.nameUz,
+      required this.mapZoom,
+      required this.lat,
+      required this.lon,
+      required this.active,
+      required this.sort,
+      required this.phone});
 
   City.fromJson(Map<String, dynamic> json) {
     id = json['id'];

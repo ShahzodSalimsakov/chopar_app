@@ -1,19 +1,14 @@
-import 'dart:convert';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
-import 'package:chopar_app/models/modal_fit.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/delivery.dart';
 import 'package:chopar_app/widgets/delivery/pickup.dart';
 import 'package:chopar_app/widgets/home/DiscountWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:http/http.dart' as http;
 
 class ChooseTypeDelivery extends StatefulWidget {
   const ChooseTypeDelivery({Key? key}) : super(key: key);
@@ -26,9 +21,11 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     with SingleTickerProviderStateMixin {
   final myTabs = <Tab>[
     Tab(text: 'Доставка'),
-    Tab(child: Row(
+    Tab(
+        child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [Text('Самовывоз '), DiscountWidget()],)),
+      children: [Text('Самовывоз '), DiscountWidget()],
+    )),
   ];
 
   late TabController _tabController;
@@ -64,31 +61,33 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
             height: 33.0,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25.0), color: Colors.grey),
-            padding: EdgeInsets.all(1.0),
+            padding: EdgeInsets.all(2),
             child: DefaultTabController(
                 length: 2,
                 child: TabBar(
-                  tabs: myTabs,
-                  controller: _tabController,
-                  onTap: (index) {
-                    DeliveryType deliveryType = DeliveryType();
-                    if (index == 0) {
-                      deliveryType.value = DeliveryTypeEnum.deliver;
-                    } else {
-                      deliveryType.value = DeliveryTypeEnum.pickup;
-                    }
-                    Box<DeliveryType> box =
-                        Hive.box<DeliveryType>('deliveryType');
-                    box.put('deliveryType', deliveryType);
-                  },
-                  // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
-                  indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.white),
-                  unselectedLabelColor: Colors.white,
-                ))),
+                    tabs: myTabs,
+                    controller: _tabController,
+                    onTap: (index) {
+                      DeliveryType deliveryType = DeliveryType();
+                      if (index == 0) {
+                        deliveryType.value = DeliveryTypeEnum.deliver;
+                      } else {
+                        deliveryType.value = DeliveryTypeEnum.pickup;
+                      }
+                      Box<DeliveryType> box =
+                          Hive.box<DeliveryType>('deliveryType');
+                      box.put('deliveryType', deliveryType);
+                    },
+                    // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
+                    indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white),
+                    unselectedLabelColor: Colors.white,
+                    dividerHeight: 0,
+                    indicatorSize: TabBarIndicatorSize.tab))),
         Container(
-            height: 50,
+            height: 55,
+            width: double.infinity,
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               controller: _tabController,

@@ -59,14 +59,14 @@ class _MainPageState extends State<MainPage>
               scrollDirection: Axis.vertical,
               child: Container(
                 height: MediaQuery.of(context).size.height * 1,
-                margin: EdgeInsets.all(15.0),
+                margin: EdgeInsets.all(5.0),
                 child: Column(
                   children: [
                     OrderStatus(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(width: 150, height: 60, child: ChooseCity()),
+                        SizedBox(width: 150, height: 50, child: ChooseCity()),
                         GestureDetector(
                             onTap: () {
                               context.router.pushNamed("/notifications");
