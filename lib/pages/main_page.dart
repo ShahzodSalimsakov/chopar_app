@@ -19,7 +19,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
-  var _tabController;
   ScrollController _parentScrollController = ScrollController();
   List<ProductSection> products = List<ProductSection>.empty();
   bool isProductsLoading = true;
@@ -28,7 +27,6 @@ class _MainPageState extends State<MainPage>
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 1, vsync: this);
     // _scrollController = ScrollController();
   }
 
@@ -58,7 +56,7 @@ class _MainPageState extends State<MainPage>
               controller: _parentScrollController,
               scrollDirection: Axis.vertical,
               child: Container(
-                height: MediaQuery.of(context).size.height * 1,
+                height: (MediaQuery.of(context).size.height + 18) * 1,
                 margin: EdgeInsets.all(5.0),
                 child: Column(
                   children: [
@@ -76,7 +74,6 @@ class _MainPageState extends State<MainPage>
                       ],
                     ),
                     ChooseTypeDelivery(),
-                    SizedBox(height: 25.0),
                     ProductListListen(
                         parentScrollController: _parentScrollController),
                   ],

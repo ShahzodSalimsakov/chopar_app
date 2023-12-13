@@ -5,11 +5,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hashids2/hashids2.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:html/parser.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:scrolls_to_top/scrolls_to_top.dart';
 import 'package:simple_html_css/simple_html_css.dart';
@@ -325,8 +322,8 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
 
   Widget renderCreatePizza(BuildContext context, List<Items>? items) {
     return Card(
-      elevation: 5,
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      elevation: 2,
+      surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
@@ -530,17 +527,13 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
       }
     }
 
-    var html = product.attributeData?.description?.chopar?.ru ?? '';
-
-    var document = parse(html);
-    String? parsedString = parse(document.body?.text).documentElement?.text;
-
     return Opacity(
       opacity: isInStock ? 0.3 : 1,
       child: Card(
-        elevation: 5,
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+        color: Colors.white,
+        elevation: 2,
+        surfaceTintColor: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -926,17 +919,20 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
                           labelColor: Colors.white,
                           unselectedLabelColor: Colors.grey.shade500,
                           isScrollable: true,
+                          dividerHeight: 0,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          overlayColor:
+                              MaterialStatePropertyAll(Colors.transparent),
+                          tabAlignment: TabAlignment.center,
                           tabs: products.map((section) {
                             return Text(
                               section.attributeData?.name?.chopar?.ru ?? '',
+                              style: TextStyle(fontSize: 20),
                             );
                           }).toList(),
                           onTap: (int index) => scrollTo(index),
                         ),
-                        height: 30,
-                      ),
-                      SizedBox(
-                        height: 10,
+                        height: 40,
                       ),
                       Expanded(
                           child: SingleChildScrollView(

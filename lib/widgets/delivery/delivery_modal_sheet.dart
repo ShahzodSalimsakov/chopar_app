@@ -258,7 +258,7 @@ class DeliveryModalSheet extends HookWidget {
                 }
 
                 Box box = Hive.box<User>('user');
-                User currentUser = box.get('user');
+                User? currentUser = box.get('user');
                 if (currentUser != null) {
                   Map<String, String> requestHeaders = {
                     'Content-type': 'application/json',
