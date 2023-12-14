@@ -412,7 +412,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
           Container(
             // padding: EdgeInsets.all(10),
             child: InkWell(
-              child: Image.asset('assets/images/threepizza.jpg'),
+              child: Image.asset('assets/images/threepizza_new.jpg'),
               onTap: () {
                 showMaterialModalBottomSheet(
                     expand: false,
@@ -783,6 +783,31 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
 
   List<Widget> getSectionsList() {
     List<Widget> sections = [];
+
+    List<Items> theeSomeProducts = [];
+    products.asMap().forEach((index, section) {
+      section.items?.forEach((element) {
+        if (element.variants != null && element.variants!.isNotEmpty) {
+          element.variants!.forEach((variant) {
+            if (variant.threesome == 1) {
+              theeSomeProducts.add(element);
+            }
+          });
+        } else if (element.threesome == 1) {
+          theeSomeProducts.add(element);
+        }
+      });
+    });
+
+    if (theeSomeProducts.isNotEmpty) {
+      sections.add(ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: 1,
+        itemBuilder: (_, index) =>
+            renderThreePizza(tabContext!, theeSomeProducts),
+      ));
+    }
 
     products.asMap().forEach((index, section) {
       sections.add(Padding(

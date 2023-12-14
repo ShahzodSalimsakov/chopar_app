@@ -215,11 +215,17 @@ class BasketWidget extends HookWidget {
                     Positioned(
                         left: 0,
                         child: Container(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                            height: 50,
-                          ),
+                          child: lineItem.variant!.product!.assets!.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl:
+                                      'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
+                                  height: 50,
+                                )
+                              : SvgPicture.network(
+                                  'https://choparpizza.uz/no_photo.svg',
+                                  width: 50.0,
+                                  height: 50.0,
+                                ),
                           // Image.network(
                           //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
                           //   height: 50,
@@ -233,11 +239,17 @@ class BasketWidget extends HookWidget {
                       return Positioned(
                           left: ((idx + 1) * 10).toDouble(),
                           child: Container(
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
-                              height: 50,
-                            ),
+                            child: e.variant!.product!.assets!.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl:
+                                        'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
+                                    height: 50,
+                                  )
+                                : SvgPicture.network(
+                                    'https://choparpizza.uz/no_photo.svg',
+                                    width: 50.0,
+                                    height: 50.0,
+                                  ),
                             // Image.network(
                             //   'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
                             //   height: 50,

@@ -158,6 +158,7 @@ class Items {
   late int? categoryId;
   late int? beforePrice;
   late int? discountValue;
+  late int? threesome;
 
   Items(
       {required this.id,
@@ -182,7 +183,8 @@ class Items {
       this.modifiers,
       this.categoryId,
       this.beforePrice,
-      this.discountValue});
+      this.discountValue,
+      this.threesome});
 
   Items.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -228,6 +230,7 @@ class Items {
     }
     categoryId = json['category_id'];
     discountValue = json['discount_value'];
+    threesome = json['threesome'];
   }
 
   Map<String, dynamic> toJson() {
@@ -255,6 +258,7 @@ class Items {
     data['price'] = this.price;
     data['image'] = this.image;
     data['discount_value'] = this.discountValue;
+    data['threesome'] = this.threesome;
     if (this.variants != null) {
       data['variants'] = this.variants?.map((v) => v.toJson()).toList();
     }
@@ -286,6 +290,7 @@ class Variants {
   int? modifierProdId;
   late String price;
   late String? image;
+  late int? threesome;
   List<Modifiers>? modifiers;
   List<Map<String, dynamic>>? variants;
   ModifierProduct? modifierProduct;
@@ -311,7 +316,8 @@ class Variants {
       required this.image,
       this.modifiers,
       this.variants,
-      this.modifierProduct});
+      this.modifierProduct,
+      this.threesome});
 
   Variants.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -340,6 +346,7 @@ class Variants {
         json['modifier_prod_id'] != null ? json['modifier_prod_id'] : null;
     price = json['price'];
     image = json['image'];
+    threesome = json['threesome'];
     if (json['modifiers'] != null) {
       modifiers = json['modifiers']
           .map<Modifiers>((m) => new Modifiers.fromJson(m))
@@ -383,6 +390,7 @@ class Variants {
     data['modifier_prod_id'] = this.modifierProdId;
     data['price'] = this.price;
     data['image'] = this.image;
+    data['threesome'] = this.threesome;
     if (this.modifiers != null) {
       data['modifiers'] = this.modifiers?.map((v) => v.toJson()).toList();
     }
