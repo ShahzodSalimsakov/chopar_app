@@ -65,26 +65,28 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
             child: DefaultTabController(
                 length: 2,
                 child: TabBar(
-                    tabs: myTabs,
-                    controller: _tabController,
-                    onTap: (index) {
-                      DeliveryType deliveryType = DeliveryType();
-                      if (index == 0) {
-                        deliveryType.value = DeliveryTypeEnum.deliver;
-                      } else {
-                        deliveryType.value = DeliveryTypeEnum.pickup;
-                      }
-                      Box<DeliveryType> box =
-                          Hive.box<DeliveryType>('deliveryType');
-                      box.put('deliveryType', deliveryType);
-                    },
-                    // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
-                    indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25.0),
-                        color: Colors.white),
-                    unselectedLabelColor: Colors.white,
-                    dividerHeight: 0,
-                    indicatorSize: TabBarIndicatorSize.tab))),
+                  tabs: myTabs,
+                  controller: _tabController,
+                  onTap: (index) {
+                    DeliveryType deliveryType = DeliveryType();
+                    if (index == 0) {
+                      deliveryType.value = DeliveryTypeEnum.deliver;
+                    } else {
+                      deliveryType.value = DeliveryTypeEnum.pickup;
+                    }
+                    Box<DeliveryType> box =
+                        Hive.box<DeliveryType>('deliveryType');
+                    box.put('deliveryType', deliveryType);
+                  },
+                  // unselectedLabelStyle: TextStyle(backgroundColor: Colors.grey),
+                  indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white),
+                  unselectedLabelColor: Colors.white,
+                  dividerHeight: 0,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Colors.black,
+                ))),
         Container(
             height: 55,
             width: double.infinity,

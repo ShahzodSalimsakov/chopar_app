@@ -319,7 +319,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ],
               )),
         bottomNavigationBar: Container(
-            height: 80.0,
+            height: 70.0,
             decoration: BoxDecoration(
               boxShadow: <BoxShadow>[
                 BoxShadow(
@@ -339,7 +339,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         items: <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
                             icon: Padding(
-                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              padding: EdgeInsets.only(bottom: 5, top: 5),
                               child: FaIcon(FontAwesomeIcons.pizzaSlice,
                                   size: 25,
                                   color: selectedIndex != 0
@@ -354,7 +354,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
-                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              padding: EdgeInsets.only(bottom: 5, top: 5),
                               child: FaIcon(FontAwesomeIcons.percent,
                                   size: 25,
                                   color: selectedIndex != 1
@@ -370,7 +370,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
-                              padding: EdgeInsets.only(bottom: 6, top: 10),
+                              padding: EdgeInsets.only(bottom: 5, top: 5),
                               child: FaIcon(FontAwesomeIcons.user,
                                   size: 25,
                                   color: selectedIndex != 2
@@ -388,7 +388,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             icon: Stack(
                               children: <Widget>[
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 6, top: 10),
+                                  padding: EdgeInsets.only(bottom: 5, top: 5),
                                   child: FaIcon(FontAwesomeIcons.cartPlus,
                                       size: 25,
                                       color: selectedIndex != 3

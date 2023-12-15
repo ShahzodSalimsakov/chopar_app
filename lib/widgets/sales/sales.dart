@@ -53,7 +53,7 @@ class _SalesState extends State<Sales> with SingleTickerProviderStateMixin {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         child: Column(
           children: [
-             BannerWidget(),
+            BannerWidget(),
             SizedBox(
               height: 30,
             ),
@@ -69,6 +69,7 @@ class _SalesState extends State<Sales> with SingleTickerProviderStateMixin {
                     color: Colors.yellow.shade700,
                   ),
                   unselectedLabelColor: Colors.grey,
+                  indicatorSize: TabBarIndicatorSize.tab,
                 )),
             SizedBox(
               height: 30,

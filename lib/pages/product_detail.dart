@@ -114,7 +114,6 @@ class ProductDetail extends HookWidget {
                                   style: TextStyle(fontSize: 14),
                                 ),
                               )),
-                              SizedBox(height: 10),
                               DecoratedBox(
                                   decoration: BoxDecoration(
                                       color: Colors.grey.shade300,
@@ -644,15 +643,16 @@ class ProductDetail extends HookWidget {
                               horizontal: 20, vertical: 20),
                           color: Colors.white,
                           child: DefaultStyledButton(
-                              isLoading: _isBasketLoading.value == true
-                                  ? _isBasketLoading.value
-                                  : null,
-                              width: MediaQuery.of(context).size.width,
-                              onPressed: () {
-                                addToBasket();
-                              },
-                              text:
-                                  'В корзину ${formatCurrency.format(totalPrice)}'),
+                            isLoading: _isBasketLoading.value == true
+                                ? _isBasketLoading.value
+                                : null,
+                            width: MediaQuery.of(context).size.width,
+                            onPressed: () {
+                              addToBasket();
+                            },
+                            text:
+                                'В корзину ${formatCurrency.format(totalPrice)}',
+                          ),
                         ),
                         bottom: 0,
                         width: MediaQuery.of(context).size.width),

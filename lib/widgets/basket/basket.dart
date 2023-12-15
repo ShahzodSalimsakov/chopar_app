@@ -881,8 +881,12 @@ class BasketWidget extends HookWidget {
 
                                                           return;
                                                         },
-                                                        child:
-                                                            Text(productPrice),
+                                                        child: Text(
+                                                          productPrice,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
                                                         style: ButtonStyle(
                                                           shape: MaterialStateProperty.all<
                                                                   RoundedRectangleBorder>(
@@ -892,6 +896,10 @@ class BasketWidget extends HookWidget {
                                                                     .circular(
                                                                         18.0),
                                                           )),
+                                                          padding:
+                                                              MaterialStateProperty
+                                                                  .all(EdgeInsets
+                                                                      .zero),
                                                           backgroundColor:
                                                               MaterialStateProperty
                                                                   .all<Color>(Colors
@@ -1215,7 +1223,11 @@ class BasketWidget extends HookWidget {
                                                             return;
                                                           },
                                                           child: Text(
-                                                              productPrice),
+                                                            productPrice,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
                                                           style: ButtonStyle(
                                                             shape: MaterialStateProperty.all<
                                                                     RoundedRectangleBorder>(
@@ -1231,6 +1243,10 @@ class BasketWidget extends HookWidget {
                                                                     Colors
                                                                         .yellow
                                                                         .shade700),
+                                                            padding:
+                                                                MaterialStateProperty
+                                                                    .all(EdgeInsets
+                                                                        .zero),
                                                           ),
                                                         ),
                                                       )
@@ -1316,7 +1332,9 @@ class BasketWidget extends HookWidget {
                               child: Text(
                                 'Оформить заказ',
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w700),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white),
                               ),
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
