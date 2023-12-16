@@ -297,9 +297,8 @@ class AuthModal extends HookWidget {
                         border: Border.all(width: 1.0, color: Colors.grey),
                       ),
                       width: double.infinity,
-                      alignment: Alignment.center,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.7,
+                        width: MediaQuery.of(context).size.width * 0.9,
                         child: InternationalPhoneNumberInput(
                           onInputChanged: (PhoneNumber number) {
                             phoneNumber.value = number.phoneNumber ?? '';
@@ -310,7 +309,7 @@ class AuthModal extends HookWidget {
                           countries: ['UZ'],
                           selectorConfig: SelectorConfig(
                             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                            showFlags: true,
+                            showFlags: false,
                           ),
                           ignoreBlank: false,
                           autoValidateMode: AutovalidateMode.disabled,
@@ -326,8 +325,9 @@ class AuthModal extends HookWidget {
                           spaceBetweenSelectorAndTextField: 0,
                           textStyle:
                               TextStyle(color: Colors.black, fontSize: 24.0),
-                          // inputDecoration: InputDecoration(border: ),
+                          maxLength: 12,
                           onSaved: (PhoneNumber number) {},
+                          autoFocus: true,
                         ),
                       ),
                     ),

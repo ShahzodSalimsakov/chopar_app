@@ -341,7 +341,7 @@ class OrderRegistration extends HookWidget {
 
                                       if (deliverLaterTime != null) {
                                         formData['formData']['notes'] =
-                                            deliveryNotes!.deliveryNotes;
+                                            deliveryNotes?.deliveryNotes ?? '';
                                       }
 
                                       if (payType != null) {

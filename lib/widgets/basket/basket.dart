@@ -369,114 +369,103 @@ class BasketWidget extends HookWidget {
           modifier.add(lines.modifiers?[0].name ?? '');
         }
       }
-      return Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
-          // padding: EdgeInsets.symmetric(
-          //   horizontal: 15,
-          // ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          renderProductImage(context, lines),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  renderProductImage(context, lines),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 120,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              productName!.toUpperCase(),
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              modifier.join(', ').toUpperCase(),
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.yellow.shade600),
-                            ),
-                          ],
-                        ),
-                      ),
-                      lines.bonusId != null
-                          ? Text(
-                              tr('bonus'),
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.yellow.shade600),
-                            )
-                          : SizedBox()
-                    ],
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  lines.discountValue != null && lines.discountValue! > 0
-                      ? Text(
-                          formatCurrency.format(lines.total),
-                          style: TextStyle(
-                              fontSize: 18,
-                              decoration: TextDecoration.lineThrough),
-                        )
-                      : SizedBox(),
-                  Text(
-                    formatCurrency.format(
-                      lines.discountValue != null && lines.discountValue! > 0
-                          ? lines.total - lines.discountValue!
-                          : lines.total,
+              Container(
+                width: 120,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      productName!.toUpperCase(),
+                      style: TextStyle(fontSize: 14),
                     ),
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  lines.bonusId == null
-                      ? Container(
-                          height: 30.0,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.yellow.shade600,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                icon: Icon(Icons.remove,
-                                    size: 20.0, color: Colors.yellow.shade600),
-                                onPressed: () {
-                                  decreaseQuantity(lines);
-                                },
-                              ),
-                              Text(
-                                lines.quantity.toString(),
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.yellow.shade600,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(Icons.add,
-                                      size: 20.0,
-                                      color: Colors.yellow.shade600),
-                                  onPressed: () {
-                                    increaseQuantity(lines);
-                                  })
-                            ],
-                          ),
-                        )
-                      : SizedBox(),
-                ],
-              )
+                    Text(
+                      modifier.join(', ').toUpperCase(),
+                      style: TextStyle(
+                          fontSize: 12, color: Colors.yellow.shade600),
+                    ),
+                  ],
+                ),
+              ),
+              lines.bonusId != null
+                  ? Text(
+                      tr('bonus'),
+                      style: TextStyle(
+                          fontSize: 18, color: Colors.yellow.shade600),
+                    )
+                  : SizedBox()
             ],
-          ));
+          ),
+          Column(
+            children: [
+              lines.discountValue != null && lines.discountValue! > 0
+                  ? Text(
+                      formatCurrency.format(lines.total),
+                      style: TextStyle(
+                          fontSize: 18, decoration: TextDecoration.lineThrough),
+                    )
+                  : SizedBox(),
+              Text(
+                formatCurrency.format(
+                  lines.discountValue != null && lines.discountValue! > 0
+                      ? lines.total - lines.discountValue!
+                      : lines.total,
+                ),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              lines.bonusId == null
+                  ? Container(
+                      height: 30.0,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.yellow.shade600,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: Icon(Icons.remove,
+                                size: 20.0, color: Colors.yellow.shade600),
+                            onPressed: () {
+                              decreaseQuantity(lines);
+                            },
+                          ),
+                          Text(
+                            lines.quantity.toString(),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.yellow.shade600,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: Icon(Icons.add,
+                                  size: 20.0, color: Colors.yellow.shade600),
+                              onPressed: () {
+                                increaseQuantity(lines);
+                              })
+                        ],
+                      ),
+                    )
+                  : SizedBox(),
+            ],
+          )
+        ],
+      );
     }
 
     Widget renderPage() {
@@ -598,12 +587,13 @@ class BasketWidget extends HookWidget {
                                     child: Text('С этими продуктами покупают',
                                         style: const TextStyle(
                                             fontSize: 22,
-                                            fontWeight: FontWeight.w500))),
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.amber))),
                               )
                             : const SizedBox(),
                         relatedBiData.value.isNotEmpty
                             ? SizedBox(
-                                height: 240,
+                                height: 150,
                                 child: ListView.builder(
                                     shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
@@ -623,8 +613,19 @@ class BasketWidget extends HookWidget {
                                           double.tryParse(productPrice));
                                       return Container(
                                           width: 130,
-                                          margin:
-                                              const EdgeInsets.only(right: 10),
+                                          margin: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.5),
+                                                  spreadRadius: 1,
+                                                  blurRadius: 1,
+                                                )
+                                              ]),
                                           child: Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -644,8 +645,8 @@ class BasketWidget extends HookWidget {
                                                     CachedNetworkImage(
                                                       imageUrl: relatedBiData
                                                           .value[index].image,
-                                                      height: 100,
-                                                      width: 100,
+                                                      height: 50,
+                                                      width: 50,
                                                     ),
                                                     // Image.network(
                                                     //   relatedBiData
@@ -660,7 +661,7 @@ class BasketWidget extends HookWidget {
                                                       relatedBiData.value[index]
                                                           .customName,
                                                       style: const TextStyle(
-                                                          fontSize: 15),
+                                                          fontSize: 10),
                                                       textAlign:
                                                           TextAlign.center,
                                                     ),
@@ -668,7 +669,7 @@ class BasketWidget extends HookWidget {
                                                       flex: 1,
                                                     ),
                                                     SizedBox(
-                                                      height: 50,
+                                                      height: 25,
                                                       width: 144,
                                                       child: ElevatedButton(
                                                         onPressed: () async {
@@ -923,14 +924,15 @@ class BasketWidget extends HookWidget {
                                     child: Text('Популярные продукты',
                                         style: const TextStyle(
                                             fontSize: 22,
-                                            fontWeight: FontWeight.w500))),
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.amber))),
                               )
                             : const SizedBox(),
                         topProducts.value.isNotEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 30),
                                 child: SizedBox(
-                                  height: 240,
+                                  height: 150,
                                   child: ListView.builder(
                                       shrinkWrap: true,
                                       scrollDirection: Axis.horizontal,
@@ -950,8 +952,19 @@ class BasketWidget extends HookWidget {
                                             double.tryParse(productPrice));
                                         return Container(
                                             width: 130,
-                                            margin: const EdgeInsets.only(
-                                                right: 10),
+                                            margin: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 1,
+                                                  )
+                                                ]),
                                             child: Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -973,8 +986,8 @@ class BasketWidget extends HookWidget {
                                                       CachedNetworkImage(
                                                         imageUrl: topProducts
                                                             .value[index].image,
-                                                        height: 100,
-                                                        width: 100,
+                                                        height: 50,
+                                                        width: 50,
                                                       ),
                                                       // Image.network(
                                                       //   topProducts
@@ -989,7 +1002,7 @@ class BasketWidget extends HookWidget {
                                                         topProducts.value[index]
                                                             .customName,
                                                         style: const TextStyle(
-                                                            fontSize: 15),
+                                                            fontSize: 10),
                                                         textAlign:
                                                             TextAlign.center,
                                                       ),
@@ -997,7 +1010,7 @@ class BasketWidget extends HookWidget {
                                                         flex: 1,
                                                       ),
                                                       SizedBox(
-                                                        height: 50,
+                                                        height: 25,
                                                         width: 144,
                                                         child: ElevatedButton(
                                                           onPressed: () async {

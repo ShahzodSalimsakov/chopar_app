@@ -1,6 +1,7 @@
 import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -28,12 +29,12 @@ class _PayTypeState extends State<PayTypeWidget>
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Tab(text: 'Онлайн'),
     ),
-    Container(
-        height: 30,
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Tab(
-          text: 'Картой',
-        ))
+    // Container(
+    //     height: 30,
+    //     padding: EdgeInsets.symmetric(horizontal: 20),
+    //     child: Tab(
+    //       text: 'Картой',
+    //     ))
   ];
 
   @override
@@ -217,6 +218,9 @@ class _PayTypeState extends State<PayTypeWidget>
                           color: Colors.yellow.shade700,
                         ),
                         unselectedLabelColor: Colors.grey,
+                        tabAlignment: TabAlignment.start,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerHeight: 0,
                       )),
                   SizedBox(
                     height: 20,
@@ -225,7 +229,7 @@ class _PayTypeState extends State<PayTypeWidget>
                       height: MediaQuery.of(context).size.height * 0.12,
                       child: TabBarView(
                           controller: _tabController,
-                          children: [inCash(), online(), byCard()]))
+                          children: [inCash(), online()]))
                 ],
               ));
         });
