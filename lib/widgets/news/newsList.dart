@@ -90,11 +90,11 @@ class NewsList extends HookWidget {
                               SizedBox(
                                 height: 5,
                               ),
-                              Text(
-                                '12 август 2021',
-                                style:
-                                    TextStyle(fontSize: 10, color: Colors.grey),
-                              ),
+                              // Text(
+                              //   '12 август 2021',
+                              //   style:
+                              //       TextStyle(fontSize: 10, color: Colors.grey),
+                              // ),
                               SizedBox(
                                 height: 20,
                               ),
@@ -124,10 +124,10 @@ class NewsList extends HookWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Text(
-                          '12 август 2021',
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
-                        ),
+                        // Text(
+                        //   '12 август 2021',
+                        //   style: TextStyle(fontSize: 10, color: Colors.grey),
+                        // ),
                       ],
                     ),
                   ),

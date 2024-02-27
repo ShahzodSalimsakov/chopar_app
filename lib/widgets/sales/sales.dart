@@ -70,6 +70,7 @@ class _SalesState extends State<Sales> with SingleTickerProviderStateMixin {
                   ),
                   unselectedLabelColor: Colors.grey,
                   indicatorSize: TabBarIndicatorSize.tab,
+                  dividerHeight: 0,
                 )),
             SizedBox(
               height: 30,

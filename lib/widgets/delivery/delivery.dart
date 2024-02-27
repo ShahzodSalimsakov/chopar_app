@@ -290,8 +290,7 @@ class DeliveryWidget extends HookWidget {
         child: Column(
           children: [
             Container(
-              height: 65,
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
