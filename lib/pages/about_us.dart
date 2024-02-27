@@ -63,10 +63,9 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.instagram),
               style: ElevatedButton.styleFrom(
-                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
-                padding: EdgeInsets.all(12),
-                onPrimary: Colors.yellow.shade800, // <-- Splash color
+                padding: EdgeInsets.all(12), // <-- Splash color
               ),
             ),
             OutlinedButton(
@@ -75,10 +74,9 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.facebook),
               style: ElevatedButton.styleFrom(
-                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
-                padding: EdgeInsets.all(12),
-                onPrimary: Colors.yellow.shade800, // <-- Splash color
+                padding: EdgeInsets.all(12), // <-- Splash color
               ),
             ),
             OutlinedButton(
@@ -87,10 +85,9 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.telegram),
               style: ElevatedButton.styleFrom(
-                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
-                padding: EdgeInsets.all(12),
-                onPrimary: Colors.yellow.shade800, // <-- Splash color
+                padding: EdgeInsets.all(12), // <-- Splash color
               ),
             ),
           ],

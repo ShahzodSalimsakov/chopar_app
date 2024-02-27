@@ -11,7 +11,6 @@ import 'package:chopar_app/widgets/profile/unautorised_user.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hashids2/hashids2.dart';
 import 'package:hive_flutter/hive_flutter.dart';

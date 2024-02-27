@@ -136,7 +136,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                                 MaterialPageRoute(
                                     builder: (context) => DeliveryWidget()));
                           },
-                          style: TextButton.styleFrom(primary: Colors.grey));
+                          style: TextButton.styleFrom(foregroundColor: Colors.grey));
                     }),
                 ValueListenableBuilder<Box<Terminals>>(
                     valueListenable:
@@ -177,7 +177,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                               ),
                             ],
                           ),
-                          style: TextButton.styleFrom(primary: Colors.grey));
+                          style: TextButton.styleFrom(foregroundColor: Colors.grey));
                     }),
               ],
             )),
