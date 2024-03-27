@@ -229,9 +229,7 @@ class OrderRegistration extends HookWidget {
                                                   content: Text(
                                                       'Не указано время доставки')));
                                           return;
-                                        } else if (deliverLaterTime.value ==
-                                                null ||
-                                            deliverLaterTime.value.length ==
+                                        } else if (deliverLaterTime.value.length ==
                                                 0) {
                                           _isOrderLoading.value = false;
                                           ScaffoldMessenger.of(context)
@@ -331,7 +329,7 @@ class OrderRegistration extends HookWidget {
                                         formData['formData']
                                             ['delivery_schedule'] = 'later';
                                         formData['formData']['delivery_time'] =
-                                            deliveryTime.value;
+                                            deliverLaterTime?.value;
                                       }
 
                                       if (payCash != null) {

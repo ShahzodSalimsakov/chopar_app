@@ -28,7 +28,7 @@ class DeliveryWidget extends HookWidget {
         useState<List<YandexGeoData>>(List<YandexGeoData>.empty());
     final queryText = useState<String>('');
     final myAddresses = useState<List<MyAddress>>(List<MyAddress>.empty());
-    final geoData = useState<YandexGeoData?>(null);
+    useState<YandexGeoData?>(null);
     final loading = useState(false);
     Future<void> getMyAddresses() async {
       Box box = Hive.box<User>('user');
@@ -231,14 +231,14 @@ class DeliveryWidget extends HookWidget {
                           )
                         : Center(
                             child: CircularProgressIndicator(
-                              color: Colors.blue,
+                              color: Colors.amber[700],
                             ),
                           ));
               },
               separatorBuilder: (context, index) {
                 return Divider();
               },
-              itemCount: myAddresses.value.length);
+              itemCount: loading.value == true ? 1 : myAddresses.value.length);
         }
       } else if (suggestedData.value.length == 0) {
         return Center(

@@ -27,7 +27,7 @@ class OrderDetailPage extends HookWidget {
         lineItem.child!.length > 0 &&
         lineItem.child![0].variant?.product?.id !=
             lineItem.variant?.product?.boxId) {
-      if (lineItem.child!.length > 1) {
+      if (lineItem.child!.length > 0) {
         return Container(
           height: 50.0,
           width: 70,
@@ -36,6 +36,7 @@ class OrderDetailPage extends HookWidget {
             children: [
               Expanded(
                   child: Stack(
+                clipBehavior: Clip.antiAlias,
                 children: [
                   Positioned(
                       left: 0,
@@ -43,32 +44,29 @@ class OrderDetailPage extends HookWidget {
                         child: CachedNetworkImage(
                             imageUrl:
                                 'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}'),
-                        // Image.network(
-                        //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                        //   height: 50,
-                        // ),
                         width: 50,
                       )),
+                ],
+              )),
+              Expanded(
+                  child: Stack(
+                children: [
                   ...lineItem.child!.asMap().entries.map((entry) {
                     int idx = entry.key;
                     var e = entry.value;
                     print(((idx + 1) * 15).toDouble());
                     return Positioned(
-                        left: ((idx + 1) * 10).toDouble(),
+                        right: ((idx + 1) * 0).toDouble(),
                         child: Container(
                           child: CachedNetworkImage(
+                              fit: BoxFit.cover,
                               imageUrl:
                                   'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}'),
-                          // Image.network(
-                          //   'https://api.choparpizza.uz/storage/${e.variant?.product?.assets![0].location}/${e.variant?.product?.assets![0].filename}',
-                          //   height: 50,
-                          // ),
-
                           width: 50,
                         ));
                   }).toList()
                 ],
-              )),
+              ))
             ],
           ),
         );
@@ -76,7 +74,6 @@ class OrderDetailPage extends HookWidget {
         return Container(
           height: 50.0,
           width: 50,
-          // margin: EdgeInsets.all(15),
           child: Row(
             children: [
               Expanded(
@@ -89,11 +86,6 @@ class OrderDetailPage extends HookWidget {
                         child: CachedNetworkImage(
                             imageUrl:
                                 'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}'),
-                        // Image.network(
-                        //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-                        //   height: 50,
-                        // ),
-                        // width: MediaQuery.of(context).size.width - 30,
                       ))
                 ],
               )),
@@ -103,14 +95,9 @@ class OrderDetailPage extends HookWidget {
                   Positioned(
                       right: 0,
                       child: Container(
-                        // width: MediaQuery.of(context).size.width - 30,
                         child: CachedNetworkImage(
                             imageUrl:
                                 'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}'),
-                        // Image.network(
-                        //   'https://api.choparpizza.uz/storage/${lineItem.child![0].variant?.product?.assets![0].location}/${lineItem.child![0].variant?.product?.assets![0].filename}',
-                        //   height: 50,
-                        // ),
                       ))
                 ],
               ))
@@ -118,16 +105,11 @@ class OrderDetailPage extends HookWidget {
           ),
         );
       }
-    } else if (lineItem.variant?.product?.assets != null) {
+    } else if (lineItem.variant?.product?.assets != null &&
+        lineItem.variant!.product!.assets!.isNotEmpty) {
       return CachedNetworkImage(
           imageUrl:
               'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}');
-      // Image.network(
-      //   'https://api.choparpizza.uz/storage/${lineItem.variant?.product?.assets![0].location}/${lineItem.variant?.product?.assets![0].filename}',
-      //   width: 50.0,
-      //   height: 50.0,
-      //   // width: MediaQuery.of(context).size.width / 2.5,
-      // );
     } else {
       return SvgPicture.network(
         'https://choparpizza.uz/no_photo.svg',
@@ -209,7 +191,7 @@ class OrderDetailPage extends HookWidget {
             mainAxisSize: MainAxisSize.max,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.7,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -318,7 +300,7 @@ class OrderDetailPage extends HookWidget {
                               }
                               return ListTile(
                                 title: Text(
-                                    "${lineItem.child != null && lineItem.child!.length > 1 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant?.product?.customName} + ${lineItem.child![1].variant!.product!.customName}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
+                                    "${lineItem.child != null && lineItem.child!.length > 0 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant!.product!.attributeData?.name?.chopar?.ru}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
                                 leading: SizedBox(
                                     width: 50,
                                     child:

@@ -167,8 +167,8 @@ class _TerminalModalState extends State<TerminalsModal> {
                           icon: PlacemarkIcon.single(PlacemarkIconStyle(
                               image: BitmapDescriptor.fromAssetImage(
                                   element.isWorking!
-                                      ? 'assets/images/place.png'
-                                      : 'assets/images/place_disabled.png'),
+                                      ? 'images/place.png'
+                                      : 'images/place_disabled.png'),
                               rotationType: RotationType.noRotation,
                               scale: scale,
                               anchor: Offset.fromDirection(1.1, 1))));

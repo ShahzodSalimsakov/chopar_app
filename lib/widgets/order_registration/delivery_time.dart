@@ -148,8 +148,7 @@ class DeliveryTimeWidget extends HookWidget {
                                       Box<DeliverLaterTime> box =
                                           Hive.box<DeliverLaterTime>(
                                               'deliveryLaterTime');
-                                      DeliverLaterTime? deliveryTime =
-                                          box.get('deliveryLaterTime');
+                                      box.get('deliveryLaterTime');
                                       DeliverLaterTime deliverLaterTime =
                                           new DeliverLaterTime();
                                       deliverLaterTime.value =
