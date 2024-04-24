@@ -120,13 +120,13 @@ void main() async {
   await Hive.openBox<RegisteredReview>('registeredReview');
   await Hive.openBox<BasketItemQuantity>('basketItemQuantity');
 
-  runApp(EasyLocalization(
-      supportedLocales: [Locale('ru'), Locale('uz')],
-      path: 'https://api.choparpizza.uz/api/get_langs',
-      fallbackLocale: Locale('ru'),
-      assetLoader: HttpAssetLoader(),
-      useOnlyLangCode: true,
-      child: MainApp()));
+  // runApp(EasyLocalization(
+  //     supportedLocales: [Locale('ru'), Locale('uz')],
+  //     path: 'https://api.choparpizza.uz/api/get_langs',
+  //     fallbackLocale: Locale('ru'),
+  //     assetLoader: HttpAssetLoader(),
+  //     useOnlyLangCode: true,
+  //     child: MainApp()));
 }
 
 class MainApp extends StatefulWidget {
