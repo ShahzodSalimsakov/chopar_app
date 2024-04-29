@@ -25,7 +25,6 @@ dependencies:
   authentication_repository:
     path: packages/authentication_repository
   auto_route: ^7.8.0
-  awesome_notifications: ^0.7.4+1
   cached_network_image: ^3.3.0
   carousel_slider: ^4.0.0
   collection: ^1.15.0
@@ -97,6 +96,8 @@ dependency_overrides:
 dev_dependencies:
   analyzer: ^5.13.0
   auto_route_generator: ^7.3.0
+  awesome_notifications: ^0.9.3+1
+  awesome_notifications_fcm: ^0.9.3+1
   build_runner: null
   flutter_native_splash: ^2.2.10
   flutter_test:
