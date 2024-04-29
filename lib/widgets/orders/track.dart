@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -50,15 +49,13 @@ class _TrackOrderState extends State<TrackOrder> {
       if (localOrder.data != null &&
           trackPoint != null &&
           trackPoint?.data != null) {
-        if (localOrder.data!.latitude != null &&
-            localOrder.data!.longitude != null &&
-            localOrder.data!.latitude != trackPoint!.data!.latitude &&
+        if (localOrder.data!.latitude != trackPoint!.data!.latitude &&
             localOrder.data!.longitude != trackPoint!.data!.longitude) {
           controller.moveCamera(
               CameraUpdate.newCameraPosition(CameraPosition(
                   target: Point(
-                      latitude: localOrder!.data!.latitude,
-                      longitude: localOrder!.data!.longitude),
+                      latitude: localOrder.data!.latitude,
+                      longitude: localOrder.data!.longitude),
                   zoom: 15)),
               animation: animation);
         }
@@ -214,8 +211,7 @@ class _TrackOrderState extends State<TrackOrder> {
                             child: CloseButton()),
                         top: 40,
                         right: 10),
-                    trackPoint!.courier != null &&
-                            trackPoint!.courier!.first_name != null
+                    trackPoint!.courier != null
                         ? Positioned(
                             child: Padding(
                               padding:
@@ -269,7 +265,7 @@ class _TrackOrderState extends State<TrackOrder> {
                                                         .width *
                                                     0.6,
                                                 child: Text(
-                                                  "${trackPoint!.courier!.first_name!} ${trackPoint!.courier!.last_name!}",
+                                                  "${trackPoint!.courier!.first_name} ${trackPoint!.courier!.last_name}",
                                                   style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -305,7 +301,7 @@ class _TrackOrderState extends State<TrackOrder> {
                                                         .width *
                                                     0.6,
                                                 child: Text(
-                                                  trackPoint!.courier!.phone!,
+                                                  trackPoint!.courier!.phone,
                                                   style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,

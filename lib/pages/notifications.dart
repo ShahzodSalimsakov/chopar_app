@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chopar_app/pages/notifications_detail.dart';
 import 'package:chopar_app/routes/router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';

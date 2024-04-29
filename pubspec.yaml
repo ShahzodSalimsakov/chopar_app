@@ -89,7 +89,7 @@ dependencies:
     path: packages/user_repository
   uuid: ^3.0.4
   vertical_scrollable_tabview: ^0.1.0
-  yandex_mapkit: ^3.0.1
+  yandex_mapkit: ^3.3.3
 
 dependency_overrides:
   intl: ^0.17.0

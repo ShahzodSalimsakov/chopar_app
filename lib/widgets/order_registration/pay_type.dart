@@ -1,10 +1,8 @@
 import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class PayTypeWidget extends StatefulWidget {

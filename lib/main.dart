@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/models/basket_item_quantity.dart';
@@ -28,7 +27,6 @@ import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/home_scroll_position.dart';
 import 'models/stock.dart';
-import 'utils/http_locale_loader.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -120,13 +118,12 @@ void main() async {
   await Hive.openBox<RegisteredReview>('registeredReview');
   await Hive.openBox<BasketItemQuantity>('basketItemQuantity');
 
-  // runApp(EasyLocalization(
-  //     supportedLocales: [Locale('ru'), Locale('uz')],
-  //     path: 'https://api.choparpizza.uz/api/get_langs',
-  //     fallbackLocale: Locale('ru'),
-  //     assetLoader: HttpAssetLoader(),
-  //     useOnlyLangCode: true,
-  //     child: MainApp()));
+  runApp(EasyLocalization(
+      supportedLocales: [Locale('ru'), Locale('uz')],
+      path: 'https://api.choparpizza.uz/api/get_langs',
+      fallbackLocale: Locale('ru'),
+      useOnlyLangCode: true,
+      child: MainApp()));
 }
 
 class MainApp extends StatefulWidget {

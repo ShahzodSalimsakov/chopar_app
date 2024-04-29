@@ -143,7 +143,7 @@ class _WorkTimeWidgetState extends State<WorkTimeWidget> {
         _closeWorkModal.show(context);
       }
     } else {
-      if (workTimeModalOpened && _closeWorkModal != null) {
+      if (workTimeModalOpened) {
         _closeWorkModal.dismiss();
       }
       if (mounted) {

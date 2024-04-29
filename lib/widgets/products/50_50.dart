@@ -5,10 +5,8 @@ import 'package:chopar_app/models/basket_data.dart';
 import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -139,8 +137,7 @@ class CreateOwnPizza extends HookWidget {
 
     final modifiers = useMemoized(() {
       if (leftSelectedProduct.value == null ||
-          rightSelectedProduct.value == null ||
-          activeCustomName.value == null) {
+          rightSelectedProduct.value == null) {
         return List<Modifiers>.empty();
       }
       List<Modifiers>? leftModifiers = List<Modifiers>.empty();
@@ -384,7 +381,7 @@ class CreateOwnPizza extends HookWidget {
               'child': {
                 'id': rightModifierProduct != null
                     ? rightModifierProduct.id
-                    : rightProduct!.id,
+                    : rightProduct.id,
                 'quantity': 1,
                 'modifiers': []
               }
@@ -424,7 +421,7 @@ class CreateOwnPizza extends HookWidget {
               'child': {
                 'id': rightModifierProduct != null
                     ? rightModifierProduct.id
-                    : rightProduct!.id,
+                    : rightProduct.id,
                 'quantity': 1,
                 'modifiers': []
               }

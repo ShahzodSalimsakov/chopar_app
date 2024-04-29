@@ -106,10 +106,10 @@ class BasketWidget extends HookWidget {
           if (response.statusCode == 200 || response.statusCode == 201) {
             var json = jsonDecode(response.body);
             BasketData newBasket = BasketData.fromJson(json['data']);
-            if (newBasket!.lines == null) {
+            if (newBasket.lines == null) {
               basket.lineCount = 0;
             } else {
-              basket.lineCount = newBasket!.lines!.length ?? 0;
+              basket.lineCount = newBasket.lines!.length ?? 0;
             }
 
             basketBox.put('basket', basket);
@@ -485,7 +485,7 @@ class BasketWidget extends HookWidget {
             ],
           ),
         );
-      } else if (basket != null && basket.lineCount == 0) {
+      } else if (basket.lineCount == 0) {
         return Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -1375,9 +1375,9 @@ class BasketWidget extends HookWidget {
       if (basket != null) {
         List<String> productIds = [];
 
-        if (basketData?.lines != null) {
-          if (basketData!.lines!.length > 0) {
-            for (var line in basketData!.lines!) {
+        if (basketData.lines != null) {
+          if (basketData.lines!.length > 0) {
+            for (var line in basketData.lines!) {
               productIds.add(line.variant!.productId.toString());
             }
           }
@@ -1427,7 +1427,7 @@ class BasketWidget extends HookWidget {
         }
 
         var url = Uri.https('api.choparpizza.uz',
-            '/api/baskets/${basket!.encodedId}', queryParameters);
+            '/api/baskets/${basket.encodedId}', queryParameters);
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);

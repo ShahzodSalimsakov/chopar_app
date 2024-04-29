@@ -241,7 +241,7 @@ class _TerminalModalState extends State<TerminalsModal> {
                 } else {
                   currentPosition = new Position(
                       longitude: deliveryData!.lon!,
-                      latitude: deliveryData!.lat!,
+                      latitude: deliveryData.lat!,
                       timestamp: DateTime.now(),
                       accuracy: 0,
                       altitude: 0,

@@ -57,7 +57,7 @@ class MessageHandlerPageState extends State<MessageHandlerPage> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      if (message != null && message.notification != null) {
+      if (message.notification != null) {
         checkNotificationRouter(message);
       }
     });

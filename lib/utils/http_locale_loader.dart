@@ -5,9 +5,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import 'package:easy_localization_loader/easy_localization_loader.dart';
 
-import 'dart:ui';
 
 // show AssetLoader;
 

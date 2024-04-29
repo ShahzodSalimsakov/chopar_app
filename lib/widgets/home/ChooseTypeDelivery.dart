@@ -4,10 +4,8 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/delivery.dart';
 import 'package:chopar_app/widgets/delivery/pickup.dart';
 import 'package:chopar_app/widgets/home/DiscountWidget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ChooseTypeDelivery extends StatefulWidget {
@@ -103,7 +101,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                           box.get('deliveryLocationData');
                       String deliveryText = 'Укажите адрес доставки';
                       if (deliveryLocationData != null) {
-                        deliveryText = deliveryLocationData?.address ?? '';
+                        deliveryText = deliveryLocationData.address ?? '';
                         String house = deliveryLocationData.house != null
                             ? ', дом: ${deliveryLocationData.house}'
                             : '';

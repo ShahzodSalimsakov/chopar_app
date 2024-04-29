@@ -11,7 +11,6 @@ import 'package:chopar_app/models/pay_cash.dart';
 import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
-import 'package:chopar_app/pages/home.dart';
 import 'package:chopar_app/pages/order_detail.dart';
 import 'package:chopar_app/widgets/order_registration/additional_phone_number.dart';
 import 'package:chopar_app/widgets/order_registration/comment.dart';
@@ -24,7 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hashids2/hashids2.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -175,8 +173,7 @@ class OrderRegistration extends HookWidget {
                                       }
 
                                       //Check pickup terminal
-                                      if (deliveryType != null &&
-                                          deliveryType.value ==
+                                      if (deliveryType.value ==
                                               DeliveryTypeEnum.pickup) {
                                         if (currentTerminal == null) {
                                           _isOrderLoading.value = false;
@@ -189,8 +186,7 @@ class OrderRegistration extends HookWidget {
                                       }
 
                                       // Check delivery address
-                                      if (deliveryType != null &&
-                                          deliveryType.value ==
+                                      if (deliveryType.value ==
                                               DeliveryTypeEnum.deliver) {
                                         if (deliveryLocationData == null) {
                                           _isOrderLoading.value = false;
@@ -280,7 +276,7 @@ class OrderRegistration extends HookWidget {
                                           'label': ''
                                         }
                                       };
-                                      if (deliveryType!.value ==
+                                      if (deliveryType.value ==
                                           DeliveryTypeEnum.deliver) {
                                         formData['formData']['address'] =
                                             deliveryLocationData!.address;
@@ -309,7 +305,7 @@ class OrderRegistration extends HookWidget {
                                           currentTerminal!.id.toString();
                                       formData['formData']['name'] = user!.name;
                                       formData['formData']['phone'] =
-                                          user!.phone;
+                                          user.phone;
                                       formData['formData']['email'] = '';
                                       formData['formData']['change'] = '';
                                       formData['formData']['notes'] = '';
@@ -342,14 +338,9 @@ class OrderRegistration extends HookWidget {
                                             deliveryNotes?.deliveryNotes ?? '';
                                       }
 
-                                      if (payType != null) {
-                                        formData['formData']['pay_type'] =
-                                            payType.value;
-                                      } else {
-                                        formData['formData']['pay_type'] =
-                                            'offline';
-                                      }
-
+                                      formData['formData']['pay_type'] =
+                                          payType.value;
+                                    
                                       var response = await http.post(url,
                                           headers: requestHeaders,
                                           body: jsonEncode(formData));
@@ -362,11 +353,9 @@ class OrderRegistration extends HookWidget {
                                           'Accept': 'application/json'
                                         };
 
-                                        if (user != null) {
-                                          requestHeaders['Authorization'] =
-                                              'Bearer ${user.userToken}';
-                                        }
-
+                                        requestHeaders['Authorization'] =
+                                            'Bearer ${user.userToken}';
+                                      
                                         url = Uri.https(
                                             'api.choparpizza.uz',
                                             '/api/orders',

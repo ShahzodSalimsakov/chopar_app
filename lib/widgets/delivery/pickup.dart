@@ -144,7 +144,7 @@ class Pickup extends HookWidget {
       } else {
         currentPosition = new Position(
             longitude: deliveryData!.lon!,
-            latitude: deliveryData!.lat!,
+            latitude: deliveryData.lat!,
             timestamp: DateTime.now(),
             accuracy: 0,
             altitude: 0,
@@ -238,6 +238,7 @@ class Pickup extends HookWidget {
 
     useEffect(() {
       getTerminals();
+      return null;
     }, []);
 
     return ValueListenableBuilder<Box<Terminals>>(

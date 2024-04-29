@@ -58,8 +58,8 @@ class DeliveryModalSheet extends HookWidget {
 
         var url =
             Uri.https('api.choparpizza.uz', 'api/terminals/find_nearest', {
-          'lat': currentPoint!.latitude.toString(),
-          'lon': currentPoint!.longitude.toString()
+          'lat': currentPoint.latitude.toString(),
+          'lon': currentPoint.longitude.toString()
         });
         response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200) {
@@ -328,10 +328,10 @@ class DeliveryModalSheet extends HookWidget {
                   ),
                   title: Text(currentTerminal.value == null
                       ? terminalFoundErrors[notFoundText.value]!
-                      : geoData.value!.title!),
+                      : geoData.value!.title),
                   subtitle: Text(currentTerminal.value == null
                       ? ''
-                      : geoData.value!.description!),
+                      : geoData.value!.description),
                 );
               },
               separatorBuilder: (context, index) {
@@ -366,6 +366,7 @@ class DeliveryModalSheet extends HookWidget {
 
     useEffect(() {
       getPointData();
+      return null;
     }, []);
 
     return Material(
