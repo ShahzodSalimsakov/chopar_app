@@ -269,6 +269,7 @@ class DeliveryWidget extends HookWidget {
 
     useEffect(() {
       getMyAddresses();
+      return null;
     }, []);
 
     return Scaffold(

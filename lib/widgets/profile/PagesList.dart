@@ -1,10 +1,7 @@
 import 'package:chopar_app/pages/about_us.dart';
-import 'package:chopar_app/pages/bonuses.dart';
-import 'package:chopar_app/pages/order_registration.dart';
 import 'package:chopar_app/pages/orders.dart';
 import 'package:chopar_app/pages/personal_data.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PagesList extends StatelessWidget {
   const PagesList({Key? key}) : super(key: key);

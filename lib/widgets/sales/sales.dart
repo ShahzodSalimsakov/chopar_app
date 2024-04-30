@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chopar_app/widgets/news/newsList.dart';
 import 'package:chopar_app/widgets/sales/banner.dart';
 import 'package:chopar_app/widgets/sales/salesList.dart';

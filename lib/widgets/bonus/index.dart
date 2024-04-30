@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'package:chopar_app/models/basket.dart';
-import 'package:chopar_app/models/basket_data.dart';
-import 'package:chopar_app/models/product_section.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/services/user_repository.dart';
 import 'package:chopar_app/widgets/bonus/bonus_shuffle.dart';
@@ -10,9 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:overlay_dialog/overlay_dialog.dart';
 import 'package:http/http.dart' as http;
 
 class BonusIndex extends HookWidget {
@@ -45,6 +40,7 @@ class BonusIndex extends HookWidget {
 
     useEffect(() {
       getProducts(context);
+      return null;
     }, []);
 
     return ValueListenableBuilder<Box<User>>(

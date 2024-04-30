@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/models/basket_item_quantity.dart';
@@ -15,6 +14,7 @@ import 'package:chopar_app/models/registered_review.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/routes/router.dart';
+import 'package:chopar_app/utils/http_locale_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -28,7 +28,6 @@ import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/home_scroll_position.dart';
 import 'models/stock.dart';
-import 'utils/http_locale_loader.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -124,8 +123,8 @@ void main() async {
       supportedLocales: [Locale('ru'), Locale('uz')],
       path: 'https://api.choparpizza.uz/api/get_langs',
       fallbackLocale: Locale('ru'),
-      assetLoader: HttpAssetLoader(),
       useOnlyLangCode: true,
+      assetLoader: HttpAssetLoader(),
       child: MainApp()));
 }
 

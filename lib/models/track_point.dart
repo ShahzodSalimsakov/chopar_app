@@ -29,8 +29,8 @@ class TrackPointLocationData {
 
   factory TrackPointLocationData.fromMap(Map<String, dynamic> map) {
     return TrackPointLocationData(
-      latitude: double.parse(map['latitude']) as double,
-      longitude: double.parse(map['longitude']) as double,
+      latitude: double.parse(map['latitude']),
+      longitude: double.parse(map['longitude']),
     );
   }
 

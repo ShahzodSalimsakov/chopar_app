@@ -8,7 +8,6 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
@@ -268,7 +267,6 @@ class ProductDetail extends HookWidget {
       if (activeModifiers.value.contains(modId)) {
         Modifiers currentModifier =
             modifiers.firstWhere((mod) => mod.id == modId);
-        if (currentModifier == null) return;
         if (currentModifier.price == 0) return;
         List<int> resultModifiers = activeModifiers.value
             .where((id) => modId != id)
@@ -327,7 +325,7 @@ class ProductDetail extends HookWidget {
                     .toStringAsFixed(0));
           }
 
-          if (modifiers != null && modifiers.isNotEmpty) {
+          if (modifiers.isNotEmpty) {
             modifiers.forEach((mod) {
               if (activeModifiers.value.contains(mod.id)) {
                 price += int.parse(
@@ -383,13 +381,11 @@ class ProductDetail extends HookWidget {
       if (mods == null) {
         mods = activeModifiers.value;
       }
-      if (modifiers != null) {
-        selectedModifiers = modifiers
-            .where((m) => mods!.contains(m.id))
-            .map((m) => ({'id': m.id}))
-            .toList();
-      }
-
+      selectedModifiers = modifiers
+          .where((m) => mods!.contains(m.id))
+          .map((m) => ({'id': m.id}))
+          .toList();
+    
       int selectedProdId = 0;
       if (detail.variants != null && detail.variants.length > 0) {
         Variants activeVariant = detail.variants

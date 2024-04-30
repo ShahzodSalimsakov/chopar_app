@@ -4,7 +4,6 @@ import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hex/hex.dart';
@@ -189,7 +188,7 @@ class AuthModal extends HookWidget {
                           appContext: context,
                           keyboardType: TextInputType.number,
                           onCompleted: (String code) {
-                            if (code!.length == 4) {
+                            if (code.length == 4) {
                               otpCode.value = code;
                               trySignIn();
                             }
@@ -341,6 +340,7 @@ class AuthModal extends HookWidget {
                                 if (val == null || val.isEmpty) {
                                   return 'Укажите своё имя';
                                 }
+                                return null;
                               },
                               decoration: InputDecoration(
                                   labelText: 'Ваше имя',
@@ -387,6 +387,7 @@ class AuthModal extends HookWidget {
                                 if (val == null) {
                                   return 'Укажите день рождения';
                                 }
+                                return null;
                               },
                               // enabled: true,
                             ),
@@ -485,7 +486,7 @@ class AuthModal extends HookWidget {
                                     DateFormat('yyyy-MM-dd')
                                         .format(values['birth']);
                               }
-                              formData['gender'] = _gender.value!.toString();
+                              formData['gender'] = _gender.value.toString();
 
                               response = await http.post(url,
                                   headers: requestHeaders,

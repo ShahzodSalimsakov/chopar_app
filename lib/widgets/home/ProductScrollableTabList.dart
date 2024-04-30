@@ -302,7 +302,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
   Widget productImage(String? image) {
     if (image != null) {
       return CachedNetworkImage(
-        imageUrl: image!,
+        imageUrl: image,
         placeholder: (context, url) =>
             CircularProgressIndicator(color: Colors.yellow.shade600),
         width: 170.0,
@@ -442,8 +442,8 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
           // }
           basketData!.lines!.forEach((element) {
             if (product!.variants != null) {
-              product!.variants!.forEach((variant) {
-                if (element.variant!.productId == variant!.id) {
+              product.variants!.forEach((variant) {
+                if (element.variant!.productId == variant.id) {
                   productLine = element;
                 }
               });
@@ -491,10 +491,10 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
                     ((100 - double.parse(configData!["discount_value"])) / 100))
                 .toString();
 
-            if (product?.variants != null && product!.variants!.isNotEmpty) {
+            if (product.variants != null && product.variants!.isNotEmpty) {
               beforePrice = product.variants!.first.price;
             } else {
-              beforePrice = product!.price;
+              beforePrice = product.price;
             }
           }
         }
@@ -877,7 +877,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
             curve: Curves.easeIn);
       }
     }
-    DefaultTabController.of(tabContext!)!.animateTo(
+    DefaultTabController.of(tabContext!).animateTo(
       scrolledIndex,
       duration: Duration(milliseconds: 100),
     );
@@ -923,7 +923,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
           return ScrollsToTop(
             onScrollsToTop: (ScrollsToTopEvent event) async {
               scrollTo(0);
-              DefaultTabController.of(tabContext!)!.animateTo(
+              DefaultTabController.of(tabContext!).animateTo(
                 0,
                 duration: Duration(milliseconds: 100),
               );

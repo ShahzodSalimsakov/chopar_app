@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hashids2/hashids2.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:html/parser.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -64,7 +63,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
       };
 
       var url =
-          Uri.https('api.choparpizza.uz', '/api/baskets/${basket!.encodedId}');
+          Uri.https('api.choparpizza.uz', '/api/baskets/${basket.encodedId}');
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200 || response.statusCode == 201) {
         var json = jsonDecode(response.body);
@@ -340,8 +339,8 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
           // }
           basketData!.lines!.forEach((element) {
             if (product!.variants != null) {
-              product!.variants!.forEach((variant) {
-                if (element.variant!.productId == variant!.id) {
+              product.variants!.forEach((variant) {
+                if (element.variant!.productId == variant.id) {
                   productLine = element;
                 }
               });
@@ -389,10 +388,10 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                     ((100 - double.parse(configData!["discount_value"])) / 100))
                 .toString();
 
-            if (product?.variants != null && product!.variants!.isNotEmpty) {
+            if (product.variants != null && product.variants!.isNotEmpty) {
               beforePrice = product.variants!.first.price;
             } else {
-              beforePrice = product!.price;
+              beforePrice = product.price;
             }
           }
         }

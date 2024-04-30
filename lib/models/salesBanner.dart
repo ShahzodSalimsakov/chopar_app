@@ -51,10 +51,8 @@ class SalesBanner {
     data['sort'] = this.sort;
     data['city_id'] = this.cityId;
     data['locale'] = this.locale;
-    if (this.asset != null) {
-      data['asset'] = this.asset.map((v) => v.toJson()).toList();
-    }
-    return data;
+    data['asset'] = this.asset.map((v) => v.toJson()).toList();
+      return data;
   }
 }
 
