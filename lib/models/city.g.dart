@@ -26,7 +26,7 @@ class CityAdapter extends TypeAdapter<City> {
       lon: fields[6] as String,
       active: fields[7] as bool,
       sort: fields[8] as int,
-      phone: fields[9] as String,
+      phone: fields[9] as String?,
     );
   }
 

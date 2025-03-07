@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:chopar_app/pages/home.dart';
+import 'package:chopar_app/pages/home.dart' as home_page;
 import 'package:chopar_app/routes/router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -22,15 +22,13 @@ class MessageHandlerPageState extends State<MessageHandlerPage> {
     print("onMessage: ${message.data['screen']}");
     String? route = message.data['route'];
     if (route != null) {
-      getIt<AppRouter>().pushNamed(route);
+      Navigator.of(context).pushNamed(route);
     }
 
     if (message.data['view'] != null) {
       print('${message.data['view']}/${message.data['id']}');
-      getIt<AppRouter>()
+      Navigator.of(context)
           .pushNamed('${message.data['view']}/${message.data['id']}');
-
-      // getIt<AppRouter>().push(OrderDetailPage(orderId: message.data['id']));
     }
 
     // if (screen == "secondScreen") {
@@ -94,6 +92,6 @@ class MessageHandlerPageState extends State<MessageHandlerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Home();
+    return const home_page.Home();
   }
 }

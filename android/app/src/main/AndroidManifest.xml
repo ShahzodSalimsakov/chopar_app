@@ -1,11 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.havoqand.chopar">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="havoqand.chopar">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Add this to handle plugins that require higher SDK versions -->
+    <uses-sdk
+        tools:overrideLibrary="io.flutter.plugins.flutter_plugin_android_lifecycle,me.carda.awesome_notifications,io.flutter.plugins.imagepicker,io.flutter.plugins.camera,io.flutter.plugins.videoplayer" />
+
     <application
         android:label="Chopar Pizza"
         android:icon="@mipmap/ic_launcher">

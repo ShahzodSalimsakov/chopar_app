@@ -6,13 +6,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class BannerWidget extends HookWidget {
-  final CarouselController _controller = CarouselController();
+  BannerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final banner = useState<List<SalesBanner>>(List<SalesBanner>.empty());
     final _current = useState<int>(0);
     final isMounted = useValueNotifier<bool>(true);
+    final controller = useState(CarouselController());
 
     Future<void> getSalesBanner() async {
       Map<String, String> requestHeaders = {
@@ -26,7 +27,7 @@ class BannerWidget extends HookWidget {
         var json = jsonDecode(response.body);
         if (isMounted.value) {
           List<SalesBanner> bannerList = List<SalesBanner>.from(
-              json['data'].map((b) => new SalesBanner.fromJson(b)).toList());
+              json['data'].map((b) => SalesBanner.fromJson(b)).toList());
           banner.value = bannerList;
         }
       }
@@ -43,7 +44,6 @@ class BannerWidget extends HookWidget {
       width: MediaQuery.of(context).size.width,
       child: Column(children: [
         CarouselSlider(
-          carouselController: _controller,
           options: CarouselOptions(
               viewportFraction: 1.0,
               height: 200.0,
@@ -60,9 +60,10 @@ class BannerWidget extends HookWidget {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       image: DecorationImage(
-                        image: NetworkImage((slide.asset[1] != null
-                            ? slide.asset[1].link
-                            : slide.asset[0].link)),
+                        image: NetworkImage(
+                            (slide.asset.length > 1 && slide.asset[1] != null
+                                ? slide.asset[1].link
+                                : slide.asset[0].link)),
                         fit: BoxFit.fitWidth,
                       )),
                 );
@@ -73,17 +74,14 @@ class BannerWidget extends HookWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: banner.value.asMap().entries.map((entry) {
-            return GestureDetector(
-              onTap: () => _controller.animateToPage(entry.key),
-              child: Container(
-                width: 15.0,
-                height: 3.0,
-                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.yellow.shade700
-                        .withOpacity(_current.value == entry.key ? 0.9 : 0.4)),
-              ),
+            return Container(
+              width: 15.0,
+              height: 3.0,
+              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Colors.yellow.shade700
+                      .withOpacity(_current.value == entry.key ? 0.9 : 0.4)),
             );
           }).toList(),
         ),

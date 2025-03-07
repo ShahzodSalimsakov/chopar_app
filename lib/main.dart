@@ -13,8 +13,10 @@ import 'package:chopar_app/models/pay_type.dart';
 import 'package:chopar_app/models/registered_review.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
+import 'package:chopar_app/pages/home.dart';
 import 'package:chopar_app/routes/router.dart';
 import 'package:chopar_app/utils/http_locale_loader.dart';
+import 'package:chopar_app/utils/my_alert_dialog.dart' as custom_dialog;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -186,16 +188,14 @@ class _MainAppState extends State<MainApp> {
         statusBarBrightness:
             Brightness.light // Dark == white status bar -- for IOS.
         ));
-    final router = getIt<AppRouter>();
-    return MaterialApp.router(
+    return MaterialApp(
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       title: 'Chopar',
       theme: ThemeData(primaryColor: Colors.white, fontFamily: 'Ubuntu'),
-      routerDelegate: AutoRouterDelegate(router),
-      routeInformationParser: router.defaultRouteParser(),
+      home: const Home(),
     );
   }
 }

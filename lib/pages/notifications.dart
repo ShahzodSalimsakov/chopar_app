@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chopar_app/pages/notifications_detail.dart';
 import 'package:chopar_app/routes/router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         actions: [
           GestureDetector(
               onTap: () {
-                context.router.pop();
+                Navigator.of(context).pop();
               },
               child: const Padding(
                 padding: EdgeInsets.only(right: 28),
@@ -161,14 +162,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                         children: [
                                           TextButton(
                                               onPressed: () {
-                                                context.router.push(
-                                                    NotificationDetailRoute(
-                                                        id: _notifications[
-                                                                index]['id']
-                                                            .toString(),
-                                                        notification:
-                                                            _notifications[
-                                                                index]));
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        NotificationDetailPage(
+                                                      id: _notifications[index]
+                                                              ['id']
+                                                          .toString(),
+                                                      notification:
+                                                          _notifications[index],
+                                                    ),
+                                                  ),
+                                                );
                                               },
                                               child: Text(
                                                 'Подробнее',

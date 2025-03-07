@@ -1,69 +1,72 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 
-import '../message_handler.dart';
+import '../pages/home.dart';
 import '../pages/notifications.dart';
 import '../pages/notifications_detail.dart';
 import '../pages/order_detail.dart';
 import '../pages/orders.dart';
 import '../pages/personal_data.dart';
-part 'router.gr.dart';
 
-// @MaterialAutoRouter(replaceInRouteName: 'Page,Route', routes: [
-//   AutoRoute(path: '/', name: 'HomePage', page: MessageHandler),
-//   AutoRoute(
-//       path: 'notifications',
-//       name: 'NotificationsPage',
-//       page: EmptyRouterPage,
-//       children: [
-//         AutoRoute(
-//           path: '',
-//           name: 'NotificationsRoute',
-//           page: NotificationsPage,
-//         ),
-//         AutoRoute(
-//           path: ':id',
-//           page: NotificationDetailPage,
-//         )
-//       ]),
-//   AutoRoute(
-//       path: 'order',
-//       name: 'OrdersPage',
-//       page: EmptyRouterPage,
-//       children: [
-//         AutoRoute(
-//           path: '',
-//           name: 'OrdersList',
-//           page: Orders,
-//         ),
-//         AutoRoute(
-//           path: ':orderId',
-//           name: 'OrderDetailPage',
-//           page: OrderDetail,
-//         )
-//       ]),
-// ])
-// class $AppRouter {}
+// Simple router implementation
+class AppRouter {
+  // Method to handle navigation
+  void pushNamed(String route) {
+    // Implementation will be added later
+  }
 
-@AutoRouterConfig(replaceInRouteName: 'Page,Route')
-class AppRouter extends _$AppRouter {
+  // Method for router delegate
+  RouterDelegate<Object> delegate() {
+    return _AppRouterDelegate();
+  }
+
+  // Method for route information parser
+  RouteInformationParser<Object> defaultRouteParser() {
+    return _AppRouteInformationParser();
+  }
+}
+
+// Custom router delegate
+class _AppRouterDelegate extends RouterDelegate<Object>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<Object> {
   @override
-  List<AutoRoute> get routes => [
-        AutoRoute(path: '/', page: MessageHandlerRoute.page),
-        AutoRoute(
-          path: '/notifications',
-          page: NotificationsRoute.page,
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      key: navigatorKey,
+      pages: [
+        MaterialPage(
+          key: const ValueKey('HomePage'),
+          child: Home(),
         ),
-        AutoRoute(
-          path: '/:id',
-          page: NotificationDetailRoute.page,
-        ),
-        AutoRoute(
-          path: '/order',
-          page: OrdersRoute.page,
-        ),
-        AutoRoute(
-          path: '/order/:orderId',
-          page: OrderDetailRoute.page,
-        )
-      ];
+      ],
+      onPopPage: (route, result) {
+        if (!route.didPop(result)) {
+          return false;
+        }
+        return true;
+      },
+    );
+  }
+
+  @override
+  Future<void> setNewRoutePath(Object configuration) async {
+    // Implementation will be added later
+  }
+}
+
+// Custom route information parser
+class _AppRouteInformationParser extends RouteInformationParser<Object> {
+  @override
+  Future<Object> parseRouteInformation(
+      RouteInformation routeInformation) async {
+    return {};
+  }
+
+  @override
+  RouteInformation? restoreRouteInformation(Object configuration) {
+    return const RouteInformation(location: '/');
+  }
 }

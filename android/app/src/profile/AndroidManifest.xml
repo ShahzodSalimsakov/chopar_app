@@ -1,7 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.havoqand.chopar">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="havoqand.chopar">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Add this to handle plugins that require higher SDK versions -->
+    <uses-sdk
+        tools:overrideLibrary="io.flutter.plugins.flutter_plugin_android_lifecycle,me.carda.awesome_notifications,io.flutter.plugins.imagepicker,io.flutter.plugins.camera,io.flutter.plugins.videoplayer" />
 </manifest>

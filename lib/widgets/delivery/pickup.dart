@@ -10,7 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:yandex_mapkit/yandex_mapkit.dart';
-import 'package:dart_date/dart_date.dart';
 
 class Pickup extends HookWidget {
   late YandexMapController controller;
@@ -43,25 +42,35 @@ class Pickup extends HookWidget {
             if (t.openWork == null) {
               return null;
             } else {
-              DateTime openWork = Date.parse(t.openWork!);
+              DateTime openWork = DateTime.parse(t.openWork!);
               openWork = openWork.toLocal();
-              openWork = openWork.setDay(currentTime.day);
-              openWork = openWork.setMonth(currentTime.month);
-              openWork = openWork.setYear(currentTime.year);
-              DateTime closeWork = Date.parse(t.closeWork!);
+              openWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  openWork.hour,
+                  openWork.minute,
+                  openWork.second);
+              DateTime closeWork = DateTime.parse(t.closeWork!);
               closeWork = closeWork.toLocal();
-              closeWork = closeWork.setDay(currentTime.day);
-              closeWork = closeWork.setMonth(currentTime.month);
-              closeWork = closeWork.setYear(currentTime.year);
+              closeWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  closeWork.hour,
+                  closeWork.minute,
+                  closeWork.second);
 
-              if (closeWork.getHours < openWork.getHours) {
-                if (currentTime < openWork && currentTime > closeWork) {
+              if (closeWork.hour < openWork.hour) {
+                if (currentTime.isBefore(openWork) &&
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
                 }
               } else {
-                if (currentTime < openWork || currentTime > closeWork) {
+                if (currentTime.isBefore(openWork) ||
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
@@ -72,25 +81,35 @@ class Pickup extends HookWidget {
             if (t.openWeekend == null) {
               return null;
             } else {
-              DateTime openWork = Date.parse(t.openWeekend!);
+              DateTime openWork = DateTime.parse(t.openWeekend!);
               openWork = openWork.toLocal();
-              openWork = openWork.setDay(currentTime.day);
-              openWork = openWork.setMonth(currentTime.month);
-              openWork = openWork.setYear(currentTime.year);
-              DateTime closeWork = Date.parse(t.closeWeekend!);
+              openWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  openWork.hour,
+                  openWork.minute,
+                  openWork.second);
+              DateTime closeWork = DateTime.parse(t.closeWeekend!);
               closeWork = closeWork.toLocal();
-              closeWork = closeWork.setDay(currentTime.day);
-              closeWork = closeWork.setMonth(currentTime.month);
-              closeWork = closeWork.setYear(currentTime.year);
+              closeWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  closeWork.hour,
+                  closeWork.minute,
+                  closeWork.second);
 
-              if (closeWork.getHours < openWork.getHours) {
-                if (currentTime < openWork && currentTime > closeWork) {
+              if (closeWork.hour < openWork.hour) {
+                if (currentTime.isBefore(openWork) &&
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
                 }
               } else {
-                if (currentTime < openWork || currentTime > closeWork) {
+                if (currentTime.isBefore(openWork) ||
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
@@ -150,7 +169,9 @@ class Pickup extends HookWidget {
             altitude: 0,
             heading: 0,
             speed: 0,
-            speedAccuracy: 0, altitudeAccuracy: 0.0, headingAccuracy: 0.0);
+            speedAccuracy: 0,
+            altitudeAccuracy: 0.0,
+            headingAccuracy: 0.0);
       }
 
       if (currentPosition != null) {
@@ -174,25 +195,35 @@ class Pickup extends HookWidget {
             if (t.openWork == null) {
               return null;
             } else {
-              DateTime openWork = Date.parse(t.openWork!);
+              DateTime openWork = DateTime.parse(t.openWork!);
               openWork = openWork.toLocal();
-              openWork = openWork.setDay(currentTime.day);
-              openWork = openWork.setMonth(currentTime.month);
-              openWork = openWork.setYear(currentTime.year);
-              DateTime closeWork = Date.parse(t.closeWork!);
+              openWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  openWork.hour,
+                  openWork.minute,
+                  openWork.second);
+              DateTime closeWork = DateTime.parse(t.closeWork!);
               closeWork = closeWork.toLocal();
-              closeWork = closeWork.setDay(currentTime.day);
-              closeWork = closeWork.setMonth(currentTime.month);
-              closeWork = closeWork.setYear(currentTime.year);
+              closeWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  closeWork.hour,
+                  closeWork.minute,
+                  closeWork.second);
 
-              if (closeWork.getHours < openWork.getHours) {
-                if (currentTime < openWork && currentTime > closeWork) {
+              if (closeWork.hour < openWork.hour) {
+                if (currentTime.isBefore(openWork) &&
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
                 }
               } else {
-                if (currentTime < openWork || currentTime > closeWork) {
+                if (currentTime.isBefore(openWork) ||
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
@@ -203,25 +234,35 @@ class Pickup extends HookWidget {
             if (t.openWeekend == null) {
               return null;
             } else {
-              DateTime openWork = Date.parse(t.openWeekend!);
+              DateTime openWork = DateTime.parse(t.openWeekend!);
               openWork = openWork.toLocal();
-              openWork = openWork.setDay(currentTime.day);
-              openWork = openWork.setMonth(currentTime.month);
-              openWork = openWork.setYear(currentTime.year);
-              DateTime closeWork = Date.parse(t.closeWeekend!);
+              openWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  openWork.hour,
+                  openWork.minute,
+                  openWork.second);
+              DateTime closeWork = DateTime.parse(t.closeWeekend!);
               closeWork = closeWork.toLocal();
-              closeWork = closeWork.setDay(currentTime.day);
-              closeWork = closeWork.setMonth(currentTime.month);
-              closeWork = closeWork.setYear(currentTime.year);
+              closeWork = DateTime(
+                  currentTime.year,
+                  currentTime.month,
+                  currentTime.day,
+                  closeWork.hour,
+                  closeWork.minute,
+                  closeWork.second);
 
-              if (closeWork.getHours < openWork.getHours) {
-                if (currentTime < openWork && currentTime > closeWork) {
+              if (closeWork.hour < openWork.hour) {
+                if (currentTime.isBefore(openWork) &&
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;
                 }
               } else {
-                if (currentTime < openWork || currentTime > closeWork) {
+                if (currentTime.isBefore(openWork) ||
+                    currentTime.isAfter(closeWork)) {
                   t.isWorking = false;
                 } else {
                   t.isWorking = true;

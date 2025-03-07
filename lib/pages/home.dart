@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/delivery_type.dart';
 import 'package:chopar_app/models/stock.dart';
@@ -25,6 +26,7 @@ import '../models/city.dart';
 
 OverlayEntry? _previousEntry;
 
+@RoutePage()
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -36,47 +38,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-
-  // showAlertOnChangeLocation(LocationData currentLocation,
-  //     DeliveryLocationData deliveryData, String house, String location) async {
-  //   await Future.delayed(Duration(milliseconds: 50));
-  //   String deliveryText = '';
-  //   if (deliveryData != null) {
-  //     deliveryText = deliveryData?.address ?? '';
-  //     String house =
-  //         deliveryData.house != null ? ', дом: ${deliveryData.house}' : '';
-  //     String flat =
-  //         deliveryData.flat != null ? ', кв.: ${deliveryData.flat}' : '';
-  //     String entrance = deliveryData.entrance != null
-  //         ? ', подъезд: ${deliveryData.entrance}'
-  //         : '';
-  //     deliveryText = '${deliveryText}${house}${flat}${entrance}';
-  //   }
-  //   PlatformAlertDialog alert = PlatformAlertDialog(
-  //     title: Text("Изменилось местоположение"),
-  //     content: Text("Ваш адрес: ${deliveryText}?"),
-  //     actions: [
-  //       TextButton(
-  //           onPressed: () {
-  //             Navigator.push(context,
-  //                 MaterialPageRoute(builder: (context) => DeliveryModal()));
-  //           },
-  //           child: Text("Да")),
-  //       TextButton(
-  //           onPressed: () {
-  //             return Navigator.pop(context, true);
-  //           },
-  //           child: Text("Нет"))
-  //     ],
-  //   );
-  //   showPlatformDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alert;
-  //     },
-  //   );
-  // }
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   Future<void> setLocation(Position location, DeliveryLocationData deliveryData,
       String house, List<AddressItems>? addressItems) async {
@@ -92,12 +54,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
       box.put('deliveryType', deliveryType);
     }
-    // else if (currentDeliver.value != DeliveryTypeEnum.pickup) {
-    //   DeliveryType deliveryType = DeliveryType();
-    //   deliveryType.value = DeliveryTypeEnum.pickup;
-    //   Box<DeliveryType> box = Hive.box<DeliveryType>('deliveryType');
-    //   box.put('deliveryType', deliveryType);
-    // }
+
     addressItems?.forEach((item) async {
       if (item.kind == 'province' || item.kind == 'area') {
         Map<String, String> requestHeaders = {
@@ -155,7 +112,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Future<void> initConnectivity() async {
-    late ConnectivityResult result;
+    late List<ConnectivityResult> result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
@@ -164,9 +121,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       return;
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) {
       return Future.value(null);
     }
@@ -174,9 +128,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return _updateConnectionStatus(result);
   }
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> results) async {
     setState(() {
-      _connectionStatus = result;
+      _connectionStatus =
+          results.isNotEmpty ? results.first : ConnectivityResult.none;
     });
   }
 
@@ -217,11 +172,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          // Permissions are denied, next time you could try
-          // requesting permissions again (this is also where
-          // Android's shouldShowRequestPermissionRationale
-          // returned true. According to Android guidelines
-          // your App should show an explanatory UI now.
           hasPermission = false;
         }
       }

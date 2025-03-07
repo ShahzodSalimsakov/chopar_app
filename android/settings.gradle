@@ -8,4 +8,9 @@ localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
 
 def flutterSdkPath = properties.getProperty("flutter.sdk")
 assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+
+// Note: There's a warning about using the apply script method for Flutter plugins,
+// but we're keeping it this way for now as it's working. In the future, this should
+// be migrated to the declarative plugins block approach when Flutter provides better
+// documentation on how to do this correctly.
 apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"

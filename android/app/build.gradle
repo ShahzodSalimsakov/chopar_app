@@ -21,6 +21,10 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// Note: There's a warning about using the apply script method for Flutter plugins,
+// but we're keeping it this way for now as it's working. In the future, this should
+// be migrated to the declarative plugins block approach when Flutter provides better
+// documentation on how to do this correctly.
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
@@ -33,7 +37,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 34
+    compileSdk = 34
+    namespace = "havoqand.chopar"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,10 +46,15 @@ android {
 
     defaultConfig {
         applicationId "havoqand.chopar"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        
+        // Add this to handle plugins that require higher SDK versions
+        manifestPlaceholders = [
+            'android.support.FILE_PROVIDER_PATHS': 'filepaths'
+        ]
     }
 
     signingConfigs {
@@ -60,7 +70,15 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
+    
+    // Add this to handle Kotlin metadata version issues
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += [
+            '-Xskip-metadata-version-check',
+            '-Xskip-prerelease-check'
+        ]
+    }
 }
 
 flutter {
@@ -69,10 +87,23 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:29.0.1')
+    implementation platform('com.google.firebase:firebase-bom:32.7.2')
     implementation 'com.google.firebase:firebase-analytics'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.yandex.android:maps.mobile:4.0.0-full'
+    
+    // Force specific versions of problematic dependencies
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat-resources:1.6.1'
+}
+
+// Add a resolution strategy to force appcompat to version 1.6.1
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.appcompat:appcompat:1.6.1'
+        force 'androidx.appcompat:appcompat-resources:1.6.1'
+        // Force other dependencies if needed
+    }
 }
