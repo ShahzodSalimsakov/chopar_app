@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:auto_route/auto_route.dart';
 import 'package:chopar_app/models/order.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -9,14 +8,11 @@ import 'package:hashids2/hashids2.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-@RoutePage()
 class OrdersPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final orders = useState<List<Order>>(List<Order>.empty());
-    var t = AppLocalizations.of(context);
     //is loading
     var isLoading = useState(true);
 
@@ -58,7 +54,7 @@ class OrdersPage extends HookWidget {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           centerTitle: true,
-          title: Text('Мои заказы',
+          title: Text(tr('my_orders'),
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
         ),
         body: SafeArea(
@@ -96,26 +92,24 @@ class OrdersPage extends HookWidget {
                     );
 
                     final formatCurrency = new NumberFormat.currency(
-                        locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+                        locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
                     return Container(
-                      // margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      padding: EdgeInsets.all(16),
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,121 +117,141 @@ class OrdersPage extends HookWidget {
                               Text(
                                 '№ ${order.id}',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w400, fontSize: 20),
+                                    fontWeight: FontWeight.w600, fontSize: 16),
                               ),
-                              Text(tr('order_status_${order.status}'),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: order.status == 'cancelled'
+                                      ? Colors.red.shade50
+                                      : order.status == 'delivered'
+                                          ? Colors.green.shade50
+                                          : Colors.yellow.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  tr('order_status_${order.status}'),
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      color: order.status == 'cancelled'
-                                          ? Colors.red
-                                          : Colors.green))
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                    color: order.status == 'cancelled'
+                                        ? Colors.red
+                                        : order.status == 'delivered'
+                                            ? Colors.green
+                                            : Colors.yellow.shade700,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
+                          SizedBox(height: 4),
                           Row(
                             children: [
-                              Text(createdAtFormat.format(createdAt),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      color: Colors.grey)),
+                              Icon(
+                                Icons.access_time,
+                                size: 14,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                createdAtFormat.format(createdAt),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Divider(
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 12),
+                          Divider(color: Colors.grey.shade200, thickness: 1),
+                          SizedBox(height: 12),
                           order.deliveryType == 'deliver'
                               ? Row(
                                   children: [
                                     Flexible(
-                                        child: Text(address,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 16,
-                                            ))),
+                                      child: Text(
+                                        address,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 )
                               : order.terminalData != null
                                   ? Row(
                                       children: [
+                                        Icon(
+                                          Icons.store,
+                                          color: Colors.grey.shade700,
+                                          size: 16,
+                                        ),
+                                        SizedBox(width: 8),
                                         Flexible(
-                                            child: Text(
-                                                'Филиал: ${order.terminalData?.name ?? ''}',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 16,
-                                                ))),
+                                          child: Text(
+                                            '${tr('branch')}: ${order.terminalData?.name ?? ''}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     )
                                   : SizedBox(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Divider(
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 12),
+                          Divider(color: Colors.grey.shade200, thickness: 1),
+                          SizedBox(height: 12),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              // Text(
-                              //   t!.prodCount(order.basket?.lines?.length ?? 0),
-                              //   style: TextStyle(
-                              //       fontWeight: FontWeight.w400, fontSize: 16),
-                              // ), // TODO: fix plural data
                               Text(
-                                  formatCurrency.format(order.orderTotal / 100),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                  ))
+                                formatCurrency.format(order.orderTotal / 100),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
                             ],
                           ),
+                          SizedBox(height: 16),
                           SizedBox(
-                            height: 10,
-                          ),
-                          Divider(
-                            color: Colors.grey,
-                          ),
-                          SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    context.router.pushNamed(
-                                        '/order/${hashids.encode(order.id)}');
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => OrderDetail(
-                                    //         orderId: hashids.encode(order.id)),
-                                    //   ),
-                                    // );
-                                  },
-                                  child: Text(
-                                    'Детали заказа',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.grey.shade600),
+                            width: double.infinity,
+                            height: 44,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                print(
+                                    "Navigating to order details with ID: ${hashids.encode(order.id)}");
+                                Navigator.of(context).pushNamed('/order-detail',
+                                    arguments: {
+                                      'orderId': hashids.encode(order.id)
+                                    });
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.grey.shade200),
+                                elevation: MaterialStateProperty.all(0),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
                                   ),
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.grey.shade300),
-                                      shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(22.0),
-                                      )))))
+                                ),
+                              ),
+                              child: Text(
+                                tr('order_details'),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     );

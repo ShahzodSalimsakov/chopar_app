@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.52+52
+version: 1.0.62+62
 
 environment:
   sdk: ">=2.17.0"
@@ -26,7 +26,7 @@ dependencies:
     path: packages/authentication_repository
   auto_route: ^9.3.0+1
   awesome_notifications: ^0.10.1
-  cached_network_image: ^3.3.0
+  cached_network_image: ^3.2.3
   carousel_slider: ^5.0.0
   collection: ^1.15.0
   connectivity_plus: ^6.1.3
@@ -68,6 +68,7 @@ dependencies:
   hive_flutter: ^1.1.0
   html: ^0.15.0
   http: ^1.3.0
+  in_app_update: ^4.2.2
   intl: ^0.17.0
   intl_phone_number_input: ^0.7.0+2
   meta: ^1.3.0
@@ -80,6 +81,7 @@ dependencies:
   scrollable_list_tabview: 0.2.0-nullsafety
   scrollable_positioned_list: ^0.2.3
   scrolls_to_top: ^2.1.1
+  shared_preferences: ^2.5.2
   simple_html_css: ^5.0.0
   timer_count_down: ^2.2.0
   top_snackbar_flutter: ^3.1.0
@@ -90,16 +92,17 @@ dependencies:
   uuid: ^3.0.4
   vertical_scrollable_tabview: ^0.1.0
   yandex_mapkit: ^4.1.0
+  package_info_plus: ^4.2.0
 
 dependency_overrides:
   country_pickers: ^3.0.1
   intl: ^0.17.0
-  package_info_plus: ^4.2.0
+  awesome_notifications_fcm: ^0.10.1
+  flutter_plugin_android_lifecycle: 2.0.15 # Using an older version that doesn't require SDK 35
 dev_dependencies:
   analyzer: ^6.7.0
   auto_route_generator: ^9.0.0
   awesome_notifications: ^0.10.1
-  awesome_notifications_fcm: ^0.10.1
   build_runner: null
   easy_localization: ^3.0.6
   flutter_native_splash: ^2.2.10
@@ -132,6 +135,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - lib/l10n/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

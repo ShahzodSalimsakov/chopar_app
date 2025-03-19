@@ -4,6 +4,7 @@ import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/terminals_modal.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
@@ -151,9 +152,8 @@ class Pickup extends HookWidget {
         }
 
         if (!serviceEnabled) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  'Включите геолокацию, чтобы увидеть ближайшие филиалы первыми')));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(tr('enable_location_services'))));
         }
         try {
           if (serviceEnabled) {
@@ -310,7 +310,7 @@ class Pickup extends HookWidget {
                                                   BorderRadius.circular(
                                                       25.0)))),
                                   child: Text(
-                                    'Списком',
+                                    tr('list'),
                                     style: TextStyle(
                                         color: Colors.yellow.shade600),
                                   ))),
@@ -338,7 +338,7 @@ class Pickup extends HookWidget {
                                                   BorderRadius.circular(
                                                       25.0)))),
                                   child: Text(
-                                    'На карте',
+                                    tr('on_map'),
                                     style: TextStyle(color: Colors.grey),
                                   )))
                         ],
@@ -354,8 +354,8 @@ class Pickup extends HookWidget {
                                     if (!terminal.isWorking!) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Данный терминал сейчас не работает')));
+                                              content: Text(tr(
+                                                  'this_terminal_is_not_working'))));
                                       return;
                                     }
                                     Box<Terminals> transaction =

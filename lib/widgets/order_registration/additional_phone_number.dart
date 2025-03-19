@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AdditionalPhoneNumberWidget extends HookWidget {
   final number = PhoneNumber(isoCode: 'UZ');
@@ -14,13 +15,6 @@ class AdditionalPhoneNumberWidget extends HookWidget {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            'Дополнительный номер телефона',
-            style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(
-            height: 20,
-          ),
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40.0),
@@ -45,6 +39,7 @@ class AdditionalPhoneNumberWidget extends HookWidget {
               selectorConfig: SelectorConfig(
                 selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                 showFlags: false,
+                setSelectorButtonAsPrefixIcon: true,
               ),
               ignoreBlank: false,
               autoValidateMode: AutovalidateMode.disabled,
@@ -54,11 +49,17 @@ class AdditionalPhoneNumberWidget extends HookWidget {
               countrySelectorScrollControlled: false,
               keyboardType: TextInputType.number,
               inputBorder: InputBorder.none,
-              hintText: '',
-              errorMessage: 'Неверный номер',
-              spaceBetweenSelectorAndTextField: 0,
+              hintText: tr('invalid_number'),
+              errorMessage: tr('invalid_number'),
+              spaceBetweenSelectorAndTextField: 8,
+              textAlign: TextAlign.left,
+              textAlignVertical: TextAlignVertical.center,
+              inputDecoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                border: InputBorder.none,
+              ),
               textStyle: TextStyle(color: Colors.black, fontSize: 24.0),
-              // inputDecoration: InputDecoration(border: ),
               onSaved: (PhoneNumber number) {},
             ),
           ),

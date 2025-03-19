@@ -7,6 +7,7 @@ import 'package:chopar_app/models/stock.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/yandex_geo_data.dart';
 import 'package:chopar_app/pages/main_page.dart';
+import 'package:chopar_app/services/app_update_service.dart';
 import 'package:chopar_app/widgets/basket/basket.dart';
 import 'package:chopar_app/models/basket.dart';
 import 'package:chopar_app/widgets/home/WorkTime.dart';
@@ -21,6 +22,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
+import 'package:in_app_update/in_app_update.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../models/city.dart';
 
@@ -39,6 +42,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  final AppUpdateService _appUpdateService = AppUpdateService();
+  AppUpdateInfo? _updateInfo;
 
   Future<void> setLocation(Position location, DeliveryLocationData deliveryData,
       String house, List<AddressItems>? addressItems) async {
@@ -142,9 +147,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    // Initialize connectivity
     initConnectivity();
+
+    // We'll check for updates in the didChangeDependencies method
 
     _instanceId();
 
@@ -162,23 +170,56 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       // Test if location services are enabled.
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // Location services are not enabled don't continue
-        // accessing the position and request users of the
-        // App to enable the location services.
-        hasPermission = true;
+        // Location services are not enabled
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(tr('enable_location_services')),
+            action: SnackBarAction(
+              label: tr('settings'),
+              onPressed: () {
+                Geolocator.openLocationSettings();
+              },
+            ),
+          ),
+        );
+        hasPermission = false;
+        return;
       }
 
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(tr('insufficient_location_rights')),
+              action: SnackBarAction(
+                label: tr('allow'),
+                onPressed: () async {
+                  permission = await Geolocator.requestPermission();
+                },
+              ),
+            ),
+          );
           hasPermission = false;
+          return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        // Permissions are denied forever, handle appropriately.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(tr('insufficient_location_rights')),
+            action: SnackBarAction(
+              label: tr('settings'),
+              onPressed: () {
+                Geolocator.openAppSettings();
+              },
+            ),
+          ),
+        );
         hasPermission = false;
+        return;
       }
 
       if (hasPermission) {
@@ -219,6 +260,39 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Check for app updates after the context is available
+    _checkForUpdates();
+  }
+
+  // Check for app updates
+  Future<void> _checkForUpdates() async {
+    // Only check for updates on Android
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      try {
+        _updateInfo = await _appUpdateService.checkForUpdateInfo();
+
+        if (_updateInfo != null &&
+            _updateInfo!.updateAvailability ==
+                UpdateAvailability.updateAvailable) {
+          // If flexible update is allowed, start it
+          if (_updateInfo!.flexibleUpdateAllowed) {
+            _appUpdateService.startFlexibleUpdate(context);
+          }
+          // If immediate update is allowed, perform it
+          else if (_updateInfo!.immediateUpdateAllowed) {
+            _appUpdateService.performImmediateUpdate();
+          }
+        }
+      } catch (e) {
+        debugPrint('Ошибка при проверке обновлений: $e');
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _connectivitySubscription.cancel();
     super.dispose();
@@ -254,7 +328,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                     Center(
                         child: Text(
-                      'Проверьте подключение к интернету',
+                      tr('no_internet'),
                       style: TextStyle(fontSize: 18),
                       textAlign: TextAlign.center,
                     )),
@@ -300,7 +374,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               //         ? Colors.grey
                               //         : Colors.yellow.shade700),
                             ),
-                            label: 'Меню',
+                            label: tr('nav_menu'),
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
@@ -316,7 +390,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               //         ? Colors.grey
                               //         : Colors.yellow.shade700),
                             ),
-                            label: 'Акции',
+                            label: tr('nav_sales'),
                           ),
                           BottomNavigationBarItem(
                             icon: Padding(
@@ -332,7 +406,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               //         ? Colors.grey
                               //         : Colors.yellow.shade700),
                             ),
-                            label: 'Профиль',
+                            label: tr('nav_profile'),
                           ),
                           BottomNavigationBarItem(
                             icon: Stack(
@@ -375,7 +449,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               ],
                             ),
                             // activeIcon: Stack(children: [],),
-                            label: 'Корзина',
+                            label: tr('nav_cart'),
                           ),
                         ],
                         currentIndex: selectedIndex,

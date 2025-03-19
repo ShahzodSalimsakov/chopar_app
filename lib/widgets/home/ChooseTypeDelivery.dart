@@ -4,6 +4,7 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/delivery/delivery.dart';
 import 'package:chopar_app/widgets/delivery/pickup.dart';
 import 'package:chopar_app/widgets/home/DiscountWidget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,11 +19,11 @@ class ChooseTypeDelivery extends StatefulWidget {
 class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
     with SingleTickerProviderStateMixin {
   final myTabs = <Tab>[
-    Tab(text: 'Доставка'),
+    Tab(text: tr('delivery')),
     Tab(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [Text('Самовывоз '), DiscountWidget()],
+      children: [Text(tr('pickup') + ' '), DiscountWidget()],
     )),
   ];
 
@@ -99,7 +100,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                     builder: (context, box, _) {
                       DeliveryLocationData? deliveryLocationData =
                           box.get('deliveryLocationData');
-                      String deliveryText = 'Укажите адрес доставки';
+                      String deliveryText = tr('delivery_address');
                       if (deliveryLocationData != null) {
                         deliveryText = deliveryLocationData.address ?? '';
                         String house = deliveryLocationData.house != null
@@ -134,7 +135,8 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                                 MaterialPageRoute(
                                     builder: (context) => DeliveryWidget()));
                           },
-                          style: TextButton.styleFrom(foregroundColor: Colors.grey));
+                          style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey));
                     }),
                 ValueListenableBuilder<Box<Terminals>>(
                     valueListenable:
@@ -158,7 +160,7 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                                             backgroundColor: Colors.white,
                                             foregroundColor: Colors.black,
                                             centerTitle: true,
-                                            title: Text('Выберите ресторан',
+                                            title: Text(tr('choose_restaurant'),
                                                 style: TextStyle(fontSize: 20)),
                                           ),
                                           body: Pickup(),
@@ -168,14 +170,15 @@ class _ChooseTypeDeliveryState extends State<ChooseTypeDelivery>
                             children: [
                               Text(currentTerminal != null
                                   ? currentTerminal.name!
-                                  : 'Выберите ресторан'),
+                                  : tr('choose_restaurant')),
                               Spacer(),
                               SvgPicture.asset(
                                 'assets/images/edit.svg',
                               ),
                             ],
                           ),
-                          style: TextButton.styleFrom(foregroundColor: Colors.grey));
+                          style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey));
                     }),
               ],
             )),

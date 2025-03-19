@@ -102,7 +102,7 @@ packages:
     source: hosted
     version: "0.10.1"
   awesome_notifications_fcm:
-    dependency: "direct dev"
+    dependency: "direct overridden"
     description:
       name: awesome_notifications_fcm
       sha256: "77c23d452bb40eae06c1bf00ca259a8b9d88f1c6a1e8433fdc3fd94100289b7d"
@@ -608,13 +608,13 @@ packages:
     source: hosted
     version: "7.0.1"
   flutter_plugin_android_lifecycle:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "1c2b787f99bdca1f3718543f81d38aa1b124817dfeb9fb196201bea85b6134bf"
+      sha256: "950e77c2bbe1692bc0874fc7fb491b96a4dc340457f4ea1641443d0a6c1ea360"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.26"
+    version: "2.0.15"
   flutter_rating_bar:
     dependency: "direct main"
     description:
@@ -849,6 +849,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.3"
+  in_app_update:
+    dependency: "direct main"
+    description:
+      name: in_app_update
+      sha256: "489572accaa55b51518b2d64676ca8c3c6d4c989fa53cf718001882237691a3c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.3"
   intl:
     dependency: "direct main"
     description:
@@ -1082,7 +1090,7 @@ packages:
     source: hosted
     version: "2.1.1"
   package_info_plus:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: package_info_plus
       sha256: "7e76fad405b3e4016cd39d08f455a4eb5199723cf594cd1b8916d47140d93017"
@@ -1290,7 +1298,7 @@ packages:
     source: hosted
     version: "2.1.1"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "846849e3e9b68f3ef4b60c60cf4b3e02e9321bc7f4d8c4692cf87ffa82fc8a3a"

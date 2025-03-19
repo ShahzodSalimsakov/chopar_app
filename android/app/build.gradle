@@ -47,7 +47,7 @@ android {
     defaultConfig {
         applicationId "havoqand.chopar"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         
@@ -89,6 +89,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation platform('com.google.firebase:firebase-bom:32.7.2')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -107,3 +110,6 @@ configurations.all {
         // Force other dependencies if needed
     }
 }
+
+// Add the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'

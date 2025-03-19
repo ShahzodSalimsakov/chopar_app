@@ -24,7 +24,7 @@ class AuthModal extends HookWidget {
   final TextEditingController nameFieldController = TextEditingController();
   final initialCountry = 'UZ';
   final number = PhoneNumber(isoCode: 'UZ');
-  late OTPTextEditController controller;
+  OTPTextEditController? controller;
   late OTPInteractor _otpInteractor;
 
   @override
@@ -126,7 +126,7 @@ class AuthModal extends HookWidget {
 
       return () {
         // SmsAutoFill().unregisterListener();
-        controller.stopListen();
+        controller?.stopListen();
         print('Unregistered');
       };
     }, const []);
@@ -154,7 +154,7 @@ class AuthModal extends HookWidget {
                     Row(
                       children: [
                         Text(
-                          'Отправили код на номер',
+                          tr('sent_code_to_number'),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey),
                         )
@@ -180,7 +180,7 @@ class AuthModal extends HookWidget {
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 15),
                         child: PinCodeTextField(
-                          controller: controller,
+                          controller: controller ?? TextEditingController(),
                           enablePinAutofill: true,
                           autoFocus: true,
                           length: 4,
@@ -206,7 +206,7 @@ class AuthModal extends HookWidget {
                         ? Container(
                             child: InkWell(
                               child: Text(
-                                'Получить новый код',
+                                tr('get_new_code'),
                                 style: TextStyle(
                                     color: Colors.yellow.shade600,
                                     decoration: TextDecoration.underline),
@@ -223,7 +223,7 @@ class AuthModal extends HookWidget {
                               build: (_, double time) => Row(
                                 children: [
                                   Text(
-                                    'Код не пришел\n получить новый код через ${time.ceil().toString()} сек.',
+                                    '${tr('code_not_received')} ${time.ceil().toString()} ${tr('seconds')}.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(color: Colors.grey),
                                   )
@@ -253,7 +253,7 @@ class AuthModal extends HookWidget {
                               trySignIn();
                             }
                           },
-                          text: 'Войти',
+                          text: tr('login'),
                         ))
                   ],
                 ),
@@ -269,7 +269,7 @@ class AuthModal extends HookWidget {
                     Row(
                       children: [
                         Text(
-                          'Укажите Ваш номер',
+                          tr('enter_your_number'),
                           style: TextStyle(fontSize: 26.0),
                         )
                       ],
@@ -281,7 +281,7 @@ class AuthModal extends HookWidget {
                     Row(
                       children: [
                         Text(
-                          'чтобы быстро оформлять заказы\n и получать бонусы',
+                          tr('to_quickly_place_orders_and_receive_bonuses'),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey),
                         )
@@ -309,6 +309,7 @@ class AuthModal extends HookWidget {
                           selectorConfig: SelectorConfig(
                             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                             showFlags: false,
+                            setSelectorButtonAsPrefixIcon: true,
                           ),
                           ignoreBlank: false,
                           autoValidateMode: AutovalidateMode.disabled,
@@ -320,8 +321,15 @@ class AuthModal extends HookWidget {
                           keyboardType: TextInputType.number,
                           inputBorder: InputBorder.none,
                           hintText: '',
-                          errorMessage: 'Неверный номер',
-                          spaceBetweenSelectorAndTextField: 0,
+                          errorMessage: tr('invalid_number'),
+                          spaceBetweenSelectorAndTextField: 8,
+                          textAlign: TextAlign.left,
+                          textAlignVertical: TextAlignVertical.center,
+                          inputDecoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 8),
+                            border: InputBorder.none,
+                          ),
                           textStyle:
                               TextStyle(color: Colors.black, fontSize: 24.0),
                           maxLength: 12,
@@ -338,12 +346,12 @@ class AuthModal extends HookWidget {
                               controller: nameFieldController,
                               validator: (String? val) {
                                 if (val == null || val.isEmpty) {
-                                  return 'Укажите своё имя';
+                                  return tr('enter_your_name');
                                 }
                                 return null;
                               },
                               decoration: InputDecoration(
-                                  labelText: 'Ваше имя',
+                                  labelText: tr('your_name'),
                                   floatingLabelStyle:
                                       TextStyle(color: Colors.yellow.shade600),
                                   focusedBorder: OutlineInputBorder(
@@ -368,7 +376,7 @@ class AuthModal extends HookWidget {
                               inputType: InputType.date,
                               // style: const TextStyle(fontSize: 20),
                               decoration: InputDecoration(
-                                  labelText: 'День рождения',
+                                  labelText: tr('birthday'),
                                   floatingLabelStyle:
                                       TextStyle(color: Colors.yellow.shade600),
                                   focusedBorder: OutlineInputBorder(
@@ -385,7 +393,7 @@ class AuthModal extends HookWidget {
                                   : null,
                               validator: (val) {
                                 if (val == null) {
-                                  return 'Укажите день рождения';
+                                  return tr('enter_your_birthday');
                                 }
                                 return null;
                               },
@@ -402,7 +410,7 @@ class AuthModal extends HookWidget {
                               SizedBox(
                                 width: 100,
                                 child: ListTile(
-                                  title: const Text('М'),
+                                  title: Text(tr('male')),
                                   leading: Radio<int>(
                                     activeColor: Colors.yellow.shade600,
                                     value: 1,
@@ -416,7 +424,7 @@ class AuthModal extends HookWidget {
                               SizedBox(
                                 width: 100,
                                 child: ListTile(
-                                  title: const Text('Ж'),
+                                  title: Text(tr('female')),
                                   leading: Radio<int>(
                                     activeColor: Colors.yellow.shade600,
                                     value: 0,
@@ -438,7 +446,7 @@ class AuthModal extends HookWidget {
                       child: DefaultStyledButton(
                         width: MediaQuery.of(context).size.width,
                         isLoading: _isSendingPhone.value == true ? true : null,
-                        text: 'Получить код',
+                        text: tr('get_code'),
                         onPressed: () async {
                           if (_isSendingPhone.value) {
                             return;
@@ -499,16 +507,16 @@ class AuthModal extends HookWidget {
                                     _isShowNameField.value = true;
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
-                                      content: Text(
-                                          'Мы Вас не нашли в нашей системе. Просьба указать своё имя, день рождения и пол.'),
+                                      content:
+                                          Text(tr('name_field_is_required')),
                                       duration: Duration(seconds: 3),
                                     ));
                                   }
                                   if (json['error'] == 'user_is_blocked') {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Вы удаляли свой аккаунт. Просьба связаться с нами.')));
+                                        SnackBar(
+                                            content: Text(tr(
+                                                'you_are_deleting_your_account_please_contact_us'))));
                                   }
                                 } else if (json['success'] != null) {
                                   Codec<String, String> stringToBase64 =

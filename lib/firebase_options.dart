@@ -50,21 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB4PheEMHkqvKa_OJy5GhvEG81GqlinAnc',
-    appId: '1:1047213993186:android:934d58d34b25fd2e7942bb',
-    messagingSenderId: '1047213993186',
-    projectId: 'les-ailes-9fa76',
-    storageBucket: 'les-ailes-9fa76.appspot.com',
+    apiKey: 'AIzaSyBYdHB1y9j9Qwum_oI_Da4a0Y2AlZXfa14',
+    appId: '1:566392578836:android:91432154905336846d5801',
+    messagingSenderId: '566392578836',
+    projectId: 'choparpizza-7ca78',
+    storageBucket: 'choparpizza-7ca78.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBGR1RoRGuqZb3tHQ5Epq7hbOE6Otwnk84',
-    appId: '1:1047213993186:ios:bf9765512b1f3d597942bb',
-    messagingSenderId: '1047213993186',
-    projectId: 'les-ailes-9fa76',
-    storageBucket: 'les-ailes-9fa76.appspot.com',
+    apiKey: 'AIzaSyB3dM-9K-UdIxs3-FazdH2MMRYgPOM6_bE',
+    appId: '1:566392578836:ios:abb66563daa866336d5801',
+    messagingSenderId: '566392578836',
+    projectId: 'choparpizza-7ca78',
+    storageBucket: 'choparpizza-7ca78.appspot.com',
     iosClientId:
-        '1047213993186-gv97e6fbceselt4bhsurgs23v9v9v482.apps.googleusercontent.com',
-    iosBundleId: 'com.havoqandpeople.lesAiles',
+        '566392578836-0lthc4pl20d8pjae6776bfv9bovbpqc2.apps.googleusercontent.com',
+    iosBundleId: 'com.havoqand.chopar',
   );
 }

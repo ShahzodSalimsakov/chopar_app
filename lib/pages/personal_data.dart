@@ -81,7 +81,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
                 centerTitle: true,
-                title: Text('Личные данные',
+                title: Text(tr('personal_data'),
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
               ),
@@ -118,11 +118,10 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                     // validator: (value) => value?.length == 0 ? 'Поле обязательно для заполнения' : '',
                                     validator: FormBuilderValidators.compose([
                                       FormBuilderValidators.required(
-                                          errorText:
-                                              'Поле обязательно для заполнения')
+                                          errorText: tr('required_field'))
                                     ]),
                                     decoration: InputDecoration(
-                                        labelText: 'Имя',
+                                        labelText: tr('name'),
                                         contentPadding: EdgeInsets.symmetric(
                                             horizontal: 30),
                                         focusedBorder: OutlineInputBorder(
@@ -150,18 +149,19 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                   ),
                                   FormBuilderPhoneField(
                                     name: 'phone',
-                                    initialValue: currentUser?.phone ?? '',
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(
-                                          errorText:
-                                              'Поле обязательно для заполнения'),
-                                      FormBuilderValidators.minLength(13,
-                                          errorText: 'Заполнено неверно')
-                                    ]),
+                                    initialValue: currentUser?.phone,
+                                    enabled: false,
                                     decoration: InputDecoration(
-                                        labelText: 'Номер телефона',
+                                        labelText: tr('phone_number'),
                                         contentPadding: EdgeInsets.symmetric(
                                             horizontal: 30),
+                                        suffixIcon: Icon(
+                                          Icons.lock_outline,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          size: 20,
+                                        ),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(width: 1.0),
                                           borderRadius:
@@ -180,18 +180,26 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                             borderSide: BorderSide(
                                                 width: 1.0, color: Colors.red),
                                             borderRadius:
-                                                BorderRadius.circular(40))),
-                                    // onChanged: _onChanged,
+                                                BorderRadius.circular(40)),
+                                        disabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1.0,
+                                                color: Colors.grey.shade400),
+                                            borderRadius:
+                                                BorderRadius.circular(40)),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true),
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(
+                                          errorText: tr('required_field')),
+                                      FormBuilderValidators.minLength(13,
+                                          errorText: tr('invalid_phone_number'))
+                                    ]),
                                     priorityListByIsoCode: ['UZ'],
                                     defaultSelectedCountryIsoCode: 'UZ',
                                     countryFilterByIsoCode: ['Uz'],
                                     isSearchable: false,
                                     autocorrect: true,
-                                    // validator: ,
-                                    // validator: FormBuilderValidators.compose([
-                                    //   FormBuilderValidators.numeric(context),
-                                    //   FormBuilderValidators.required(context),
-                                    // ]),
                                   ),
                                   SizedBox(
                                     height: 20,
@@ -200,7 +208,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                     name: 'email',
                                     initialValue: currentUser?.email ?? '',
                                     decoration: InputDecoration(
-                                      labelText: 'Эл. почта',
+                                      labelText: tr('email'),
                                       contentPadding:
                                           EdgeInsets.symmetric(horizontal: 30),
                                       focusedBorder: OutlineInputBorder(
@@ -221,7 +229,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                       // onChanged: _onChanged,
                                       inputType: InputType.date,
                                       decoration: InputDecoration(
-                                        labelText: 'День рождения',
+                                        labelText: tr('birthday'),
                                         contentPadding: EdgeInsets.symmetric(
                                             horizontal: 30),
                                         focusedBorder: OutlineInputBorder(
@@ -267,7 +275,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                       isLoading: deleteIsLoading == true
                                           ? deleteIsLoading
                                           : null,
-                                      text: 'Удалить аккаунт',
+                                      text: tr('delete_account'),
                                       onPressed: () async {
                                         setState(() {
                                           deleteIsLoading = true;
@@ -296,7 +304,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                               DefaultStyledButton(
                                 width: MediaQuery.of(context).size.width - 30,
                                 isLoading: isLoading == true ? isLoading : null,
-                                text: 'Сохранить',
+                                text: tr('save'),
                                 onPressed: () async {
                                   _formKey.currentState!.save();
                                   if (_formKey.currentState != null &&
@@ -314,6 +322,10 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                                         'api.choparpizza.uz', '/api/me');
                                     var values =
                                         Map.of(_formKey.currentState!.value);
+
+                                    // Ensure phone number is not changed
+                                    values['phone'] = currentUser?.phone ?? '';
+
                                     if (values['email'] == null) {
                                       values['email'] = '';
                                     }

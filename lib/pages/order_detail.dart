@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chopar_app/models/order.dart';
 import 'package:chopar_app/models/user.dart';
@@ -16,11 +15,12 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../models/registered_review.dart';
 import '../widgets/orders/track.dart';
 
-@RoutePage()
 class OrderDetailPage extends HookWidget {
   final String orderId;
 
-  OrderDetailPage({@PathParam() required this.orderId});
+  OrderDetailPage({required this.orderId}) {
+    print("OrderDetailPage: Initialized with orderId: $orderId");
+  }
 
   Widget renderProductImage(BuildContext context, Lines lineItem) {
     if (lineItem.child != null &&
@@ -126,6 +126,7 @@ class OrderDetailPage extends HookWidget {
     final delivery = useState(0.0);
 
     Future<void> loadOrder() async {
+      print("OrderDetailPage: Loading order with ID: $orderId");
       Box<User> transaction = Hive.box<User>('user');
       User currentUser = transaction.get('user')!;
       Map<String, String> requestHeaders = {
@@ -134,10 +135,15 @@ class OrderDetailPage extends HookWidget {
         'Authorization': 'Bearer ${currentUser.userToken}'
       };
       var url = Uri.https('api.choparpizza.uz', '/api/orders', {'id': orderId});
+      print("OrderDetailPage: Making API request to: $url");
       var response = await http.get(url, headers: requestHeaders);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         order.value = Order.fromJson(json);
+        print("OrderDetailPage: Successfully loaded order: ${order.value?.id}");
+      } else {
+        print(
+            "OrderDetailPage: Failed to load order. Status code: ${response.statusCode}");
       }
     }
 
@@ -149,7 +155,7 @@ class OrderDetailPage extends HookWidget {
     if (order.value == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Загрузка...'),
+          title: Text(tr('loading')),
           centerTitle: true,
           foregroundColor: Colors.black,
           backgroundColor: Colors.white,
@@ -164,24 +170,27 @@ class OrderDetailPage extends HookWidget {
       // createdAt = createdAt.toLocal();
       DateFormat createdAtFormat = DateFormat('MMM d, y, H:m', 'ru');
       final formatCurrency = new NumberFormat.currency(
-          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+          locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
 
-      String house =
-          order.value!.house != null ? ', дом: ${order.value!.house}' : '';
-      String flat =
-          order.value!.flat != null ? ', кв.: ${order.value!.flat}' : '';
+      String house = order.value!.house != null
+          ? ', ' + tr('house') + ': ${order.value!.house}'
+          : '';
+      String flat = order.value!.flat != null
+          ? ', ' + tr('apartment') + ': ${order.value!.flat}'
+          : '';
       String entrance = order.value!.entrance != null
-          ? ', подъезд: ${order.value!.entrance}'
+          ? ', ' + tr('entrance') + ': ${order.value!.entrance}'
           : '';
       String doorCode = order.value!.doorCode != null
-          ? ', код на двери: ${order.value!.doorCode}'
+          ? ', ' + tr('door_code') + ': ${order.value!.doorCode}'
           : '';
       String address =
           '${order.value!.billingAddress}$house$flat$entrance$doorCode';
 
       return Scaffold(
         appBar: AppBar(
-          title: Text('Заказ №${order.value!.id}'),
+          title: Text(tr('order_number',
+              namedArgs: {'id': order.value!.id.toString()})),
           centerTitle: true,
           foregroundColor: Colors.black,
           backgroundColor: Colors.white,
@@ -197,15 +206,15 @@ class OrderDetailPage extends HookWidget {
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 child: Column(
                   children: [
                     Row(
@@ -214,32 +223,55 @@ class OrderDetailPage extends HookWidget {
                         Text(
                           '№ ${order.value!.id}',
                           style: TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 20),
+                              fontWeight: FontWeight.w600, fontSize: 18),
                         ),
-                        Text(tr('order_status_${order.value!.status}'),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: order.value!.status == 'cancelled'
+                                ? Colors.red.shade50
+                                : order.value!.status == 'delivered'
+                                    ? Colors.green.shade50
+                                    : Colors.yellow.shade50,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            tr('order_status_${order.value!.status}'),
                             style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: order.value!.status == 'cancelled'
-                                    ? Colors.red
-                                    : Colors.green))
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: order.value!.status == 'cancelled'
+                                  ? Colors.red
+                                  : order.value!.status == 'delivered'
+                                      ? Colors.green
+                                      : Colors.yellow.shade700,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+                    SizedBox(height: 8),
                     Row(
                       children: [
-                        Text(createdAtFormat.format(createdAt),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: Colors.grey)),
+                        Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          createdAtFormat.format(createdAt),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(
-                      color: Colors.grey,
-                    ),
+                    SizedBox(height: 16),
+                    Divider(color: Colors.grey.shade200, thickness: 1),
                     order.value?.deliveryType == 'deliver'
                         ? Row(
                             children: [
@@ -252,16 +284,27 @@ class OrderDetailPage extends HookWidget {
                             ],
                           )
                         : order.value?.terminalData != null
-                            ? Row(
-                                children: [
-                                  Flexible(
+                            ? Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.store,
+                                      color: Colors.grey.shade700,
+                                      size: 20,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Flexible(
                                       child: Text(
-                                          'Филиал: ${order.value?.terminalData?.name ?? ''}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16,
-                                          ))),
-                                ],
+                                        '${tr('branch')}: ${order.value?.terminalData?.name ?? ''}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             : SizedBox(),
                     Divider(
@@ -298,45 +341,89 @@ class OrderDetailPage extends HookWidget {
                                           .lines![index].child![1].total);
                                 }
                               }
-                              return ListTile(
-                                title: Text(
-                                    "${lineItem.child != null && lineItem.child!.length > 0 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant!.product!.attributeData?.name?.chopar?.ru}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}"),
-                                leading: SizedBox(
-                                    width: 50,
-                                    child:
-                                        renderProductImage(context, lineItem)),
-                                trailing: Text(
-                                    '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + 'X' : ''} '
-                                    '${formatCurrency.format(totalPrice)}'),
+                              return Container(
+                                margin: EdgeInsets.symmetric(vertical: 6),
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      padding: EdgeInsets.all(4),
+                                      child:
+                                          renderProductImage(context, lineItem),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${lineItem.child != null && lineItem.child!.length > 0 ? "${lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''} + ${lineItem.child![0].variant!.product!.attributeData?.name?.chopar?.ru}" : lineItem.variant?.product?.attributeData?.name?.chopar?.ru ?? ''}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            '${double.parse(order.value!.basket!.lines![index].total) > 0 ? lineItem.quantity.toString() + ' ' + tr('pcs') : ''}',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      '${formatCurrency.format(totalPrice)}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             },
                             separatorBuilder: (context, index) {
-                              return Divider();
+                              return SizedBox(height: 2);
                             },
                             itemCount:
                                 order.value!.basket?.lines?.length ?? 0)),
                     SizedBox(
-                      height: 10,
+                      height: 16,
                     ),
+                    Divider(color: Colors.grey.shade200, thickness: 1),
+                    SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Общая сумма:",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            )),
-                        // Text(
-                        //   t!.prodCount(order.basket?.lines?.length ?? 0),
-                        //   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                        // ),
                         Text(
-                            formatCurrency
-                                .format(order.value!.orderTotal / 100),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ))
+                          tr("total_amount"),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          formatCurrency.format(order.value!.orderTotal / 100),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                            color: Colors.yellow.shade700,
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -359,7 +446,7 @@ class OrderDetailPage extends HookWidget {
                                   builder: (context) =>
                                       TrackOrder(orderId: order.value!.id));
                             },
-                            text: 'Отследить заказ'.toUpperCase(),
+                            text: tr('track_order').toUpperCase(),
                           )
                         : const SizedBox(
                             width: double.infinity,
@@ -399,10 +486,10 @@ class OrderDetailPage extends HookWidget {
                             Align(
                               heightFactor: 2,
                               alignment: Alignment.topLeft,
-                              child: Text("Оставьте отзыв",
+                              child: Text(tr("leave_review"),
                                   style: const TextStyle(fontSize: 20)),
                             ),
-                            Text("Продукт",
+                            Text(tr("product"),
                                 style: const TextStyle(fontSize: 18)),
                             RatingBar.builder(
                               initialRating: 0,
@@ -420,7 +507,7 @@ class OrderDetailPage extends HookWidget {
                                 product.value = rating;
                               },
                             ),
-                            Text("Комплектация",
+                            Text(tr("packaging"),
                                 style: const TextStyle(fontSize: 18)),
                             RatingBar.builder(
                               initialRating: 0,
@@ -439,7 +526,7 @@ class OrderDetailPage extends HookWidget {
                               },
                             ),
                             order.value?.deliveryType == 'deliver'
-                                ? Text("Доставка",
+                                ? Text(tr("delivery"),
                                     style: const TextStyle(fontSize: 18))
                                 : SizedBox(),
                             order.value?.deliveryType == 'deliver'
@@ -470,8 +557,7 @@ class OrderDetailPage extends HookWidget {
                                       equipment.value == 0.0) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                            content:
-                                                Text(tr("Сначала выберите"))));
+                                            content: Text(tr("select_first"))));
                                   } else {
                                     Map<String, String> requestHeaders = {
                                       'Content-type': 'application/json',
@@ -493,7 +579,7 @@ class OrderDetailPage extends HookWidget {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                               content:
-                                                  Text(tr("Отзыв отправлен"))));
+                                                  Text(tr("review_sent"))));
                                       RegisteredReview newRegisteredView =
                                           new RegisteredReview();
                                       newRegisteredView.orderId =
@@ -529,7 +615,7 @@ class OrderDetailPage extends HookWidget {
                         margin: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 15),
                         child: Center(
-                          child: Text('Ваш отзыв успешно принят'),
+                          child: Text(tr('review_accepted')),
                         ),
                       );
                     }
@@ -545,9 +631,10 @@ class OrderDetailPage extends HookWidget {
           child: DefaultStyledButton(
               width: double.infinity,
               onPressed: () {
-                context.router.pushNamed('/');
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/', (route) => false);
               },
-              text: "Главная"),
+              text: tr("main_page")),
         ),
       );
     }

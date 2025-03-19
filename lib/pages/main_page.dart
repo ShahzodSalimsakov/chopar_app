@@ -51,36 +51,40 @@ class _MainPageState extends State<MainPage>
       },
       child: Scaffold(
           backgroundColor: Colors.white,
-          body: UpgradeAlert(
-            child: SingleChildScrollView(
-              controller: _parentScrollController,
-              scrollDirection: Axis.vertical,
-              child: Container(
-                height: (MediaQuery.of(context).size.height + 18) * 1,
-                margin: EdgeInsets.all(5.0),
-                child: Column(
-                  children: [
-                    OrderStatus(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(width: 150, height: 50, child: ChooseCity()),
-                        GestureDetector(
-                            onTap: () {
-                              context.router.pushNamed("/notifications");
-                            },
-                            child: Icon(Icons.notifications_none_rounded,
-                                size: 30)),
-                      ],
-                    ),
-                    ChooseTypeDelivery(),
-                    ProductListListen(
-                        parentScrollController: _parentScrollController),
-                  ],
+          body: Builder(builder: (context) {
+            // Скрываем глобальный индикатор загрузки
+            return UpgradeAlert(
+              child: SingleChildScrollView(
+                controller: _parentScrollController,
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  height: (MediaQuery.of(context).size.height + 18) * 1,
+                  margin: EdgeInsets.all(5.0),
+                  child: Column(
+                    children: [
+                      OrderStatus(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 150, height: 50, child: ChooseCity()),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pushNamed("/notifications");
+                              },
+                              child: Icon(Icons.notifications_none_rounded,
+                                  size: 30)),
+                        ],
+                      ),
+                      ChooseTypeDelivery(),
+                      ProductListListen(
+                          parentScrollController: _parentScrollController),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )),
+            );
+          })),
     );
   }
 }

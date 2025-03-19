@@ -42,6 +42,24 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
+  // Helper method to get localized text from notification
+  String getLocalizedText(Map<String, dynamic> notification, String field) {
+    final languageCode = context.locale.languageCode;
+
+    // Check if the field exists in the notification
+    if (notification[field] == null) return '';
+
+    // Try to get the localized version based on current language
+    if (languageCode == 'uz' &&
+        notification['${field}_uz'] != null &&
+        notification['${field}_uz'].toString().isNotEmpty) {
+      return notification['${field}_uz'];
+    }
+
+    // Fallback to the default field (usually Russian)
+    return notification[field];
+  }
+
   @override
   initState() {
     super.initState();
@@ -67,7 +85,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 )),
               ))
         ],
-        title: Text('Новости и акции',
+        title: Text(tr('news_and_promotions'),
             style: const TextStyle(
                 color: Colors.black,
                 fontSize: 18,
@@ -90,6 +108,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   child: ListView.builder(
                       itemCount: _notifications.length,
                       itemBuilder: (BuildContext context, int index) {
+                        // Get localized title and text
+                        final localizedTitle =
+                            getLocalizedText(_notifications[index], 'title');
+                        final localizedText =
+                            getLocalizedText(_notifications[index], 'text');
+
                         return Card(
                             clipBehavior: Clip.antiAlias,
                             shape: RoundedRectangleBorder(
@@ -108,10 +132,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                             image: CachedNetworkImageProvider(
                                                 _notifications[index]['asset']
                                                     [0]['link']),
-                                            // NetworkImage(
-                                            //   _notifications[index]['asset'][0]
-                                            //       ['link'],
-                                            // ),
                                             height: 200,
                                             fit: BoxFit.cover,
                                           ),
@@ -126,24 +146,22 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      _notifications[index]['title'] != null &&
-                                              _notifications[index]['title'] !=
-                                                  ''
+                                      localizedTitle.isNotEmpty
                                           ? Text(
-                                              _notifications[index]['title'],
+                                              localizedTitle,
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.w500),
                                             )
                                           : Container(),
-                                      _notifications[index]['title'] != null
+                                      localizedTitle.isNotEmpty
                                           ? const SizedBox(height: 10)
                                           : Container(),
                                       // show truncated text if text is too long
-                                      _notifications[index]['text'] != null
+                                      localizedText.isNotEmpty
                                           ? Text(
-                                              _notifications[index]['text'],
+                                              localizedText,
                                               maxLines: 3,
                                               overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(
@@ -153,7 +171,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                             )
                                           : Container(),
                                       // router push to detail page widget
-                                      _notifications[index]['title'] != null
+                                      localizedTitle.isNotEmpty
                                           ? const SizedBox(height: 10)
                                           : Container(),
                                       Row(
@@ -176,7 +194,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                                 );
                                               },
                                               child: Text(
-                                                'Подробнее',
+                                                tr('read_more'),
                                                 style: const TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 16,

@@ -4,6 +4,7 @@ import 'package:chopar_app/models/terminals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PayTypeWidget extends StatefulWidget {
   const PayTypeWidget({Key? key}) : super(key: key);
@@ -20,12 +21,12 @@ class _PayTypeState extends State<PayTypeWidget>
     Container(
       height: 30,
       padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Tab(text: 'Наличными'),
+      child: Tab(text: tr('cash')),
     ),
     Container(
       height: 30,
       padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Tab(text: 'Онлайн'),
+      child: Tab(text: tr('online')),
     ),
     // Container(
     //     height: 30,
@@ -78,7 +79,7 @@ class _PayTypeState extends State<PayTypeWidget>
         ),
         fillColor: Colors.grey.shade200,
         filled: true,
-        hintText: 'С какой суммы подготовить сдачу?',
+        hintText: tr('how_much_change'),
         contentPadding: EdgeInsets.symmetric(horizontal: 30),
       ),
       onChanged: (value) {
@@ -194,13 +195,6 @@ class _PayTypeState extends State<PayTypeWidget>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Выберите способ оплаты',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
                   DefaultTabController(
                       length: 2,
                       child: TabBar(

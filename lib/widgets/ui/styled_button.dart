@@ -32,15 +32,24 @@ class DefaultStyledButton extends StatelessWidget {
           width: double.maxFinite,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: color != null ? color! : [Colors.yellow.shade300, Colors.yellow.shade700],
+                  colors: color != null
+                      ? color!
+                      : [Colors.yellow.shade300, Colors.yellow.shade700],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
               borderRadius: BorderRadius.circular(25.0)),
           child: Center(
-            child: isLoading != null ? CircularProgressIndicator(color: Colors.white,) : Text(
-              text,
-              style: TextStyle(fontSize: textSize != null ? textSize : 18.0, color: textColor != null ? textColor : Colors.white, fontWeight: FontWeight.w700),
-            ),
+            child: isLoading != null
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Text(
+                    text,
+                    style: TextStyle(
+                        fontSize: textSize != null ? textSize : 18.0,
+                        color: textColor != null ? textColor : Colors.white,
+                        fontWeight: FontWeight.w700),
+                  ),
           ),
         ),
         style: ButtonStyle(

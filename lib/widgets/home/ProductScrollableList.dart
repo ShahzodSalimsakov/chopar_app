@@ -227,19 +227,15 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
 
   Widget productImage(String? image) {
     if (image != null) {
-      return CachedNetworkImage(imageUrl: image, width: 170.0, height: 170.0);
-      // Image.network(
-      //   image,
-      //   width: 170.0,
-      //   height: 170.0,
-      //   // width: MediaQuery.of(context).size.width / 2.5,
-      // );
+      return CachedNetworkImage(
+          imageUrl: image, width: 170.0, height: 170.0, fit: BoxFit.contain);
     } else {
       return ClipOval(
         child: SvgPicture.network(
           'https://choparpizza.uz/no_photo.svg',
           width: 175.0,
           height: 175.0,
+          fit: BoxFit.contain,
         ),
       );
     }
@@ -296,12 +292,12 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                 child: Text(
                                   'Собрать пиццу',
                                   style:
-                                      TextStyle(color: Colors.yellow.shade600),
+                                      TextStyle(color: Colors.yellow.shade700),
                                 ),
                                 style: ButtonStyle(
                                     side: MaterialStateProperty.all(BorderSide(
                                         width: 1.0,
-                                        color: Colors.yellow.shade600)),
+                                        color: Colors.yellow.shade700)),
                                     shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
                                             borderRadius:
@@ -356,7 +352,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     Stock? stock = stockBox.get('stock');
     String? image = product?.image;
     final formatCurrency = new NumberFormat.currency(
-        locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+        locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
     String productPrice = '';
     String beforePrice = '';
 
@@ -410,7 +406,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
       }
     }
 
-    var html = product.attributeData?.description?.chopar?.ru ?? '';
+    var html = getLocalizedText(product.attributeData?.description?.chopar);
 
     var document = parse(html);
     String? parsedString = parse(document.body?.text).documentElement?.text;
@@ -418,9 +414,9 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
     return Opacity(
       opacity: isInStock ? 0.3 : 1,
       child: Card(
-        elevation: 5,
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 4,
+        margin: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -429,7 +425,11 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
               child: Row(children: [
                 Expanded(
                   child: InkWell(
-                    child: productImage(image),
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      height: 150,
+                      child: productImage(image),
+                    ),
                     onTap: () {
                       DeliveryLocationData? deliveryLocationData =
                           Hive.box<DeliveryLocationData>('deliveryLocationData')
@@ -440,7 +440,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                           deliveryType.value == DeliveryTypeEnum.pickup) {
                         if (currentTerminal == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Не выбран филиал самовывоза')));
+                              content: Text(tr('pickup_branch_not_selected'))));
                           return;
                         }
                       }
@@ -450,11 +450,13 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                           deliveryType.value == DeliveryTypeEnum.deliver) {
                         if (deliveryLocationData == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Не указан адрес доставки')));
+                              content:
+                                  Text(tr('delivery_address_not_specified'))));
                           return;
                         } else if (deliveryLocationData.address == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Не указан адрес доставки')));
+                              content:
+                                  Text(tr('delivery_address_not_specified'))));
                           return;
                         }
                       }
@@ -488,9 +490,9 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                               )
                             : SizedBox(),
                         Text(
-                          product.attributeData?.name?.chopar?.ru ?? '',
+                          getLocalizedText(product.attributeData?.name?.chopar),
                           style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.w700),
+                              fontSize: 16.0, fontWeight: FontWeight.w700),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -507,9 +509,8 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                           child: RichText(
                               text: HTML.toTextSpan(
                                   context,
-                                  product.attributeData?.description?.chopar
-                                          ?.ru ??
-                                      ''),
+                                  getLocalizedText(product
+                                      .attributeData?.description?.chopar)),
                               maxLines: collapsedId == product.id ? 20 : 4,
                               overflow: TextOverflow.ellipsis
                               //...
@@ -568,7 +569,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                     Text(
                                       'от ' + productPrice,
                                       style: TextStyle(
-                                          color: Colors.yellow.shade600,
+                                          color: Colors.yellow.shade700,
                                           fontSize:
                                               beforePrice.isNotEmpty ? 17 : 16),
                                     ),
@@ -577,7 +578,7 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                 style: ButtonStyle(
                                     side: MaterialStateProperty.all(BorderSide(
                                         width: 1.0,
-                                        color: Colors.yellow.shade600)),
+                                        color: Colors.yellow.shade700)),
                                     shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
                                             borderRadius:
@@ -602,8 +603,8 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                     if (currentTerminal == null) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Не выбран филиал самовывоза')));
+                                              content: Text(tr(
+                                                  'pickup_branch_not_selected'))));
                                       return;
                                     }
                                   }
@@ -615,15 +616,15 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                     if (deliveryLocationData == null) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Не указан адрес доставки')));
+                                              content: Text(tr(
+                                                  'delivery_address_not_specified'))));
                                       return;
                                     } else if (deliveryLocationData.address ==
                                         null) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Не указан адрес доставки')));
+                                              content: Text(tr(
+                                                  'delivery_address_not_specified'))));
                                       return;
                                     }
                                   }
@@ -655,13 +656,15 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
   }
 
   double getProductHeight(ProductSection section) {
-    double height = 200;
+    double height = 160;
 
     if (section.halfMode == 1) {
-      height = 260;
+      height = 200;
     } else {
       if (section.items != null && section.items!.length > 0) {
-        height = (section.items!.length * 210) + 50;
+        // Calculate height for grid layout with 2 columns
+        int rows = (section.items!.length / 2).ceil();
+        height = (rows * 220) + 40;
       }
     }
 
@@ -745,16 +748,14 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                           : Colors.grey.shade300),
                                   borderRadius: BorderRadius.circular(20),
                                   color: scrolledIndex == index
-                                      ? Colors.yellow.shade600
+                                      ? Colors.yellow.shade700
                                       : Colors.white),
                               child: Center(
                                 child: Text(
-                                  products[index]
-                                          .attributeData
-                                          ?.name
-                                          ?.chopar
-                                          ?.ru ??
-                                      '',
+                                  getLocalizedText(products[index]
+                                      .attributeData
+                                      ?.name
+                                      ?.chopar),
                                   style: TextStyle(
                                       color: scrolledIndex == index
                                           ? Colors.white
@@ -784,8 +785,8 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              products[index].attributeData?.name?.chopar?.ru ??
-                                  '',
+                              getLocalizedText(
+                                  products[index].attributeData?.name?.chopar),
                               style: TextStyle(fontSize: 20),
                             ),
                             products[index].halfMode == 1
@@ -797,11 +798,18 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                                         renderCreatePizza(
                                             context, products[index].items),
                                   )
-                                : ListView.builder(
+                                : GridView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.7,
+                                      crossAxisSpacing: 8,
+                                      mainAxisSpacing: 12,
+                                    ),
                                     itemCount:
-                                        products[index].items?.length ?? 1,
+                                        products[index].items?.length ?? 0,
                                     itemBuilder: (_, prodIndex) =>
                                         renderProduct(context,
                                             products[index].items?[prodIndex]),
@@ -817,5 +825,25 @@ class _ProductScrollableListState extends State<ProductScrollableList> {
                 ));
               });
         });
+  }
+
+  // Helper method to get localized text
+  String getLocalizedText(dynamic chopar) {
+    if (chopar == null) return '';
+
+    final languageCode = context.locale.languageCode;
+
+    if (languageCode == 'uz' && chopar.uz != null && chopar.uz.isNotEmpty) {
+      return chopar.uz;
+    } else if (languageCode == 'ru' &&
+        chopar.ru != null &&
+        chopar.ru.isNotEmpty) {
+      return chopar.ru;
+    } else if (chopar.en != null && chopar.en.isNotEmpty) {
+      return chopar.en;
+    }
+
+    // Fallback to Russian if available
+    return chopar.ru ?? '';
   }
 }

@@ -11,11 +11,49 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:chopar_app/pages/home.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../models/delivery_type.dart';
 import '../models/terminals.dart';
+
+// Helper method to get localized text
+String getLocalizedText(BuildContext context, dynamic chopar) {
+  if (chopar == null) return '';
+
+  final languageCode = context.locale.languageCode;
+
+  if (languageCode == 'uz' && chopar.uz != null && chopar.uz.isNotEmpty) {
+    return chopar.uz;
+  } else if (languageCode == 'ru' &&
+      chopar.ru != null &&
+      chopar.ru.isNotEmpty) {
+    return chopar.ru;
+  } else {
+    // Fallback to Russian if available
+    return chopar.ru ?? '';
+  }
+}
+
+// Helper method to get localized size
+String getLocalizedSize(BuildContext context, String size) {
+  if (context.locale.languageCode == 'uz') {
+    switch (size) {
+      case 'Средняя':
+        return 'O\'rtacha';
+      case 'Большая':
+        return 'Katta';
+      case 'Семейная':
+        return 'Oilaviy';
+      default:
+        return size;
+    }
+  }
+  return size;
+}
 
 var _scrollController = ScrollController();
 
@@ -35,16 +73,34 @@ class ProductDetail extends HookWidget {
   Widget modifierImage(Modifiers mod) {
     if (mod.assets != null && mod.assets!.isNotEmpty) {
       return CachedNetworkImage(
-          imageUrl:
-              'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
-          width: 100.0,
-          height: 73.0);
-      // Image.network(
-      //   'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
-      //   width: 100.0,
-      //   height: 73.0,
-      //   // width: MediaQuery.of(context).size.width / 2.5,
-      // );
+        imageUrl:
+            'https://api.choparpizza.uz/storage/${mod.assets![0].location}/${mod.assets![0].filename}',
+        width: 100.0,
+        height: 73.0,
+        placeholder: (context, url) => Container(
+          color: Colors.grey.shade200,
+          child: Center(
+            child: CircularProgressIndicator(
+              color: Colors.yellow.shade700,
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
+          color: Colors.grey.shade100,
+          child: Center(
+            child: Icon(
+              Icons.image_not_supported_outlined,
+              color: Colors.grey.shade400,
+              size: 40,
+            ),
+          ),
+        ),
+        memCacheWidth: 400,
+        memCacheHeight: 300,
+        maxWidthDiskCache: 400,
+        maxHeightDiskCache: 300,
+      );
     } else {
       if (mod.xmlId.isNotEmpty) {
         return ClipOval(
@@ -52,19 +108,42 @@ class ProductDetail extends HookWidget {
             'https://choparpizza.uz/no_photo.svg',
             width: 100.0,
             height: 73.0,
+            placeholderBuilder: (BuildContext context) => Container(
+              padding: const EdgeInsets.all(30.0),
+              child: CircularProgressIndicator(
+                color: Colors.yellow.shade700,
+                strokeWidth: 2,
+              ),
+            ),
           ),
         );
       } else {
         return CachedNetworkImage(
-            imageUrl: 'https://choparpizza.uz/sausage_modifier.png',
-            width: 100.0,
-            height: 73.0);
-        // Image.network(
-        //   'https://choparpizza.uz/sausage_modifier.png',
-        //   width: 100.0,
-        //   height: 73.0,
-        //   // width: MediaQuery.of(context).size.width / 2.5,
-        // );
+          imageUrl: 'https://choparpizza.uz/sausage_modifier.png',
+          width: 100.0,
+          height: 73.0,
+          placeholder: (context, url) => Container(
+            color: Colors.grey.shade200,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.yellow.shade700,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.grey.shade100,
+            child: Center(
+              child: Icon(
+                Icons.image_not_supported_outlined,
+                color: Colors.grey.shade400,
+                size: 30,
+              ),
+            ),
+          ),
+          memCacheWidth: 400,
+          memCacheHeight: 300,
+        );
       }
     }
   }
@@ -73,11 +152,11 @@ class ProductDetail extends HookWidget {
       activeModifiers, BuildContext context) {
     if (detail.variants.length > 0) {
       final formatCurrency = new NumberFormat.currency(
-          locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+          locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
       return [
         SizedBox(height: 20.0),
         Text(
-          'Добавить в пиццу',
+          tr('add_to_pizza'),
           style: TextStyle(color: Colors.yellow.shade600, fontSize: 16.0),
         ),
         SizedBox(height: 10.0),
@@ -109,7 +188,9 @@ class ProductDetail extends HookWidget {
                                   child: Center(
                                 widthFactor: 0.5,
                                 child: Text(
-                                  m.name,
+                                  context.locale.languageCode == 'uz'
+                                      ? m.nameUz
+                                      : m.name,
                                   style: TextStyle(fontSize: 14),
                                 ),
                               )),
@@ -197,13 +278,13 @@ class ProductDetail extends HookWidget {
     }, []);
 
     final formatCurrency = new NumberFormat.currency(
-        locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+        locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
 
-    String defaultSelectedVariant = '';
+    int defaultSelectedVariantId = 0;
     if (detail.variants != null && detail.variants.length > 0) {
-      defaultSelectedVariant = detail.variants[1].customName;
+      defaultSelectedVariantId = detail.variants[1].id;
     }
-    final selectedVariant = useState<String>(defaultSelectedVariant);
+    final selectedVariantId = useState<int>(defaultSelectedVariantId);
     final activeModifiers = useState<List<int>>([]);
     final _isBasketLoading = useState<bool>(false);
     final modifiers = useMemoized(() {
@@ -211,7 +292,7 @@ class ProductDetail extends HookWidget {
       if (detail.variants != null && detail.variants.length > 0) {
         try {
           Variants? activeValue = detail.variants
-              .firstWhere((item) => item.customName == selectedVariant.value);
+              .firstWhere((item) => item.id == selectedVariantId.value);
           if (activeValue != null && activeValue.modifiers != null) {
             modifier = [...activeValue.modifiers!.where((m) => m.price > 0)];
             if (activeValue.modifierProduct != null) {
@@ -250,14 +331,14 @@ class ProductDetail extends HookWidget {
       }
 
       return modifier;
-    }, [detail, selectedVariant.value]);
+    }, [detail, selectedVariantId.value]);
 
     addModifier(int modId) {
       ModifierProduct? modifierProduct;
       if (detail.variants != null && detail.variants.length > 0) {
         try {
           Variants? activeValue = detail.variants
-              .firstWhere((item) => item.customName == selectedVariant.value);
+              .firstWhere((item) => item.id == selectedVariantId.value);
           if (activeValue != null && activeValue.modifierProduct != null) {
             modifierProduct = activeValue.modifierProduct;
           }
@@ -318,7 +399,7 @@ class ProductDetail extends HookWidget {
       if (detail.variants != null && detail.variants.length > 0) {
         try {
           Variants? activeValue = detail.variants
-              .firstWhere((item) => item.customName == selectedVariant.value);
+              .firstWhere((item) => item.id == selectedVariantId.value);
           if (activeValue != null) {
             price += int.parse(
                 double.parse(activeValue.price.toString() ?? '0.0000')
@@ -385,11 +466,11 @@ class ProductDetail extends HookWidget {
           .where((m) => mods!.contains(m.id))
           .map((m) => ({'id': m.id}))
           .toList();
-    
+
       int selectedProdId = 0;
       if (detail.variants != null && detail.variants.length > 0) {
-        Variants activeVariant = detail.variants
-            .firstWhere((v) => v.customName == selectedVariant.value);
+        Variants activeVariant =
+            detail.variants.firstWhere((v) => v.id == selectedVariantId.value);
         selectedProdId = activeVariant.id;
         if (activeVariant.modifierProduct != null) {
           modifierProduct = activeVariant.modifierProduct;
@@ -454,8 +535,32 @@ class ProductDetail extends HookWidget {
             BasketData basketData = new BasketData.fromJson(json['data']);
             Basket newBasket = new Basket(
                 encodedId: basketData.encodedId ?? '',
-                lineCount: basketData.lines?.length ?? 0);
+                lineCount: basketData.lines?.length ?? 0,
+                totalPrice: basketData.total);
+
+            // Update the basket and force a rebuild of the UI
+            basketBox.delete('basket');
             basketBox.put('basket', newBasket);
+
+            // Just close the modal without refreshing the page
+            Navigator.of(context).pop();
+
+            // Show a success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text(tr('added_to_cart')),
+                  ],
+                ),
+                backgroundColor: Colors.yellow.shade700,
+                duration: Duration(seconds: 1),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            return;
           }
         } catch (e) {
           throw Exception('addToBasket: ' + e.toString());
@@ -488,8 +593,32 @@ class ProductDetail extends HookWidget {
             BasketData basketData = new BasketData.fromJson(json['data']);
             Basket newBasket = new Basket(
                 encodedId: basketData.encodedId ?? '',
-                lineCount: basketData.lines?.length ?? 0);
+                lineCount: basketData.lines?.length ?? 0,
+                totalPrice: basketData.total);
+
+            // Update the basket and force a rebuild of the UI
+            basketBox.delete('basket');
             basketBox.put('basket', newBasket);
+
+            // Just close the modal without refreshing the page
+            Navigator.of(context).pop();
+
+            // Show a success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text(tr('added_to_cart')),
+                  ],
+                ),
+                backgroundColor: Colors.yellow.shade700,
+                duration: Duration(seconds: 1),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            return;
           }
         } catch (e) {
           throw Exception('addToBasket: ' + e.toString());
@@ -498,6 +627,7 @@ class ProductDetail extends HookWidget {
       _isBasketLoading.value = false;
 
       Navigator.of(context).pop();
+      return;
 
       // showPlatformDialog(
       //     context: context,
@@ -569,24 +699,57 @@ class ProductDetail extends HookWidget {
                           ),
                           Center(
                               child: Hero(
-                                  child: Image.network(
-                                    detail.image,
-                                    width: 250.0,
-                                    height: 250.0,
-                                    // width: MediaQuery.of(context).size.width / 2.5,
-                                  ),
-                                  tag: detail.image)),
+                                  tag: detail.image != null &&
+                                          detail.image.isNotEmpty
+                                      ? detail.image
+                                      : 'no_image',
+                                  child: detail.image != null &&
+                                          detail.image.isNotEmpty
+                                      ? Image.network(
+                                          detail.image,
+                                          width: 250.0,
+                                          height: 250.0,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Container(
+                                              width: 250.0,
+                                              height: 250.0,
+                                              color: Colors.grey.shade200,
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons
+                                                      .image_not_supported_outlined,
+                                                  color: Colors.grey,
+                                                  size: 50,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : Container(
+                                          width: 250.0,
+                                          height: 250.0,
+                                          color: Colors.grey.shade200,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons
+                                                  .image_not_supported_outlined,
+                                              color: Colors.grey,
+                                              size: 50,
+                                            ),
+                                          ),
+                                        ))),
                           SizedBox(
                             height: 30,
                           ),
                           Text(
-                            detail.attributeData?.name?.chopar?.ru ?? '',
+                            getLocalizedText(
+                                context, detail.attributeData?.name?.chopar),
                             style: TextStyle(fontSize: 26),
                           ),
                           Html(
-                            data:
-                                detail.attributeData?.description?.chopar?.ru ??
-                                    '',
+                            data: getLocalizedText(context,
+                                detail.attributeData?.description?.chopar),
                             // style: TextStyle(
                             //     fontSize: 11.0, fontWeight: FontWeight.w400, height: 2),
                           ),
@@ -594,36 +757,62 @@ class ProductDetail extends HookWidget {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: List<Widget>.generate(
-                                  detail.variants.length, (index) {
-                                return Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 3.0),
-                                    child: ElevatedButton(
-                                        style: ButtonStyle(
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(
-                                                        25.0))),
-                                            backgroundColor: MaterialStateProperty.all(
-                                                selectedVariant.value == detail.variants[index].customName
-                                                    ? Colors.yellow.shade600
-                                                    : Colors.grey.shade100)),
-                                        child: Text(detail.variants[index].customName,
-                                            style: TextStyle(
-                                                fontSize: 13.0,
-                                                color: selectedVariant.value == detail.variants[index].customName
-                                                    ? Colors.white
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          selectedVariant.value =
-                                              detail.variants[index].customName;
-                                        }));
-                              }),
+                              children: detail.variants != null &&
+                                      detail.variants.length > 0
+                                  ? List<Widget>.generate(
+                                      detail.variants.length, (index) {
+                                      // Get the appropriate variant name based on language
+                                      String variantName = '';
+                                      if (context.locale.languageCode == 'uz' &&
+                                          detail.variants[index].customNameUz !=
+                                              null &&
+                                          detail.variants[index].customNameUz
+                                              .isNotEmpty) {
+                                        variantName =
+                                            detail.variants[index].customNameUz;
+                                      } else {
+                                        variantName =
+                                            detail.variants[index].customName ??
+                                                '';
+                                      }
+
+                                      // Применяем локализацию к размерам пиццы
+                                      variantName = getLocalizedSize(
+                                          context, variantName);
+
+                                      return Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 3.0),
+                                          child: ElevatedButton(
+                                              style: ButtonStyle(
+                                                  shape: MaterialStateProperty.all(
+                                                      RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  25.0))),
+                                                  backgroundColor: MaterialStateProperty.all(selectedVariantId.value == detail.variants[index].id
+                                                      ? Colors.yellow.shade600
+                                                      : Colors.grey.shade100)),
+                                              child: Text(variantName,
+                                                  style: TextStyle(
+                                                      fontSize: 13.0,
+                                                      color: selectedVariantId.value == detail.variants[index].id
+                                                          ? Colors.white
+                                                          : Colors.grey)),
+                                              onPressed: () {
+                                                selectedVariantId.value =
+                                                    detail.variants[index].id;
+                                              }));
+                                    })
+                                  : [
+                                      Container()
+                                    ], // Empty container if no variants
                             ),
                           ),
-                          ...modifiersList(
-                              modifiers, addModifier, activeModifiers, context),
+                          Column(
+                            children: modifiersList(modifiers, addModifier,
+                                activeModifiers, context),
+                          ),
                           // SizedBox(
                           //   height: 50,
                           // )
@@ -647,7 +836,7 @@ class ProductDetail extends HookWidget {
                               addToBasket();
                             },
                             text:
-                                'В корзину ${formatCurrency.format(totalPrice)}',
+                                '${tr('to_cart')} ${formatCurrency.format(totalPrice)}',
                           ),
                         ),
                         bottom: 0,

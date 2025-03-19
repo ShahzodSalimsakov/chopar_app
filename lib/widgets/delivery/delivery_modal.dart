@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DeliveryModal extends StatefulWidget {
   final YandexGeoData? geoData;
@@ -70,8 +71,17 @@ class _DeliveryModalState extends State<DeliveryModal> {
         // Test if location services are enabled.
         serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Недостаточно прав для получения локации')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(tr('enable_location_services')),
+              action: SnackBarAction(
+                label: tr('settings'),
+                onPressed: () {
+                  Geolocator.openLocationSettings();
+                },
+              ),
+            ),
+          );
           return;
         }
 
@@ -79,15 +89,33 @@ class _DeliveryModalState extends State<DeliveryModal> {
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Недостаточно прав для получения локации')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(tr('insufficient_location_rights')),
+                action: SnackBarAction(
+                  label: tr('allow'),
+                  onPressed: () async {
+                    permission = await Geolocator.requestPermission();
+                  },
+                ),
+              ),
+            );
             return;
           }
         }
 
         if (permission == LocationPermission.deniedForever) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Недостаточно прав для получения локации')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(tr('insufficient_location_rights')),
+              action: SnackBarAction(
+                label: tr('settings'),
+                onPressed: () {
+                  Geolocator.openAppSettings();
+                },
+              ),
+            ),
+          );
           return;
         }
 
@@ -101,7 +129,9 @@ class _DeliveryModalState extends State<DeliveryModal> {
             altitude: 0,
             heading: 0,
             speed: 0,
-            speedAccuracy: 0, altitudeAccuracy: 0.0, headingAccuracy: 0.0);
+            speedAccuracy: 0,
+            altitudeAccuracy: 0.0,
+            headingAccuracy: 0.0);
       }
 
       var _placemark = PlacemarkMapObject(

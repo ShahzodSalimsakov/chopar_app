@@ -1,11 +1,11 @@
 import 'package:chopar_app/models/deliver_later_time.dart';
 import 'package:chopar_app/models/delivery_time.dart';
-import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:direct_select/direct_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DeliveryTimeWidget extends HookWidget {
   Widget build(BuildContext context) {
@@ -59,69 +59,81 @@ class DeliveryTimeWidget extends HookWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Когда доставить',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
                     Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 38,
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            child: DefaultStyledButton(
-                              color: (deliveryTime == null ||
-                                      deliveryTime.value != DeliveryTimeEnum.now
-                                  ? disabledColors
-                                  : activeColor),
-                              textSize: 16,
-                              textColor: (deliveryTime == null ||
-                                      deliveryTime.value != DeliveryTimeEnum.now
-                                  ? Colors.grey.shade700
-                                  : null),
-                              width: MediaQuery.of(context).size.width,
-                              text: 'Побыстрее',
-                              onPressed: () {
-                                DeliveryTime newDeliveryTime =
-                                    new DeliveryTime();
-                                newDeliveryTime.value = DeliveryTimeEnum.now;
-                                Box<DeliveryTime> box =
-                                    Hive.box<DeliveryTime>('deliveryTime');
-                                box.put('deliveryTime', newDeliveryTime);
-                              },
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: 38,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                  deliveryTime?.value == DeliveryTimeEnum.now
+                                      ? Colors.yellow.shade700
+                                      : Colors.white),
+                              elevation: WidgetStateProperty.all(0),
+                              shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      side: BorderSide(
+                                          color: Colors.yellow.shade700,
+                                          width: 1.5))),
+                            ),
+                            onPressed: () {
+                              DeliveryTime deliveryTime = DeliveryTime();
+                              deliveryTime.value = DeliveryTimeEnum.now;
+                              box.put('deliveryTime', deliveryTime);
+                            },
+                            child: Text(
+                              tr('delivery_time_now'),
+                              style: TextStyle(
+                                  color: deliveryTime?.value ==
+                                          DeliveryTimeEnum.now
+                                      ? Colors.white
+                                      : Colors.yellow.shade700,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13),
                             ),
                           ),
-                          Container(
-                            height: 38,
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            child: DefaultStyledButton(
-                              color: (deliveryTime == null ||
-                                      deliveryTime.value !=
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: 38,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                  deliveryTime?.value == DeliveryTimeEnum.later
+                                      ? Colors.yellow.shade700
+                                      : Colors.white),
+                              elevation: WidgetStateProperty.all(0),
+                              shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      side: BorderSide(
+                                          color: Colors.yellow.shade700,
+                                          width: 1.5))),
+                            ),
+                            onPressed: () {
+                              DeliveryTime deliveryTime = DeliveryTime();
+                              deliveryTime.value = DeliveryTimeEnum.later;
+                              box.put('deliveryTime', deliveryTime);
+                            },
+                            child: Text(
+                              tr('delivery_time_later'),
+                              style: TextStyle(
+                                  color: deliveryTime?.value ==
                                           DeliveryTimeEnum.later
-                                  ? disabledColors
-                                  : activeColor),
-                              textSize: 16,
-                              textColor: (deliveryTime == null ||
-                                      deliveryTime.value !=
-                                          DeliveryTimeEnum.later
-                                  ? Colors.grey.shade700
-                                  : null),
-                              width: MediaQuery.of(context).size.width,
-                              text: 'Позже',
-                              onPressed: () {
-                                DeliveryTime newDeliveryTime =
-                                    new DeliveryTime();
-                                newDeliveryTime.value = DeliveryTimeEnum.later;
-                                Box<DeliveryTime> box =
-                                    Hive.box<DeliveryTime>('deliveryTime');
-                                box.put('deliveryTime', newDeliveryTime);
-                              },
+                                      ? Colors.white
+                                      : Colors.yellow.shade700,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13),
                             ),
                           ),
-                        ]),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       height: 15,
                     ),

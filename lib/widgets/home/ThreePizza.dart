@@ -17,7 +17,7 @@ import '../../models/user.dart';
 
 class ThreePizzaWidget extends HookWidget {
   final formatCurrency = new NumberFormat.currency(
-      locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+      locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
   final List<Items>? items;
 
   ThreePizzaWidget(this.items);
@@ -357,7 +357,7 @@ class ThreePizzaWidget extends HookWidget {
             decoration: BoxDecoration(color: Colors.white),
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
             child: DefaultStyledButton(
-              text: 'В корзину',
+              text: '${tr('to_cart')}',
               onPressed: () {
                 addToBasket();
               },
@@ -385,7 +385,7 @@ class ThreePizzaWidget extends HookWidget {
             leading: new IconButton(
                 icon: new Icon(Icons.arrow_back), onPressed: _onBackPressed),
             title: Text(
-              'Выберите продукт',
+              tr('choose_product'),
               textAlign: TextAlign.center,
             ),
             centerTitle: true,

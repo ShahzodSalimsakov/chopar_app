@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ModalFit extends StatelessWidget {
   const ModalFit({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class ModalFit extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 title: Text(
-                  'Выберите город',
+                  tr('select_city'),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onTap: () => Navigator.of(context).pop(),

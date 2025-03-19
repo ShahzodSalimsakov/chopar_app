@@ -15,6 +15,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DeliveryWidget extends HookWidget {
   final _debouncer = Debouncer(milliseconds: 500);
@@ -73,7 +74,25 @@ class DeliveryWidget extends HookWidget {
       if (queryText.value.length == 0) {
         if (myAddresses.value.length == 0) {
           return Center(
-            child: Text('Введите текст запроса'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 48,
+                  color: Colors.grey.shade400,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Введите текст запроса',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           );
         } else {
           return ListView.separated(
@@ -195,11 +214,23 @@ class DeliveryWidget extends HookWidget {
                     title: loading.value == false
                         ? Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(Icons.bookmark_border_outlined),
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Icon(
+                                  Icons.bookmark_border_outlined,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 20,
+                                ),
+                              ),
+                              SizedBox(width: 15),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
+                                width: MediaQuery.of(context).size.width * 0.65,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -208,22 +239,38 @@ class DeliveryWidget extends HookWidget {
                                             myAddresses.value[index].label
                                                     ?.toUpperCase() ??
                                                 '',
-                                            style: TextStyle())
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ))
                                         : SizedBox(height: 3),
+                                    SizedBox(height: 4),
                                     Text(myAddresses.value[index].address ?? '',
                                         style: TextStyle(
+                                            fontSize: 14,
                                             color: myAddresses
                                                         .value[index].label !=
                                                     null
-                                                ? Colors.grey
+                                                ? Colors.grey.shade700
                                                 : Colors.black)),
-                                    Text(myAddresses.value[index].house ?? '',
-                                        style: TextStyle(
-                                            color: myAddresses
-                                                        .value[index].house !=
-                                                    null
-                                                ? Colors.grey
-                                                : Colors.black))
+                                    SizedBox(height: 2),
+                                    Text(
+                                      myAddresses.value[index].house != null &&
+                                              myAddresses.value[index].house!
+                                                  .isNotEmpty
+                                          ? "Дом ${myAddresses.value[index].house}" +
+                                              (myAddresses.value[index].flat !=
+                                                          null &&
+                                                      myAddresses.value[index]
+                                                          .flat!.isNotEmpty
+                                                  ? ", кв. ${myAddresses.value[index].flat}"
+                                                  : "")
+                                          : "",
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -242,12 +289,40 @@ class DeliveryWidget extends HookWidget {
         }
       } else if (suggestedData.value.length == 0) {
         return Center(
-          child: Text('Ничего не найдено'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.location_off_outlined,
+                size: 48,
+                color: Colors.grey.shade400,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Ничего не найдено',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Попробуйте изменить запрос',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+            ],
+          ),
         );
       } else {
         return ListView.separated(
             itemBuilder: (context, index) {
               return ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -256,8 +331,32 @@ class DeliveryWidget extends HookWidget {
                                 geoData: suggestedData.value[index],
                               )));
                 },
-                title: Text(suggestedData.value[index].title),
-                subtitle: Text(suggestedData.value[index].description),
+                leading: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    Icons.location_on_outlined,
+                    color: Theme.of(context).primaryColor,
+                    size: 20,
+                  ),
+                ),
+                title: Text(
+                  suggestedData.value[index].title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                  ),
+                ),
+                subtitle: Text(
+                  suggestedData.value[index].description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
               );
             },
             separatorBuilder: (context, index) {
@@ -281,7 +380,7 @@ class DeliveryWidget extends HookWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         centerTitle: true,
-        title: Text('Укажите адрес', style: TextStyle(fontSize: 20)),
+        title: Text(tr('delivery_address'), style: TextStyle(fontSize: 20)),
       ),
       body: SafeArea(
           child: Container(
@@ -291,16 +390,16 @@ class DeliveryWidget extends HookWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(5),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(40),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 5,
-                      offset: Offset(0, 3), // changes position of shadow
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
                     ),
                   ]),
               child: Row(
@@ -308,6 +407,7 @@ class DeliveryWidget extends HookWidget {
                   Icon(
                     Icons.search,
                     color: Colors.yellow.shade600,
+                    size: 24,
                   ),
                   SizedBox(
                     width: 10,
@@ -321,17 +421,33 @@ class DeliveryWidget extends HookWidget {
                       decoration: InputDecoration(
                         hintText: 'Введите адрес',
                         border: InputBorder.none,
-                        prefixIcon: Center(
+                        contentPadding: EdgeInsets.zero,
+                        isDense: true,
+                        prefixIcon: Container(
+                          padding: EdgeInsets.only(right: 5),
                           child: Text(
                             '${currentCity!.name}, ',
-                            style: TextStyle(fontSize: 17),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
                           ),
-                          widthFactor: 1,
                         ),
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 0, minHeight: 0),
                       ),
                     ),
                   ),
-                  VerticalDivider(),
+                  SizedBox(width: 5),
+                  Container(
+                    height: 24,
+                    child: VerticalDivider(
+                      color: Colors.grey.shade400,
+                      thickness: 1,
+                      width: 20,
+                    ),
+                  ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -339,7 +455,13 @@ class DeliveryWidget extends HookWidget {
                           MaterialPageRoute(
                               builder: (context) => DeliveryModal()));
                     },
-                    child: Text('Карта'),
+                    child: Text(
+                      'Карта',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   )
                 ],
               ),

@@ -2,6 +2,7 @@ import 'package:chopar_app/widgets/news/newsList.dart';
 import 'package:chopar_app/widgets/sales/banner.dart';
 import 'package:chopar_app/widgets/sales/salesList.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Sales extends StatefulWidget {
   const Sales({Key? key}) : super(key: key);
@@ -14,12 +15,12 @@ class _SalesState extends State<Sales> with SingleTickerProviderStateMixin {
   final myTabs = [
     Container(
       height: 30,
-      child: Tab(text: 'Акции'),
+      child: Tab(text: tr('sales')),
     ),
     Container(
         height: 30,
         child: Tab(
-          text: 'Новости',
+          text: tr('news'),
         ))
   ];
 
@@ -44,7 +45,7 @@ class _SalesState extends State<Sales> with SingleTickerProviderStateMixin {
         centerTitle: true,
         backgroundColor: Colors.white,
         title: Text(
-          'Акции',
+          tr('sales'),
           style: TextStyle(color: Colors.black),
         ),
       ),

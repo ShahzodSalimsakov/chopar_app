@@ -44,7 +44,7 @@ class AboutUs extends StatelessWidget {
         Container(
             margin: EdgeInsets.symmetric(horizontal: 80),
             child: Text(
-              'Chopar Pizza - национальная сеть пиццерий, специализирующаяся на пицце в лучших традициях востока.',
+              tr('about_chopar_description'),
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Color.fromRGBO(47, 94, 142, 1),
@@ -63,7 +63,8 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.instagram),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800,
+                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(12), // <-- Splash color
               ),
@@ -74,7 +75,8 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.facebook),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800,
+                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(12), // <-- Splash color
               ),
@@ -85,7 +87,8 @@ class AboutUs extends StatelessWidget {
               },
               child: FaIcon(FontAwesomeIcons.telegram),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.yellow.shade800, side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
+                foregroundColor: Colors.yellow.shade800,
+                side: BorderSide(width: 1.0, color: Colors.yellow.shade800),
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(12), // <-- Splash color
               ),
@@ -103,7 +106,7 @@ class AboutUs extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.all(0.00),
                   title: Text(
-                    'Пользовательское соглашение',
+                    tr('user_agreement'),
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
@@ -125,7 +128,7 @@ class AboutUs extends StatelessWidget {
                             foregroundColor: Colors.black,
                             centerTitle: true,
                             title: SingleChildScrollView(
-                              child: Text('Пользовательское соглашение',
+                              child: Text(tr('user_agreement'),
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
@@ -143,7 +146,37 @@ class AboutUs extends StatelessWidget {
                                     child: Column(children: [
                                       Container(
                                         padding: EdgeInsets.all(10),
-                                        child: Html(data: tr('privacy_text')),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              tr('privacy_policy_description'),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.grey.shade700),
+                                            ),
+                                            SizedBox(height: 20),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                launchUrl(
+                                                  Uri.parse(
+                                                      'https://choparpizza.uz/tashkent/privacy'),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
+                                                );
+                                              },
+                                              child: Text(
+                                                  tr('open_privacy_policy')),
+                                              style: ElevatedButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                backgroundColor: Color.fromRGBO(
+                                                    47, 94, 142, 1),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 12),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       )
                                     ])));
                           })),
@@ -155,7 +188,7 @@ class AboutUs extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.all(0.00),
                   title: Text(
-                    'Публичная оферта',
+                    tr('public_offer'),
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
@@ -176,7 +209,7 @@ class AboutUs extends StatelessWidget {
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
                             centerTitle: true,
-                            title: Text('Публичная оферта',
+                            title: Text(tr('public_offer'),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w400)),
                           ),
@@ -191,7 +224,8 @@ class AboutUs extends StatelessWidget {
                                     child: Column(children: [
                                       Container(
                                         padding: EdgeInsets.all(10),
-                                        child: Html(data: tr('public_offer')),
+                                        child:
+                                            Html(data: tr('public_offer_text')),
                                       )
                                     ])));
                           })),

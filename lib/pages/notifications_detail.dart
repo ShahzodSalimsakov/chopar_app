@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:http/http.dart' as http;
+import 'package:easy_localization/easy_localization.dart';
 
 @RoutePage()
 class NotificationDetailPage extends StatefulWidget {
@@ -30,6 +31,23 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
     }
   }
 
+  // Helper method to get localized text from notification
+  String getLocalizedText(Map<String, dynamic>? notification, String field) {
+    if (notification == null || notification[field] == null) return '';
+
+    final languageCode = context.locale.languageCode;
+
+    // Try to get the localized version based on current language
+    if (languageCode == 'uz' &&
+        notification['${field}_uz'] != null &&
+        notification['${field}_uz'].toString().isNotEmpty) {
+      return notification['${field}_uz'];
+    }
+
+    // Fallback to the default field (usually Russian)
+    return notification[field];
+  }
+
   @override
   Widget build(BuildContext context) {
     return loading
@@ -39,7 +57,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
         : Scaffold(
             appBar: AppBar(
               title: Text(
-                notification?['title'] ?? '',
+                getLocalizedText(notification, 'title'),
                 style: const TextStyle(color: Colors.black),
               ),
               backgroundColor: Colors.white,
@@ -71,23 +89,22 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        notification?['title'] != null &&
-                                notification?['title'] != ''
+                        getLocalizedText(notification, 'title').isNotEmpty
                             ? Text(
-                                notification?['title'],
+                                getLocalizedText(notification, 'title'),
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500),
                               )
                             : Container(),
-                        notification?['title'] != null
+                        getLocalizedText(notification, 'title').isNotEmpty
                             ? const SizedBox(height: 10)
                             : Container(),
                         // show truncated text if text is too long
-                        notification?['text'] != null
+                        getLocalizedText(notification, 'text').isNotEmpty
                             ? Text(
-                                notification?['text'],
+                                getLocalizedText(notification, 'text'),
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,

@@ -12,14 +12,35 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../models/delivery_type.dart';
 import '../../models/stock.dart';
 import '../../models/terminals.dart';
 
+// Helper function to get localized text
+String getLocalizedText(BuildContext context, dynamic chopar) {
+  if (chopar == null) return '';
+
+  final languageCode = context.locale.languageCode;
+
+  if (languageCode == 'uz' && chopar.uz != null && chopar.uz.isNotEmpty) {
+    return chopar.uz;
+  } else if (languageCode == 'ru' &&
+      chopar.ru != null &&
+      chopar.ru.isNotEmpty) {
+    return chopar.ru;
+  } else if (chopar.en != null && chopar.en.isNotEmpty) {
+    return chopar.en;
+  }
+
+  // Fallback to Russian if available
+  return chopar.ru ?? '';
+}
+
 class CreateOwnPizza extends HookWidget {
   final formatCurrency = new NumberFormat.currency(
-      locale: 'ru_RU', symbol: 'сум', decimalDigits: 0);
+      locale: 'ru_RU', symbol: tr('sum'), decimalDigits: 0);
   final List<Items>? items;
 
   CreateOwnPizza(this.items);
@@ -89,6 +110,23 @@ class CreateOwnPizza extends HookWidget {
       });
       return names.keys.toList();
     }, [items]);
+
+    // Функция для локализации размеров пиццы
+    String getLocalizedSize(String size) {
+      if (context.locale.languageCode == 'uz') {
+        switch (size) {
+          case 'Средняя':
+            return 'O\'rtacha';
+          case 'Большая':
+            return 'Katta';
+          case 'Семейная':
+            return 'Oilaviy';
+          default:
+            return size;
+        }
+      }
+      return size;
+    }
 
     final activeCustomName = useState<String>(customNames[0]);
 
@@ -551,7 +589,7 @@ class CreateOwnPizza extends HookWidget {
                             margin: EdgeInsets.symmetric(horizontal: 15.0),
                             width: MediaQuery.of(context).size.width,
                             child: Text(
-                              '${leftSelectedProduct.value?.attributeData?.name?.chopar?.ru?.toUpperCase()} + ${rightSelectedProduct.value?.attributeData?.name?.chopar?.ru?.toUpperCase()}',
+                              '${getLocalizedText(context, leftSelectedProduct.value?.attributeData?.name?.chopar)?.toUpperCase()} + ${getLocalizedText(context, rightSelectedProduct.value?.attributeData?.name?.chopar)?.toUpperCase()}',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 24),
                             ),
@@ -601,7 +639,7 @@ class CreateOwnPizza extends HookWidget {
                           //     )),
                           SizedBox(height: 20.0),
                           Text(
-                            'Добавить в пиццу',
+                            tr('add_to_pizza'),
                             style: TextStyle(
                                 color: Colors.yellow.shade600, fontSize: 16.0),
                           ),
@@ -636,7 +674,11 @@ class CreateOwnPizza extends HookWidget {
                                                     child: Center(
                                                   widthFactor: 0.5,
                                                   child: Text(
-                                                    m.name,
+                                                    context.locale
+                                                                .languageCode ==
+                                                            'uz'
+                                                        ? m.nameUz
+                                                        : m.name,
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),
@@ -704,7 +746,7 @@ class CreateOwnPizza extends HookWidget {
                     onPressed: () {
                       addToBasket();
                     },
-                    text: 'В корзину $totalSummary сум',
+                    text: '${tr('to_cart')} $totalSummary ${tr('sum')}',
                   ),
                 ))
           ],
@@ -737,7 +779,7 @@ class CreateOwnPizza extends HookWidget {
                                     activeCustomName.value == customNames[index]
                                         ? Colors.yellow.shade600
                                         : Colors.grey.shade100)),
-                            child: Text(customNames[index],
+                            child: Text(getLocalizedSize(customNames[index]),
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     color: activeCustomName.value ==
@@ -817,52 +859,56 @@ class CreateOwnPizza extends HookWidget {
                                       color: Colors.white),
                                   height: 200,
                                   width: 150,
-                                  child: Column(
-                                    children: [
-                                      CachedNetworkImage(
-                                        imageUrl:
-                                            readyProductList?[index].image ??
-                                                '',
-                                        width: 110,
-                                        height: 110,
-                                      ),
-                                      // Image.network(
-                                      //   readyProductList?[index].image ?? '',
-                                      //   width: 110,
-                                      //   height: 110,
-                                      // ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        readyProductList?[index]
-                                                .attributeData
-                                                ?.name
-                                                ?.chopar
-                                                ?.ru
-                                                ?.toUpperCase() ??
-                                            '',
-                                        style: TextStyle(fontSize: 20.0),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      readyProductList?[index].beforePrice !=
-                                              null
-                                          ? Text(
-                                              formatCurrency.format(
-                                                  readyProductList?[index]
-                                                          .beforePrice ??
-                                                      0.0000),
-                                              style: TextStyle(
-                                                  decoration: TextDecoration
-                                                      .lineThrough),
-                                            )
-                                          : SizedBox(),
-                                      Text(formatCurrency.format(int.parse(
-                                          double.parse(readyProductList?[index]
-                                                      .price ??
-                                                  '0.0000')
-                                              .toStringAsFixed(0))))
-                                    ],
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        CachedNetworkImage(
+                                          imageUrl:
+                                              readyProductList?[index].image ??
+                                                  '',
+                                          width: 110,
+                                          height: 110,
+                                        ),
+                                        // Image.network(
+                                        //   readyProductList?[index].image ?? '',
+                                        //   width: 110,
+                                        //   height: 110,
+                                        // ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          getLocalizedText(
+                                                      context,
+                                                      readyProductList?[index]
+                                                          .attributeData
+                                                          ?.name
+                                                          ?.chopar)
+                                                  ?.toUpperCase() ??
+                                              '',
+                                          style: TextStyle(fontSize: 20.0),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        readyProductList?[index].beforePrice !=
+                                                null
+                                            ? Text(
+                                                formatCurrency.format(
+                                                    readyProductList?[index]
+                                                            .beforePrice ??
+                                                        0.0000),
+                                                style: TextStyle(
+                                                    decoration: TextDecoration
+                                                        .lineThrough),
+                                              )
+                                            : SizedBox(),
+                                        Text(formatCurrency.format(int.parse(
+                                            double.parse(
+                                                    readyProductList?[index]
+                                                            .price ??
+                                                        '0.0000')
+                                                .toStringAsFixed(0))))
+                                      ],
+                                    ),
                                   ),
                                 )),
                             Positioned(
@@ -949,50 +995,55 @@ class CreateOwnPizza extends HookWidget {
                                     color: Colors.white),
                                 height: 200,
                                 width: 150,
-                                child: Column(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl:
-                                          readyProductList?[index].image ?? '',
-                                      width: 110,
-                                      height: 110,
-                                    ),
-                                    // Image.network(
-                                    //   readyProductList?[index].image ?? '',
-                                    //   width: 110,
-                                    //   height: 110,
-                                    // ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(
-                                      readyProductList?[index]
-                                              .attributeData
-                                              ?.name
-                                              ?.chopar
-                                              ?.ru
-                                              ?.toUpperCase() ??
-                                          '',
-                                      style: TextStyle(fontSize: 20.0),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    readyProductList?[index].beforePrice != null
-                                        ? Text(
-                                            formatCurrency.format(
-                                                readyProductList?[index]
-                                                        .beforePrice ??
-                                                    0.0000),
-                                            style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.lineThrough),
-                                          )
-                                        : SizedBox(),
-                                    Text(formatCurrency.format(int.parse(
-                                        double.parse(readyProductList?[index]
-                                                    .price ??
-                                                '0.0000')
-                                            .toStringAsFixed(0))))
-                                  ],
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl:
+                                            readyProductList?[index].image ??
+                                                '',
+                                        width: 110,
+                                        height: 110,
+                                      ),
+                                      // Image.network(
+                                      //   readyProductList?[index].image ?? '',
+                                      //   width: 110,
+                                      //   height: 110,
+                                      // ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        getLocalizedText(
+                                                    context,
+                                                    readyProductList?[index]
+                                                        .attributeData
+                                                        ?.name
+                                                        ?.chopar)
+                                                ?.toUpperCase() ??
+                                            '',
+                                        style: TextStyle(fontSize: 20.0),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      readyProductList?[index].beforePrice !=
+                                              null
+                                          ? Text(
+                                              formatCurrency.format(
+                                                  readyProductList?[index]
+                                                          .beforePrice ??
+                                                      0.0000),
+                                              style: TextStyle(
+                                                  decoration: TextDecoration
+                                                      .lineThrough),
+                                            )
+                                          : SizedBox(),
+                                      Text(formatCurrency.format(int.parse(
+                                          double.parse(readyProductList?[index]
+                                                      .price ??
+                                                  '0.0000')
+                                              .toStringAsFixed(0))))
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -1031,8 +1082,10 @@ class CreateOwnPizza extends HookWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(leftSelectedProduct
-                          .value?.attributeData?.name?.chopar?.ru
+                  Text(getLocalizedText(
+                              context,
+                              leftSelectedProduct
+                                  .value?.attributeData?.name?.chopar)
                           ?.toUpperCase() ??
                       ''),
                   Container(
@@ -1040,8 +1093,10 @@ class CreateOwnPizza extends HookWidget {
                     width: 1.0,
                     height: 40.0,
                   ),
-                  Text(rightSelectedProduct
-                          .value?.attributeData?.name?.chopar?.ru
+                  Text(getLocalizedText(
+                              context,
+                              rightSelectedProduct
+                                  .value?.attributeData?.name?.chopar)
                           ?.toUpperCase() ??
                       ''),
                 ],
@@ -1051,7 +1106,7 @@ class CreateOwnPizza extends HookWidget {
               decoration: BoxDecoration(color: Colors.white),
               padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
               child: DefaultStyledButton(
-                text: 'Соединить половинки',
+                text: tr('combine_halves'),
                 onPressed: () {
                   if (leftSelectedProduct.value == null ||
                       rightSelectedProduct.value == null) {
@@ -1071,13 +1126,12 @@ class CreateOwnPizza extends HookWidget {
       }
     }
 
-    Future<bool> _onBackPressed() {
+    Future<bool> _onBackPressed() async {
       if (isSecondPage.value) {
         isSecondPage.value = false;
-      } else {
-        Navigator.of(context).pop();
+        return Future.value(false);
       }
-      return Future.value(false);
+      return Future.value(true);
     }
 
     return WillPopScope(
@@ -1085,9 +1139,16 @@ class CreateOwnPizza extends HookWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: new IconButton(
-                icon: new Icon(Icons.arrow_back), onPressed: _onBackPressed),
+                icon: new Icon(Icons.arrow_back),
+                onPressed: () {
+                  if (isSecondPage.value) {
+                    isSecondPage.value = false;
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                }),
             title: Text(
-              'Пицца 50/50\nСоедини 2 любимых вкуса',
+              '${tr('pizza_50_50')}\n${tr('combine_2_favorite_flavors')}',
               textAlign: TextAlign.center,
             ),
             centerTitle: true,

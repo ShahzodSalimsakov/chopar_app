@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class WorkTimeWidget extends StatefulWidget {
   const WorkTimeWidget({Key? key}) : super(key: key);
@@ -106,7 +107,7 @@ class _WorkTimeWidgetState extends State<WorkTimeWidget> {
       await Future.delayed(Duration(milliseconds: 50));
       if (!workTimeModalOpened) {
         _closeWorkModal = Flushbar(
-            message: "Откроемся в 10:00",
+            message: "${tr('open_at')} 10:00",
             flushbarPosition: FlushbarPosition.TOP,
             flushbarStyle: FlushbarStyle.FLOATING,
             reverseAnimationCurve: Curves.decelerate,
@@ -125,7 +126,7 @@ class _WorkTimeWidgetState extends State<WorkTimeWidget> {
             messageText: Container(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                "Откроемся в 10:00",
+                "${tr('open_at')} 10:00",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 20.0,

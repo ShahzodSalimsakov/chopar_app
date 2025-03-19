@@ -3,6 +3,7 @@ import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/delivery_location_data.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
@@ -108,8 +109,8 @@ class _TerminalModalState extends State<TerminalsModal> {
       });
       showBottomSheet(terminal);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Данный терминал сейчас не работает')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(tr('terminal_not_working'))));
     }
   }
 
@@ -138,21 +139,21 @@ class _TerminalModalState extends State<TerminalsModal> {
                           target: Point(
                               latitude: double.parse(currentCity!.lat),
                               longitude: double.parse(currentCity.lon)),
-                          zoom: 12)),
+                          zoom: 11)),
                       animation: animation);
 
                   List<PlacemarkMapObject> mapsList = <PlacemarkMapObject>[];
 
                   widget.terminals.forEach((element) async {
                     if (element.latitude != null) {
-                      double scale = 2;
+                      double scale = 3.5;
                       if (_currentTerminal != null &&
                           _currentTerminal?.id! == element.id) {
-                        scale = 4;
+                        scale = 5;
                       }
                       if (currentTerminal != null &&
                           currentTerminal.id == element.id) {
-                        scale = 4;
+                        scale = 5;
                       }
 
                       var _placemark = PlacemarkMapObject(
@@ -162,13 +163,13 @@ class _TerminalModalState extends State<TerminalsModal> {
                               longitude: double.parse(element.longitude!)),
                           onTap: (PlacemarkMapObject self, Point point) =>
                               setCurrentTerminal(element),
-                          opacity: 0.7,
+                          opacity: 1.0,
                           direction: 90,
                           icon: PlacemarkIcon.single(PlacemarkIconStyle(
                               image: BitmapDescriptor.fromAssetImage(
-                                  element.isWorking!
-                                      ? 'images/place.png'
-                                      : 'images/place_disabled.png'),
+                                  element.isWorking == true
+                                      ? 'assets/images/place.png'
+                                      : 'assets/images/place_disabled.png'),
                               rotationType: RotationType.noRotation,
                               scale: scale,
                               anchor: Offset.fromDirection(1.1, 1))));
@@ -176,18 +177,27 @@ class _TerminalModalState extends State<TerminalsModal> {
                       mapsList.add(_placemark);
                     }
                   });
+
+                  // Add all the placemarks to the map objects collection
+                  setState(() {
+                    mapObjects = mapsList;
+                  });
                 })) /*)*/,
         Positioned(
             top: 50,
+            left: 20,
             child: RawMaterialButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              elevation: 2.0,
+              elevation: 4.0,
               fillColor: Colors.white,
-              child: Icon(Icons.close, size: 14.0, color: Colors.black),
-              padding: EdgeInsets.all(10.0),
-              shape: CircleBorder(),
+              child: Icon(Icons.arrow_back, size: 24.0, color: Colors.black),
+              padding: EdgeInsets.all(12.0),
+              constraints: BoxConstraints(minWidth: 44.0, minHeight: 44.0),
+              shape: CircleBorder(
+                side: BorderSide(color: Colors.grey.shade300, width: 1.0),
+              ),
             )),
         Positioned(
             right: 0,
@@ -214,8 +224,7 @@ class _TerminalModalState extends State<TerminalsModal> {
                   serviceEnabled = await Geolocator.isLocationServiceEnabled();
                   if (!serviceEnabled) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:
-                            Text('Недостаточно прав для получения локации')));
+                        content: Text(tr('insufficient_location_rights'))));
                     return;
                   }
 
@@ -224,16 +233,14 @@ class _TerminalModalState extends State<TerminalsModal> {
                     permission = await Geolocator.requestPermission();
                     if (permission == LocationPermission.denied) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content:
-                              Text('Недостаточно прав для получения локации')));
+                          content: Text(tr('insufficient_location_rights'))));
                       return;
                     }
                   }
 
                   if (permission == LocationPermission.deniedForever) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:
-                            Text('Недостаточно прав для получения локации')));
+                        content: Text(tr('insufficient_location_rights'))));
                     return;
                   }
 
@@ -247,7 +254,9 @@ class _TerminalModalState extends State<TerminalsModal> {
                       altitude: 0,
                       heading: 0,
                       speed: 0,
-                      speedAccuracy: 0, altitudeAccuracy: 0.0, headingAccuracy: 0.0);
+                      speedAccuracy: 0,
+                      altitudeAccuracy: 0.0,
+                      headingAccuracy: 0.0);
                 }
 
                 Map<String, String> requestHeaders = {

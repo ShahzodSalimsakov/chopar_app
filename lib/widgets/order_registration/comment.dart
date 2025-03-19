@@ -1,4 +1,5 @@
 import 'package:chopar_app/models/delivery_notes.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
@@ -10,13 +11,6 @@ class OrderCommentWidget extends HookWidget {
         width: double.infinity,
         padding: EdgeInsets.only(top: 20, bottom: 60, right: 20, left: 20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            'Комментарий к заказу',
-            style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(
-            height: 20,
-          ),
           TextField(
             maxLines: 4,
             textAlignVertical: TextAlignVertical.center,
@@ -27,7 +21,7 @@ class OrderCommentWidget extends HookWidget {
               ),
               fillColor: Colors.grey.shade200,
               filled: true,
-              hintText: 'Комментарий',
+              hintText: tr('comment'),
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),

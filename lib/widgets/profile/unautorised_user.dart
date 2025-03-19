@@ -1,6 +1,7 @@
 import 'package:chopar_app/widgets/auth/modal.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UnAuthorisedUserPage extends StatelessWidget {
   final String? title;
@@ -11,7 +12,7 @@ class UnAuthorisedUserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title ?? 'Профиль'),
+        title: Text(this.title ?? tr('nav_profile')),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -32,14 +33,14 @@ class UnAuthorisedUserPage extends StatelessWidget {
                 height: 100,
               ),
               Text(
-                'Привет',
+                tr('hello'),
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
               ),
               SizedBox(
                 height: 10,
               ),
               Text(
-                'чтобы войти в акаунт укажите\nномер телефона',
+                tr('to_login_enter_phone_number'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
@@ -60,7 +61,7 @@ class UnAuthorisedUserPage extends StatelessWidget {
                       ),
                     );
                   },
-                  text: 'Указать номер')
+                  text: tr('to_login_enter_phone_number'))
             ],
           ),
         ),
