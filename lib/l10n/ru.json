@@ -80,7 +80,7 @@
   "order_status_delivering": "В пути",
   "order_status_not_accepted": "Не принят",
   "order_status_not_confirmed": "Не подтвержден",
-  "order_status_awaiting_payment": "Ожидает оплаты",
+  "order_status_awaiting-payment": "Ожидает оплаты",
   "bonus": "Бонус",
   "empty_cart": "Корзина пуста",
   "swipe_to_delete": "Проведите пальцем влево, чтобы удалить продукт",
@@ -175,5 +175,8 @@
   "update_error": "Ошибка обновления",
   "order_is_accepted": "Заказ принят",
   "order_is_accepted_content": "Заказ принят. Ожидайте пока он будет обработан.",
-  "version": "Версия"
+  "version": "Версия",
+  "nearest_terminal_not_found": "Ближайший к Вам филиал не найден",
+  "nearest_terminals_is_closed": "Ближайший к Вам филиал закрыт",
+  "delivery_time_not_selected": "Выберите время доставки"
 }

@@ -17,6 +17,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/delivery_type.dart';
+import '../../models/stock.dart';
 
 class BasketWidget extends HookWidget {
   @override
@@ -835,6 +836,38 @@ class BasketWidget extends HookWidget {
                                     scrollDirection: Axis.horizontal,
                                     itemCount: relatedBiData.value.length,
                                     itemBuilder: (context, index) {
+                                      final product =
+                                          relatedBiData.value[index];
+
+                                      // Check if product is in stock
+                                      Box<Stock> stockBox =
+                                          Hive.box<Stock>('stock');
+                                      Stock? stock = stockBox.get('stock');
+                                      bool isOutOfStock = false;
+
+                                      if (stock != null &&
+                                          stock.prodIds.isNotEmpty) {
+                                        if (product.variants != null &&
+                                            product.variants.isNotEmpty) {
+                                          for (var variant
+                                              in product.variants) {
+                                            if (stock.prodIds
+                                                .contains(variant['id'])) {
+                                              isOutOfStock = true;
+                                              break;
+                                            }
+                                          }
+                                        } else if (stock.prodIds
+                                            .contains(product.id)) {
+                                          isOutOfStock = true;
+                                        }
+                                      }
+
+                                      // Skip inactive or out of stock products
+                                      if (product.active != 1 || isOutOfStock) {
+                                        return SizedBox.shrink();
+                                      }
+
                                       final formatCurrency =
                                           NumberFormat.currency(
                                               locale: 'ru_RU',
@@ -842,8 +875,7 @@ class BasketWidget extends HookWidget {
                                               decimalDigits: 0);
                                       String productPrice = '';
 
-                                      productPrice =
-                                          relatedBiData.value[index].price;
+                                      productPrice = product.price;
 
                                       productPrice = formatCurrency.format(
                                           double.tryParse(productPrice));
@@ -881,8 +913,7 @@ class BasketWidget extends HookWidget {
                                                       CrossAxisAlignment.center,
                                                   children: [
                                                     CachedNetworkImage(
-                                                      imageUrl: relatedBiData
-                                                          .value[index].image,
+                                                      imageUrl: product.image,
                                                       height: 70,
                                                       width: 70,
                                                     ),
@@ -891,32 +922,27 @@ class BasketWidget extends HookWidget {
                                                     ),
                                                     Text(
                                                       // Get localized product name based on language
-                                                      context.locale
-                                                                      .languageCode ==
+                                                      context
+                                                                      .locale.languageCode ==
                                                                   'uz' &&
-                                                              relatedBiData
-                                                                      .value[
-                                                                          index]
+                                                              product
                                                                       .attributeData
                                                                       .name
                                                                       .chopar
                                                                       .uz !=
                                                                   null &&
-                                                              relatedBiData
-                                                                  .value[index]
+                                                              product
                                                                   .attributeData
                                                                   .name
                                                                   .chopar
                                                                   .uz!
                                                                   .isNotEmpty
-                                                          ? relatedBiData
-                                                              .value[index]
+                                                          ? product
                                                               .attributeData
                                                               .name
                                                               .chopar
                                                               .uz!
-                                                          : relatedBiData
-                                                                  .value[index]
+                                                          : product
                                                                   .attributeData
                                                                   .name
                                                                   .chopar
@@ -948,9 +974,7 @@ class BasketWidget extends HookWidget {
                                                               .value = true;
 
                                                           int selectedProdId =
-                                                              relatedBiData
-                                                                  .value[index]
-                                                                  .id;
+                                                              product.id;
 
                                                           Box userBox =
                                                               Hive.box<User>(
@@ -1288,12 +1312,17 @@ class BasketWidget extends HookWidget {
       if (basket != null) {
         List<String> productIds = [];
 
-        if (basketData.lines != null) {
-          if (basketData.lines!.length > 0) {
-            for (var line in basketData.lines!) {
+        if (basketData.lines != null && basketData.lines!.isNotEmpty) {
+          for (var line in basketData.lines!) {
+            if (line.variant?.productId != null) {
               productIds.add(line.variant!.productId.toString());
             }
           }
+        }
+
+        // Don't make the API call if there are no product IDs
+        if (productIds.isEmpty) {
+          return;
         }
 
         Map<String, String> requestHeaders = {
@@ -1304,6 +1333,7 @@ class BasketWidget extends HookWidget {
         var url = SimplifiedUri.uri(
             'https://api.choparpizza.uz/api/baskets/bi_related/',
             {"productIds": productIds});
+
         var response = await http.get(url, headers: requestHeaders);
         if (response.statusCode == 200 || response.statusCode == 201) {
           var json = jsonDecode(response.body);
@@ -1312,11 +1342,14 @@ class BasketWidget extends HookWidget {
               List<RelatedProduct> localBiRelatedProduct =
                   List<RelatedProduct>.from(json['data']['relatedItems']
                       .map((m) => RelatedProduct.fromJson(m))
+                      .where((product) => product.active == 1)
                       .toList());
               relatedBiData.value = localBiRelatedProduct;
+
               List<RelatedProduct> topProduct = List<RelatedProduct>.from(
                   json['data']['topItems']
                       .map((m) => RelatedProduct.fromJson(m))
+                      .where((product) => product.active == 1)
                       .toList());
               topProducts.value = topProduct;
             }

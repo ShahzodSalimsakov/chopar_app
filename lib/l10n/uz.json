@@ -79,7 +79,7 @@
   "order_status_delivering": "Yo'lda",
   "order_status_not_accepted": "Qabul qilinmagan",
   "order_status_not_confirmed": "Tasdiqlanmagan",
-  "order_status_awaiting_payment": "To'lovni kutmoqda",
+  "order_status_awaiting-payment": "To'lovni kutmoqda",
   "bonus": "Bonus",
   "empty_cart": "Savat bo'sh",
   "swipe_to_delete": "Mahsulotni o'chirish uchun chapga suring",
@@ -187,5 +187,8 @@
   "order_is_accepted_content": "Buyurtmangiz qabul qilindi",
   "version": "Versiya",
   "allow": "Ruxsat berish",
-  "settings": "Sozlamalar"
+  "settings": "Sozlamalar",
+  "nearest_terminal_not_found": "Sizga yaqin bo'lgan filial topilmadi",
+  "nearest_terminals_is_closed": "Sizga yaqin bo'lgan filial hozirda yopilgan",
+  "delivery_time_not_selected": "Yetkazib berish vaqti tanlanmagan"
 }

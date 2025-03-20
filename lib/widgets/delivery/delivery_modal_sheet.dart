@@ -11,13 +11,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:easy_localization/easy_localization.dart';
 import '../../models/city.dart';
 import '../../models/user.dart';
 
 Map<String, String> terminalFoundErrors = {
-  "nearest_terminal_not_found": "Ближайший к Вам филиал не найден",
-  "nearest_terminals_is_closed": "Ближайший к Вам филиал закрыт"
+  "nearest_terminal_not_found": tr('nearest_terminal_not_found'),
+  "nearest_terminals_is_closed": tr('nearest_terminals_is_closed')
 };
 
 class DeliveryModalSheet extends HookWidget {
