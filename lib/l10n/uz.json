@@ -190,5 +190,10 @@
   "settings": "Sozlamalar",
   "nearest_terminal_not_found": "Sizga yaqin bo'lgan filial topilmadi",
   "nearest_terminals_is_closed": "Sizga yaqin bo'lgan filial hozirda yopilgan",
-  "delivery_time_not_selected": "Yetkazib berish vaqti tanlanmagan"
+  "delivery_time_not_selected": "Yetkazib berish vaqti tanlanmagan",
+  "please_check_your_connection_and_try_again": "Iltimos, internet aloqasini tekshiring va qayta urinib ko'ring",
+  "sorry_we_cant_accept_your_order": "Biz sizning buyurtmangizni qabul qilolmaymiz",
+  "working_hours": "Biz 10:00 dan boshlaymiz",
+  "current_version_remains_until_restart": "Joriy versiya ilova qayta ishga tushirilguncha ishlatilinadi",
+  "not_in_stock": "BU MAHSULOT YO'Q"
 }

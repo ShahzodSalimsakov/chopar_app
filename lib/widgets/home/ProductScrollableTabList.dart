@@ -378,9 +378,12 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
       };
 
       try {
+        print('Attempting to fetch cities from API...');
         var urlCities = Uri.https('api.choparpizza.uz', '/api/cities/public');
         var responseCity =
             await httpClient.get(urlCities, headers: requestHeaders);
+
+        print('Cities API response status: ${responseCity.statusCode}');
 
         if (responseCity.statusCode == 200) {
           var json = jsonDecode(responseCity.body);
@@ -389,35 +392,84 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
               citySlug = element['slug'];
             }
           });
+          print('Selected city slug: $citySlug');
         }
 
+        print('Attempting to fetch products from API...');
         var url = Uri.https('api.choparpizza.uz', '/api/products/public',
             {'perSection': '1', 'city_slug': citySlug});
         var response = await httpClient.get(url, headers: requestHeaders);
 
+        print('Products API response status: ${response.statusCode}');
+
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
-          List<ProductSection> productSections = List<ProductSection>.from(
-              json['data'].map((m) => new ProductSection.fromJson(m)).toList());
+          print('JSON Response structure: ${json.keys}');
 
-          // Сохраняем данные в кэш
-          _cacheProducts(productSections);
+          if (json['data'] != null) {
+            try {
+              // Try to parse each item individually to identify the problematic one
+              List<dynamic> dataItems = json['data'];
+              print('Number of items in response: ${dataItems.length}');
 
-          List<GlobalKey> localCategories = [];
-          for (var i = 0; i < productSections.length; i++) {
-            localCategories.add(GlobalKey());
-          }
-          if (mounted) {
-            setState(() {
-              products = productSections;
-              categories = localCategories;
-              scrollCont.addListener(changeTabs);
-              isLoading = false;
-              hasNetworkError = false;
-              retryCount = 0;
-            });
+              for (int i = 0; i < dataItems.length; i++) {
+                try {
+                  var item = dataItems[i];
+                  print('Processing item $i with keys: ${item.keys}');
+                  ProductSection section = ProductSection.fromJson(item);
+                  print('Successfully parsed item $i');
+                } catch (e) {
+                  print('Error parsing item $i: $e');
+                }
+              }
+
+              List<ProductSection> productSections = List<ProductSection>.from(
+                  json['data']
+                      .map((m) => new ProductSection.fromJson(m))
+                      .toList());
+
+              print(
+                  'Successfully fetched ${productSections.length} product sections');
+
+              // Сохраняем данные в кэш
+              _cacheProducts(productSections);
+
+              List<GlobalKey> localCategories = [];
+              for (var i = 0; i < productSections.length; i++) {
+                localCategories.add(GlobalKey());
+              }
+              if (mounted) {
+                setState(() {
+                  products = productSections;
+                  categories = localCategories;
+                  scrollCont.addListener(changeTabs);
+                  isLoading = false;
+                  hasNetworkError = false;
+                  retryCount = 0;
+                });
+              }
+            } catch (parseError) {
+              print('Error parsing product sections: $parseError');
+              print('Error type: ${parseError.runtimeType}');
+              if (mounted) {
+                setState(() {
+                  isLoading = false;
+                  hasNetworkError = true;
+                });
+              }
+            }
+          } else {
+            print('Data field is null in API response');
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+                hasNetworkError = true;
+              });
+            }
           }
         } else {
+          print(
+              'Server returned error: ${response.statusCode}, Body: ${response.body}');
           if (mounted) {
             setState(() {
               isLoading = false;
@@ -427,6 +479,19 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
         }
       } catch (networkError) {
         print('Network error in getProducts: $networkError');
+        print('Error type: ${networkError.runtimeType}');
+
+        // Additional error details for specific error types
+        if (networkError is SocketException) {
+          print('Socket error: ${networkError.message}');
+          print('Address: ${networkError.address}');
+          print('Port: ${networkError.port}');
+        } else if (networkError is TimeoutException) {
+          print('Timeout error: ${networkError.message}');
+        } else if (networkError is HandshakeException) {
+          print('SSL handshake error: ${networkError.message}');
+        }
+
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -435,6 +500,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
 
           if (retryCount < 2) {
             // Auto-retry up to 2 times but with delay
+            print('Retrying request (attempt ${retryCount + 1}/3)...');
             retryCount++;
             await Future.delayed(Duration(seconds: 2));
             getProducts();
@@ -1082,7 +1148,7 @@ class _ProductScrollableListTabState extends State<ProductScrollableTabList> {
                         color: Colors.black54,
                         padding: EdgeInsets.symmetric(vertical: 4),
                         child: Text(
-                          'НЕТ В НАЛИЧИИ',
+                          tr('not_in_stock'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,

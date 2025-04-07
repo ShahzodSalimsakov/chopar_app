@@ -178,5 +178,10 @@
   "version": "Версия",
   "nearest_terminal_not_found": "Ближайший к Вам филиал не найден",
   "nearest_terminals_is_closed": "Ближайший к Вам филиал закрыт",
-  "delivery_time_not_selected": "Выберите время доставки"
+  "delivery_time_not_selected": "Выберите время доставки",
+  "please_check_your_connection_and_try_again": "Пожалуйста, проверьте ваше соединение и попробуйте снова",
+  "sorry_we_cant_accept_your_order": "Извините, мы не можем принять ваш заказ",
+  "working_hours": "Время работы с 10:00",
+  "current_version_remains_until_restart": "Текущая версия будет использоваться до перезапуска приложения",
+  "not_in_stock": "НЕТ В НАЛИЧИИ"
 }

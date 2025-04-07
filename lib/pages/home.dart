@@ -24,6 +24,7 @@ import 'dart:developer' as developer;
 import 'package:geolocator/geolocator.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/city.dart';
 
@@ -37,7 +38,8 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+class _HomeState extends State<Home>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int selectedIndex = 0;
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
@@ -148,6 +150,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    // Register observer for app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
 
     // Initialize connectivity
     initConnectivity();
@@ -267,6 +272,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _checkForUpdates();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Check for updates when app resumes from background
+      _checkForUpdates();
+    }
+  }
+
   // Check for app updates
   Future<void> _checkForUpdates() async {
     // Only check for updates on Android
@@ -285,6 +298,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           else if (_updateInfo!.immediateUpdateAllowed) {
             _appUpdateService.performImmediateUpdate();
           }
+        } else if (_updateInfo != null &&
+            _updateInfo!.updateAvailability ==
+                UpdateAvailability.updateAvailable &&
+            _updateInfo!.installStatus == InstallStatus.downloaded) {
+          // If update is downloaded but not installed, show restart dialog
+          _appUpdateService.showRestartDialog(context);
         }
       } catch (e) {
         debugPrint('Ошибка при проверке обновлений: $e');
@@ -294,6 +313,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    // Remove observer
+    WidgetsBinding.instance.removeObserver(this);
     _connectivitySubscription.cancel();
     super.dispose();
   }
@@ -342,6 +363,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   Expanded(child: tabs[selectedIndex])
                 ],
               )),
+        floatingActionButton: kDebugMode
+            ? FloatingActionButton(
+                backgroundColor: Colors.yellow.shade700,
+                child: Icon(Icons.system_update, size: 28),
+                onPressed: () {
+                  // Directly start the emulation without confirmation dialog for simplicity
+                  _appUpdateService.emulateUpdate(context);
+                },
+              )
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: Container(
             height: 70.0,
             decoration: BoxDecoration(

@@ -3,13 +3,13 @@ class ProductSection {
   AttributeData? attributeData;
   late int iLft;
   late int iRgt;
-  Null parentId;
+  dynamic parentId;
   late String createdAt;
   late String updatedAt;
   late String sort;
-  Null layoutId;
-  Null draftedAt;
-  Null draftParentId;
+  dynamic layoutId;
+  dynamic draftedAt;
+  dynamic draftParentId;
   late int active;
   late int halfMode;
   late int threeSale;
@@ -33,22 +33,22 @@ class ProductSection {
       this.items});
 
   ProductSection.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] ?? 0;
     attributeData = json['attribute_data'] != null
         ? new AttributeData.fromJson(json['attribute_data'])
         : null;
-    iLft = json['_lft'];
-    iRgt = json['_rgt'];
+    iLft = json['_lft'] ?? 0;
+    iRgt = json['_rgt'] ?? 0;
     parentId = json['parent_id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    sort = json['sort'];
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
+    sort = json['sort']?.toString() ?? '0';
     layoutId = json['layout_id'];
     draftedAt = json['drafted_at'];
     draftParentId = json['draft_parent_id'];
-    active = json['active'];
-    halfMode = json['half_mode'];
-    threeSale = json['three_sale'];
+    active = json['active'] ?? 0;
+    halfMode = json['half_mode'] ?? 0;
+    threeSale = json['three_sale'] ?? 0;
     if (json['items'] != null) {
       items = json['items'].map<Items>((m) => new Items.fromJson(m)).toList();
       // json['items'].forEach((v) {
@@ -140,17 +140,17 @@ class Items {
   List<Map<String, dynamic>>? optionData;
   late String createdAt;
   late String updatedAt;
-  Null deletedAt;
+  dynamic deletedAt;
   late int productFamilyId;
-  Null layoutId;
+  dynamic layoutId;
   late int groupPricing;
-  Null draftedAt;
-  Null draftParentId;
+  dynamic draftedAt;
+  dynamic draftParentId;
   late String customName;
   late int? productId;
   late String? customNameUz;
   late int active;
-  Null modifierProdId;
+  dynamic modifierProdId;
   late String price;
   late String? image;
   List<Variants>? variants;
@@ -187,7 +187,7 @@ class Items {
       this.threesome});
 
   Items.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] ?? 0;
     attributeData = json['attribute_data'] != null
         ? new AttributeData.fromJson(json['attribute_data'])
         : null;
@@ -197,20 +197,20 @@ class Items {
       //   optionData?.add(new Map<String, dynamic>.fromJson(v));
       // });
     }
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
     deletedAt = json['deleted_at'];
-    productFamilyId = json['product_family_id'];
+    productFamilyId = json['product_family_id'] ?? 0;
     layoutId = json['layout_id'];
-    groupPricing = json['group_pricing'];
+    groupPricing = json['group_pricing'] ?? 0;
     draftedAt = json['drafted_at'];
     draftParentId = json['draft_parent_id'];
-    customName = json['custom_name'];
+    customName = json['custom_name'] ?? '';
     productId = json['product_id'];
-    customNameUz = json['custom_name_uz'];
-    active = json['active'];
+    customNameUz = json['custom_name_uz'] ?? '';
+    active = json['active'] ?? 0;
     modifierProdId = json['modifier_prod_id'];
-    price = json['price'];
+    price = json['price']?.toString() ?? '0';
     image = json['image'];
     if (json['variants'] != null) {
       variants = json['variants']
@@ -277,12 +277,12 @@ class Variants {
   List<Map<String, dynamic>>? optionData;
   late String createdAt;
   late String updatedAt;
-  Null deletedAt;
+  dynamic deletedAt;
   late int productFamilyId;
-  Null layoutId;
+  dynamic layoutId;
   late int groupPricing;
-  Null draftedAt;
-  Null draftParentId;
+  dynamic draftedAt;
+  dynamic draftParentId;
   late String customName;
   late int productId;
   late String customNameUz;
@@ -320,7 +320,7 @@ class Variants {
       this.threesome});
 
   Variants.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] ?? 0;
     attributeData = json['attribute_data'] != null
         ? new AttributeData.fromJson(json['attribute_data'])
         : null;
@@ -330,21 +330,21 @@ class Variants {
       //   optionData.add(new Null.fromJson(v));
       // });
     }
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
     deletedAt = json['deleted_at'];
-    productFamilyId = json['product_family_id'];
+    productFamilyId = json['product_family_id'] ?? 0;
     layoutId = json['layout_id'];
-    groupPricing = json['group_pricing'];
+    groupPricing = json['group_pricing'] ?? 0;
     draftedAt = json['drafted_at'];
     draftParentId = json['draft_parent_id'];
-    customName = json['custom_name'];
-    productId = json['product_id'];
-    customNameUz = json['custom_name_uz'];
-    active = json['active'];
+    customName = json['custom_name'] ?? '';
+    productId = json['product_id'] ?? 0;
+    customNameUz = json['custom_name_uz'] ?? '';
+    active = json['active'] ?? 0;
     modifierProdId =
         json['modifier_prod_id'] != null ? json['modifier_prod_id'] : null;
-    price = json['price'];
+    price = json['price']?.toString() ?? '0';
     image = json['image'];
     threesome = json['threesome'];
     if (json['modifiers'] != null) {
@@ -451,15 +451,15 @@ class Modifiers {
       this.assets});
 
   Modifiers.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    name = json['name'];
-    xmlId = json['xml_id'];
-    price = json['price'];
-    weight = json['weight'];
-    groupId = json['groupId'];
-    nameUz = json['name_uz'];
+    id = json['id'] ?? 0;
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
+    name = json['name'] ?? '';
+    xmlId = json['xml_id'] ?? '';
+    price = json['price'] ?? 0;
+    weight = json['weight'] ?? 0;
+    groupId = json['groupId'] ?? '';
+    nameUz = json['name_uz'] ?? '';
     if (json['assets'] != null) {
       assets =
           json['assets'].map<Assets>((m) => new Assets.fromJson(m)).toList();
@@ -494,7 +494,7 @@ class Assets {
   String? height;
   late String title;
   late String originalFilename;
-  Null caption;
+  dynamic caption;
   late int size;
   late int external;
   late String extension;
@@ -523,22 +523,22 @@ class Assets {
       this.pivot});
 
   Assets.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    assetSourceId = json['asset_source_id'];
-    location = json['location'];
-    kind = json['kind'];
-    subKind = json['sub_kind'];
-    width = json['width'] != null ? json['width'] : null;
-    height = json['height'] != null ? json['height'] : null;
-    title = json['title'];
-    originalFilename = json['original_filename'];
+    id = json['id'] ?? 0;
+    assetSourceId = json['asset_source_id'] ?? 0;
+    location = json['location'] ?? '';
+    kind = json['kind'] ?? '';
+    subKind = json['sub_kind'] ?? '';
+    width = json['width'] != null ? json['width'].toString() : null;
+    height = json['height'] != null ? json['height'].toString() : null;
+    title = json['title'] ?? '';
+    originalFilename = json['original_filename'] ?? '';
     caption = json['caption'];
-    size = json['size'];
-    external = json['external'];
-    extension = json['extension'];
-    filename = json['filename'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    size = json['size'] ?? 0;
+    external = json['external'] ?? 0;
+    extension = json['extension'] ?? '';
+    filename = json['filename'] ?? '';
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
     pivot = json['pivot'] != null ? new Pivot.fromJson(json['pivot']) : null;
   }
 
@@ -586,13 +586,13 @@ class Pivot {
       required this.updatedAt});
 
   Pivot.fromJson(Map<String, dynamic> json) {
-    assetableId = json['assetable_id'];
-    assetId = json['asset_id'];
-    position = json['position'];
-    primary = json['primary'];
-    assetableType = json['assetable_type'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    assetableId = json['assetable_id'] ?? 0;
+    assetId = json['asset_id'] ?? 0;
+    position = json['position'] ?? '0';
+    primary = json['primary'] ?? 0;
+    assetableType = json['assetable_type'] ?? '';
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -614,17 +614,17 @@ class ModifierProduct {
   List<Map<String, dynamic>>? optionData;
   late String createdAt;
   late String updatedAt;
-  Null deletedAt;
+  dynamic deletedAt;
   late int productFamilyId;
-  Null layoutId;
+  dynamic layoutId;
   late int groupPricing;
-  Null draftedAt;
-  Null draftParentId;
+  dynamic draftedAt;
+  dynamic draftParentId;
   late String customName;
-  Null productId;
-  Null customNameUz;
+  dynamic productId;
+  dynamic customNameUz;
   late int active;
-  Null modifierProdId;
+  dynamic modifierProdId;
   late String price;
   late String? image;
   List<Modifiers>? modifiers;
@@ -651,7 +651,7 @@ class ModifierProduct {
       this.modifiers});
 
   ModifierProduct.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] ?? 0;
     attributeData = json['attribute_data'] != null
         ? new AttributeData.fromJson(json['attribute_data'])
         : null;
@@ -661,20 +661,20 @@ class ModifierProduct {
       //   optionData.add(new Null.fromJson(v));
       // });
     }
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
     deletedAt = json['deleted_at'];
-    productFamilyId = json['product_family_id'];
+    productFamilyId = json['product_family_id'] ?? 0;
     layoutId = json['layout_id'];
-    groupPricing = json['group_pricing'];
+    groupPricing = json['group_pricing'] ?? 0;
     draftedAt = json['drafted_at'];
     draftParentId = json['draft_parent_id'];
-    customName = json['custom_name'];
+    customName = json['custom_name'] ?? '';
     productId = json['product_id'];
-    customNameUz = json['custom_name_uz'];
-    active = json['active'];
+    customNameUz = json['custom_name_uz'] ?? '';
+    active = json['active'] ?? 0;
     modifierProdId = json['modifier_prod_id'];
-    price = json['price'];
+    price = json['price']?.toString() ?? '0';
     image = json['image'];
     if (json['modifiers'] != null) {
       modifiers = json['modifiers']
