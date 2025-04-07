@@ -1,4 +1,5 @@
 import 'package:chopar_app/widgets/auth/modal.dart';
+import 'package:chopar_app/widgets/profile/LanguageSwitcher.dart';
 import 'package:chopar_app/widgets/ui/styled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -17,6 +18,17 @@ class UnAuthorisedUserPage extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => LanguageSwitcher(),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         color: Colors.white,
@@ -61,7 +73,20 @@ class UnAuthorisedUserPage extends StatelessWidget {
                       ),
                     );
                   },
-                  text: tr('to_login_enter_phone_number'))
+                  text: tr('to_login_enter_phone_number')),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => LanguageSwitcher(),
+                  );
+                },
+                icon: Icon(Icons.language),
+                label: Text(tr('language_app')),
+              ),
             ],
           ),
         ),

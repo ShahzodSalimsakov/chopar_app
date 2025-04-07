@@ -13,8 +13,6 @@ import 'package:chopar_app/models/registered_review.dart';
 import 'package:chopar_app/models/terminals.dart';
 import 'package:chopar_app/models/user.dart';
 import 'package:chopar_app/routes/router.dart';
-import 'package:chopar_app/utils/http_locale_loader.dart';
-import 'package:chopar_app/utils/my_alert_dialog.dart' as custom_dialog;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -28,7 +26,6 @@ import 'models/basket.dart';
 import 'models/delivery_time.dart';
 import 'models/home_scroll_position.dart';
 import 'models/stock.dart';
-import 'package:chopar_app/services/app_update_service.dart';
 import 'firebase_options.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
@@ -71,7 +68,7 @@ void main() async {
   runApp(EasyLocalization(
       supportedLocales: [Locale('ru'), Locale('uz')],
       path: 'lib/l10n',
-      fallbackLocale: Locale('ru'),
+      fallbackLocale: Locale('uz'),
       useOnlyLangCode: true,
       child: MainApp()));
 }
