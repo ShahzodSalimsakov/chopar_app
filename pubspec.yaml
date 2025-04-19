@@ -25,7 +25,6 @@ dependencies:
   authentication_repository:
     path: packages/authentication_repository
   auto_route: ^9.3.0+1
-  awesome_notifications: ^0.10.1
   cached_network_image: ^3.2.3
   carousel_slider: ^5.0.0
   collection: ^1.15.0
@@ -37,7 +36,7 @@ dependencies:
   easy_localization_loader: ^2.0.2
   equatable: ^2.0.3
   extended_tabs: ^4.1.0
-  firebase_core: ^3.12.1
+  firebase_core: ^3.13.0
   firebase_crashlytics: ^4.3.4
   firebase_messaging: ^15.2.4
   flash: ^3.0.5+1
@@ -77,6 +76,7 @@ dependencies:
   niku: ^2.4.3
   otp_autofill: ^4.1.0
   overlay_dialog: ^0.2.1
+  package_info_plus: ^4.2.0
   pin_code_fields: ^8.0.1
   scrollable_list_tabview: 0.2.0-nullsafety
   scrollable_positioned_list: ^0.2.3
@@ -92,17 +92,14 @@ dependencies:
   uuid: ^3.0.4
   vertical_scrollable_tabview: ^0.1.0
   yandex_mapkit: ^4.1.0
-  package_info_plus: ^4.2.0
 
 dependency_overrides:
   country_pickers: ^3.0.1
   intl: ^0.17.0
-  awesome_notifications_fcm: ^0.10.1
   flutter_plugin_android_lifecycle: 2.0.15 # Using an older version that doesn't require SDK 35
 dev_dependencies:
   analyzer: ^6.7.0
   auto_route_generator: ^9.0.0
-  awesome_notifications: ^0.10.1
   build_runner: null
   easy_localization: ^3.0.6
   flutter_native_splash: ^2.2.10

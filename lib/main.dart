@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chopar_app/models/basket_item_quantity.dart';
 import 'package:chopar_app/models/city.dart';
 import 'package:chopar_app/models/deliver_later_time.dart';
@@ -30,8 +29,6 @@ import 'firebase_options.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // Awesome notifications
-  AwesomeNotifications().createNotificationFromJsonData(message.data);
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -56,7 +53,7 @@ void main() async {
   };
 
   // Initialize notifications
-  await _initializeNotifications();
+  // await _initializeNotifications();
 
   // Initialize localization
   await EasyLocalization.ensureInitialized();
@@ -73,36 +70,36 @@ void main() async {
       child: MainApp()));
 }
 
-Future<void> _initializeNotifications() async {
-  await AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-        channelGroupKey: 'basic_channel_group',
-        channelKey: 'basic_channel',
-        channelName: 'Basic notifications',
-        channelDescription: 'Notification channel for basic tests',
-        defaultColor: Color(0xFF9D50DD),
-        ledColor: Colors.white,
-      ),
-    ],
-    channelGroups: [
-      NotificationChannelGroup(
-        channelGroupKey: 'basic_channel_group',
-        channelGroupName: 'Basic group',
-      ),
-    ],
-    debug: true,
-  );
+// Future<void> _initializeNotifications() async {
+//   await AwesomeNotifications().initialize(
+//     null,
+//     [
+//       NotificationChannel(
+//         channelGroupKey: 'basic_channel_group',
+//         channelKey: 'basic_channel',
+//         channelName: 'Basic notifications',
+//         channelDescription: 'Notification channel for basic tests',
+//         defaultColor: Color(0xFF9D50DD),
+//         ledColor: Colors.white,
+//       ),
+//     ],
+//     channelGroups: [
+//       NotificationChannelGroup(
+//         channelGroupKey: 'basic_channel_group',
+//         channelGroupName: 'Basic group',
+//       ),
+//     ],
+//     debug: true,
+//   );
 
-  await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-    if (!isAllowed) {
-      AwesomeNotifications().requestPermissionToSendNotifications();
-    }
-  });
+//   await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+//     if (!isAllowed) {
+//       AwesomeNotifications().requestPermissionToSendNotifications();
+//     }
+//   });
 
-  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-}
+//   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+// }
 
 Future<void> _initializeHive() async {
   await Hive.initFlutter();
